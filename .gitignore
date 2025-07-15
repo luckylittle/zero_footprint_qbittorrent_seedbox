@@ -1,0 +1,12 @@
+.terraform
+.terraform.lock.hcl
+.travis.yml
+.venv
+files/vsftpd/users.txt
+password.txt
+terraform.tf
+terraform.tfstate
+terraform.tfstate.backup
+tests/inventory
+tests/password.txt
+tests/zero_footprint_rutorrent_seedbox

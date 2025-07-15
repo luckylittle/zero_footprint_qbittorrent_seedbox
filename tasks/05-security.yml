@@ -1,0 +1,312 @@
+---
+# tasks file for ansible-role-zero-footprint-ruT-seedbox/05-security
+
+- name: SECURITY | 5.1 Install packages
+  ansible.builtin.dnf:
+    name: "{{ item }}"
+    state: present
+  become: true
+  loop: "{{ security_required_rpms }}"
+  tags:
+    - security
+
+- name: SECURITY | 5.2 Ensure SELinux is set to enforcing mode
+  ansible.builtin.lineinfile:
+    path: "/etc/selinux/config"
+    regexp: '^SELINUX='
+    line: "SELINUX=enforcing"
+    backup: true
+  become: true
+  tags:
+    - security
+
+- name: SECURITY | 5.3 Copy the SELinux modules (for ruTorrent & tmux)
+  ansible.builtin.copy:
+    src: "selinux/{{ item }}"
+    dest: "/tmp/{{ item }}"
+    mode: "0644"
+  loop:
+    - "rutorrent.te"
+    - "tmux.te"
+  tags:
+    - security
+
+- name: SECURITY | 5.4 Compile the SELinux modules
+  ansible.builtin.command: "make -f /usr/share/selinux/devel/Makefile \
+                           {{ item | split(\".\") | first }}.pp"
+  args:
+    chdir: "/tmp"
+    creates: "/tmp/{{ item | split('.') | first }}.pp"
+  loop:
+    - "rutorrent.te"
+    - "tmux.te"
+  tags:
+    - security
+
+- name: SECURITY | 5.5 Install the SELinux modules
+  ansible.builtin.command: "semodule -i {{ item }}"
+  args:
+    chdir: "/tmp"
+  changed_when: true
+  become: true
+  loop:
+    - "rutorrent.pp"
+    - "tmux.pp"
+  tags:
+    - security
+
+- name: SECURITY | 5.6 Start service firewalld
+  ansible.builtin.service:
+    name: "firewalld"
+    state: "started"
+    enabled: true
+  become: true
+  tags:
+    - security
+
+- name: SECURITY | 5.7 Create a new firewalld zone "limited"
+  ansible.posix.firewalld:
+    zone: "limited"
+    state: "present"
+    permanent: true
+  become: true
+  notify:
+    - "Reload firewalld"
+  tags:
+    - security
+
+- name: SECURITY | 5.8 Add source to a new firewalld zone "limited"
+  ansible.posix.firewalld:
+    zone: "limited"
+    source: "{{ item }}"
+    state: "enabled"
+    permanent: true
+  become: true
+  notify:
+    - "Reload firewalld"
+  loop: "{{ fail2ban_ignore_ipv4 | split(' ') }}"
+  tags:
+    - security
+
+- name: SECURITY | 5.9 Permit traffic in "default" zone for https service
+  ansible.posix.firewalld:
+    service: "{{ item }}"
+    permanent: true
+    state: "enabled"
+  become: true
+  notify:
+    - "Reload firewalld"
+  loop:
+    - https
+  tags:
+    - security
+
+- name: SECURITY | 5.10 Permit traffic in "default" zone for various rtorrent, \
+        vsftpd, autobrr ports
+  ansible.posix.firewalld:
+    port: "{{ item }}"
+    permanent: true
+    state: "enabled"
+  become: true
+  notify:
+    - "Reload firewalld"
+  loop:
+    - "{{ rtorrent_port }}/tcp"
+    - "{{ rtorrent_port }}/udp"
+    - "{{ ftp_port }}/tcp"
+    - "{{ pasv_port_range }}/tcp"
+  tags:
+    - security
+
+- name: SECURITY | 5.11 Deny traffic in "default" zone for cockpit and ssh
+  ansible.posix.firewalld:
+    service: "{{ item }}"
+    permanent: true
+    state: "disabled"
+  become: true
+  notify:
+    - "Reload firewalld"
+  loop:
+    - "cockpit"
+    - "ssh"
+  tags:
+    - security
+
+- name: SECURITY | 5.12 Deny ICMP traffic in "default" zone
+  ansible.posix.firewalld:
+    icmp_block: "{{ item }}"
+    permanent: true
+    state: "enabled"
+  become: true
+  notify:
+    - "Reload firewalld"
+  loop:
+    - "echo-request"
+    - "echo-reply"
+  tags:
+    - security
+
+- name: SECURITY | 5.13 Permit traffic in "limited" zone for various rtorrent, \
+        vsftpd, autobrr ports
+  ansible.posix.firewalld:
+    zone: "limited"
+    port: "{{ item }}"
+    permanent: true
+    state: "enabled"
+  become: true
+  notify:
+    - "Reload firewalld"
+  loop:
+    - "{{ rtorrent_port }}/tcp"
+    - "{{ rtorrent_port }}/udp"
+    - "{{ ftp_port }}/tcp"
+    - "{{ pasv_port_range }}/tcp"
+  tags:
+    - security
+
+- name: SECURITY | 5.14 Permit traffic in "limited" zone for https, sshd service
+  ansible.posix.firewalld:
+    zone: "limited"
+    service: "{{ item }}"
+    permanent: true
+    state: "enabled"
+  become: true
+  notify:
+    - "Reload firewalld"
+  loop:
+    - "https"
+    - "ssh"
+  tags:
+    - security
+
+- name: SECURITY | 5.15 Template the configuration for SSHD
+  ansible.builtin.template:
+    src: "sshd/sshd_config.j2"
+    dest: "{{ sshd_config_file }}"
+    backup: true
+    mode: "0600"
+  become: true
+  notify:
+    - "Reload sshd"
+  tags:
+    - security
+
+- name: SECURITY | 5.16 Copy the configuration for Fail2Ban (jail)
+  ansible.builtin.copy:
+    src: "fail2ban/jail.local"
+    dest: "{{ fail2ban_jail_local_file }}"
+    backup: true
+    mode: "0644"
+  notify:
+    - "Restart fail2ban"
+  become: true
+  tags:
+    - security
+
+- name: SECURITY | 5.17 Copy the configuration for Fail2Ban (lighttpd)
+  ansible.builtin.copy:
+    src: "fail2ban/lighttpd-auth.local"
+    dest: "{{ fail2ban_jail_lighttpd_file }}"
+    backup: true
+    mode: "0644"
+  notify:
+    - "Restart fail2ban"
+  become: true
+  tags:
+    - security
+
+- name: SECURITY | 5.18 Copy the configuration for Fail2Ban (sshd)
+  ansible.builtin.copy:
+    src: "fail2ban/sshd.local"
+    dest: "{{ fail2ban_sshd_local_file }}"
+    backup: true
+    mode: "0644"
+  notify:
+    - "Restart fail2ban"
+  become: true
+  tags:
+    - security
+
+- name: SECURITY | 5.19 Template the configuration for Fail2Ban (vsftpd)
+  ansible.builtin.template:
+    src: "fail2ban/vsftpd.local.j2"
+    dest: "{{ fail2ban_vsftpd_local_file }}"
+    backup: true
+    mode: "0644"
+  notify:
+    - "Restart fail2ban"
+  become: true
+  tags:
+    - security
+
+- name: SECURITY | 5.20 Make exceptions for some IP addresses for Fail2Ban
+  ansible.builtin.lineinfile:
+    path: "{{ fail2ban_jail_config_file }}"
+    regexp: '^#ignoreip = 127.0.0.1/8 ::1$'
+    line: "ignoreip = {{ fail2ban_ignore_ipv4 }}"
+    backup: true
+  notify:
+    - "Restart fail2ban"
+  become: true
+  tags:
+    - security
+
+- name: SECURITY | 5.21 Change logging of Fail2Ban to systemd
+  ansible.builtin.lineinfile:
+    path: "{{ fail2ban_config_file }}"
+    regexp: '^logtarget =.*'
+    line: "logtarget = SYSTEMD-JOURNAL"
+    owner: root
+    group: root
+    mode: "0644"
+    backup: true
+  notify:
+    - "Restart fail2ban"
+  become: true
+  tags:
+    - security
+
+- name: SECURITY | 5.22 Copy the filter for Fail2Ban (lighttpd-auth)
+  ansible.builtin.copy:
+    src: "fail2ban/lighttpd-auth.conf"
+    dest: "{{ fail2ban_lighttpd_config_file }}"
+    backup: true
+    mode: "0644"
+  notify:
+    - "Restart fail2ban"
+  become: true
+  tags:
+    - security
+
+- name: SECURITY | 5.23 Copy the filter for Fail2Ban (vsftpd)
+  ansible.builtin.copy:
+    src: "fail2ban/vsftpd.conf"
+    dest: "{{ fail2ban_vsftpd_config_file }}"
+    backup: true
+    mode: "0644"
+  notify:
+    - "Restart fail2ban"
+  become: true
+  tags:
+    - security
+
+- name: SECURITY | 5.24 Disable shell history
+  ansible.builtin.lineinfile:
+    path: "/etc/profile"
+    regexp: '^HISTSIZE=1000$'
+    line: "HISTSIZE=0\nHISTFILE=/dev/null"
+    backup: true
+  become: true
+  tags:
+    - security
+
+- name: SECURITY | 5.25 Configure restricted sudo for ansible_user
+  community.general.sudoers:
+    name: "ansible-{{ ansible_user }}-custom-sudo"
+    user: "{{ ansible_user }}"
+    commands: "{{ restricted_sudo_commands }}"
+    nopassword: true
+    state: "present"
+  become: true
+  tags:
+    - security

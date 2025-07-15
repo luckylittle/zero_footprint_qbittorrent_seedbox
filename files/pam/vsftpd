@@ -1,0 +1,4 @@
+# Managed by Ansible
+#%PAM-1.0
+auth required /lib64/security/pam_userdb.so db=/etc/vsftpd/login
+account required /lib64/security/pam_userdb.so db=/etc/vsftpd/login

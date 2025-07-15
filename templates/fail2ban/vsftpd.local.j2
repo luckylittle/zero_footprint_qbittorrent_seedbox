@@ -1,0 +1,7 @@
+# {{ ansible_managed }}
+[vsftpd]
+enabled = true
+backend = systemd
+filter = vsftpd
+port = {{ ftp_port }}
+journalmatch = _SYSTEMD_UNIT=vsftpd.service + _COMM=vsftpd

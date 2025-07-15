@@ -1,0 +1,48 @@
+---
+# handlers file for ansible-role-zero-footprint-ruT-seedbox
+
+# 01-common
+- name: Restart tuned
+  ansible.builtin.systemd:
+    name: "tuned"
+    state: "restarted"
+  become: true
+
+# 04-rutorrent
+- name: Reload php-fpm
+  ansible.builtin.systemd:
+    name: "php-fpm"
+    state: "reloaded"
+  become: true
+
+- name: Reload lighttpd
+  ansible.builtin.systemd:
+    name: "lighttpd"
+    state: "reloaded"
+  become: true
+
+# 05-security
+- name: Reload firewalld
+  ansible.builtin.systemd:
+    name: "firewalld"
+    state: "reloaded"
+  become: true
+
+- name: Reload sshd
+  ansible.builtin.systemd:
+    name: "sshd"
+    state: "reloaded"
+  become: true
+
+- name: Restart fail2ban
+  ansible.builtin.systemd:
+    name: "fail2ban"
+    state: "restarted"
+  become: true
+
+# 06-cleanup
+- name: Restart systemd-journald
+  ansible.builtin.systemd:
+    name: "systemd-journald"
+    state: "restarted"
+  become: true

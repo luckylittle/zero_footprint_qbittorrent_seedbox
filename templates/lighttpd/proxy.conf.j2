@@ -1,0 +1,6 @@
+# {{ ansible_managed }}
+server.modules += ( "mod_proxy" )
+$HTTP["url"] =^ "/autobrr" {
+  proxy.server = ( "" => (( "host" => "127.0.0.1", "port" => 7474 )))
+  proxy.header = ( "upgrade" => 1 )
+}

@@ -1,0 +1,223 @@
+---
+# tasks file for ansible-role-zero-footprint-ruT-seedbox/08-smoke_test
+
+- name: TEST | 8.1 Populate service_facts
+  ansible.builtin.service_facts:
+  tags:
+    - smoke_tests
+
+- name: TEST | 8.2 Print ACTIVE services
+  ansible.builtin.debug:
+    var: ansible_facts['services'].values() |
+          selectattr('state','equalto','active') |
+          map(attribute='name') | list
+  tags:
+    - smoke_tests
+
+- name: TEST | 8.3 Print INACTIVE services
+  ansible.builtin.debug:
+    var: ansible_facts['services'].values() |
+          selectattr('state','equalto','inactive') |
+          map(attribute='name') | list
+  tags:
+    - smoke_tests
+
+- name: TEST | 8.4 Print RUNNING services
+  ansible.builtin.debug:
+    var: ansible_facts['services'].values() |
+          selectattr('state','equalto','running') |
+          map(attribute='name') | list
+  tags:
+    - smoke_tests
+
+- name: TEST | 8.5 Print STOPPED services
+  ansible.builtin.debug:
+    var: ansible_facts['services'].values() |
+          selectattr('state','equalto','stopped') |
+          map(attribute='name') | list
+  tags:
+    - smoke_tests
+
+- name: TEST | 8.6 Print UNKNOWN services
+  ansible.builtin.debug:
+    var: ansible_facts['services'].values() |
+          selectattr('state','equalto','unknown') |
+          map(attribute='name') | list
+  tags:
+    - smoke_tests
+
+- name: TEST | 8.7 Check for port 22 to be open and contain "OpenSSH"
+  ansible.builtin.wait_for:
+    port: 22
+    search_regex: "OpenSSH"
+    timeout: "{{ test_timeout }}"
+  register: test_ssh
+  changed_when: false
+  tags:
+    - smoke_tests
+
+- name: TEST | 8.8 Check for FTP port to be open and contain "220 Welcome to"
+  ansible.builtin.wait_for:
+    port: "{{ ftp_port }}"
+    search_regex: "220 Welcome to"
+    timeout: "{{ test_timeout }}"
+  register: test_ftp
+  changed_when: false
+  tags:
+    - smoke_tests
+
+- name: TEST | 8.9 Check for rtorrent port to be open
+  ansible.builtin.wait_for:
+    port: "{{ rtorrent_port }}"
+    timeout: "{{ test_timeout }}"
+  register: test_rtorrent
+  changed_when: false
+  tags:
+    - smoke_tests
+
+- name: TEST | 8.10 Check for RPC rtorrent endpoint to be open
+  ansible.builtin.uri:
+    url: "https://{{ (ansible_ssh_host | default(ansible_host)) \
+        | default(inventory_hostname) }}/plugins/httprpc/action.php"
+    return_content: true
+    validate_certs: false
+    url_username: "{{ ansible_user }}"
+    url_password: "{{ htpasswd }}"
+    force_basic_auth: true
+    timeout: "{{ test_timeout }}"
+  register: test_rpc
+  failed_when: "test_rpc.status != 200 or 'false' \
+                not in test_rpc.content"
+  changed_when: false
+  tags:
+    - smoke_tests
+
+- name: TEST | 8.11 Check for HTTPS rutorrent port to be open
+  ansible.builtin.uri:
+    url: "https://{{ (ansible_ssh_host | default(ansible_host)) | \
+          default(inventory_hostname) }}:{{ https_port }}"
+    return_content: true
+    validate_certs: false
+    url_username: "{{ ansible_user }}"
+    url_password: "{{ htpasswd }}"
+    force_basic_auth: true
+    timeout: "{{ test_timeout }}"
+  register: test_https
+  failed_when: "test_https.status != 200 or \
+                'rTorrent' not in test_https.content"
+  changed_when: false
+  tags:
+    - smoke_tests
+
+- name: TEST | 8.12 Check for Autobrr to be responding
+  ansible.builtin.uri:
+    url: "https://{{ (ansible_ssh_host | default(ansible_host)) | \
+          default(inventory_hostname) }}/autobrr/"
+    return_content: true
+    validate_certs: false
+    url_username: "{{ ansible_user }}"
+    url_password: "{{ htpasswd }}"
+    force_basic_auth: true
+    timeout: "{{ test_timeout }}"
+  register: test_autobrr
+  failed_when: "test_autobrr.status != 200 or \
+                'autobrr' not in test_autobrr.content"
+  changed_when: false
+  tags:
+    - smoke_tests
+
+- name: TEST | 8.13 Check for Autobrr healtcheck to be reporting OK
+  ansible.builtin.uri:
+    url: "https://{{ (ansible_ssh_host | default(ansible_host)) | \
+          default(inventory_hostname) }}/autobrr/api/healthz/liveness"
+    return_content: true
+    validate_certs: false
+    url_username: "{{ ansible_user }}"
+    url_password: "{{ htpasswd }}"
+    force_basic_auth: true
+    timeout: "{{ test_timeout }}"
+  register: healthz_autobrr
+  failed_when: "healthz_autobrr.status != 200 or \
+                'OK' not in healthz_autobrr.content"
+  changed_when: false
+  tags:
+    - smoke_tests
+
+- name: TEST | 8.14 Check for cross-seed webhook to be responding
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:2468/api/webhook?apikey={{ cross_seed_api_key }}"
+    return_content: true
+    method: "POST"
+    body_format: "json"
+    body: |
+      {
+        "infoHash": "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ0123",
+        "includeSingleEpisodes": "true"
+      }
+    timeout: "{{ test_timeout }}"
+  register: test_cross_seed
+  failed_when: "test_cross_seed.status != 204"
+  changed_when: false
+  when: cross_seed
+  tags:
+    - smoke_tests
+
+- name: TEST | 8.15 Show the smoke test results
+  ansible.builtin.debug:
+    msg:
+      - "Results:"
+      - "########"
+      - "SSH:               {{ test_ssh.state }}"
+      - "FTP:               {{ test_ftp.state | default('Not Run') }}"
+      - "RTORRENT:          {{ test_rtorrent.state | default('Not Run') }}"
+      - "RTORRENT HTTPRPC:  {{ 'Passed' if not test_rpc.failed else
+                              'Failed (status ' +
+                              (test_rpc.status | string) + ')' }}"
+      - "RUTORRENT:         {{ 'Passed' if not test_https.failed else
+                              'Failed (status ' +
+                              (test_https.status | string) + ')' }}"
+      - "AUTOBRR:           {{ 'Passed' if not test_autobrr.failed else
+                              'Failed (status ' +
+                              (test_autobrr.status | string) + ')' }}"
+      - "AUTOBRR HEALTHZ:   {{ 'Passed' if not healthz_autobrr.failed else
+                              'Failed (status ' +
+                              (healthz_autobrr.status | string) + ')' }}"
+      - "CROSS-SEED:        {{ 'Skipped' if (test_cross_seed is not defined
+                            or test_cross_seed.get('skipped', false))
+                            else ('Failed (status ' + (test_cross_seed.status
+                            | string) + ')' if test_cross_seed.failed
+                            else 'Passed')
+                            }}"
+      - "########"
+  tags:
+    - smoke_tests
+
+- name: TEST | 8.16 Output
+  ansible.builtin.debug:
+    msg:
+      - "----------------------------------------------------------------"
+      - "Autobrr URL:"
+      - "https://{{ ansible_user }}:{{ htpasswd }}@{{ (ansible_ssh_host | \
+          default(ansible_host)) | default(inventory_hostname) }}/autobrr/\
+          onboard"
+      - "----------------------------------------------------------------"
+      - "Autobrr Healthz URL:"
+      - "https://{{ ansible_user }}:{{ htpasswd }}@{{ (ansible_ssh_host | \
+          default(ansible_host)) | default(inventory_hostname) }}/autobrr/\
+          api/healthz/liveness"
+      - "----------------------------------------------------------------"
+      - "ruTorrent URL:"
+      - "https://{{ ansible_user }}:{{ htpasswd }}@{{ (ansible_ssh_host | \
+          default(ansible_host)) | default(inventory_hostname) }}"
+      - "----------------------------------------------------------------"
+      - "vsFTPd URL:"
+      - "ftps://{{ (ansible_ssh_host | default(ansible_host)) | \
+          default(inventory_hostname) }}:{{ ftp_port }}"
+      - "----------------------------------------------------------------"
+      - "nzb360 Torrent settings URL:"
+      - "https://{{ ansible_user }}:{{ htpasswd }}@{{ (ansible_ssh_host | \
+          default(ansible_host)) | default(inventory_hostname) }}/plugins\
+          /httprpc/action.php"
+      - "----------------------------------------------------------------"
+  tags:
+    - smoke_tests

@@ -1,0 +1,128 @@
+# {{ ansible_managed }}
+#############################################################################
+# A minimal rTorrent configuration that provides the basic features
+# you want to have in addition to the built-in defaults.
+#
+# See https://github.com/rakshasa/rtorrent/wiki/CONFIG-Template
+# for an up-to-date version.
+#############################################################################
+
+## Instance layout (base paths)
+method.insert = cfg.basedir,  private|const|string, (cat,"/home/{{ ansible_user }}/")
+method.insert = cfg.download, private|const|string, (cat,(cfg.basedir),"site/")
+# method.insert = cfg.logs,     private|const|string, (cat,(cfg.basedir),"log/")
+# method.insert = cfg.logfile,  private|const|string, (cat,(cfg.logs),"rtorrent-",(system.time),".log")
+method.insert = cfg.session,  private|const|string, (cat,(cfg.basedir),".session/")
+# method.insert = cfg.watch,    private|const|string, (cat,(cfg.basedir),".Watch/")
+
+## Listening port for incoming peer traffic (fixed; you can also randomize it)
+network.port_range.set = {{ rtorrent_port }}-{{ rtorrent_port }}
+network.port_random.set = no
+
+## Tracker-less torrent and UDP tracker support
+## (conservative settings for 'private' trackers, change for 'public')
+dht.mode.set = disable
+protocol.pex.set = no
+trackers.use_udp.set = no
+
+## Peer settings
+# Global upload and download rate in KiB, `0` for unlimited (`download_rate`, `upload_rate`)
+throttle.global_down.max_rate.set_kb = 0
+throttle.global_up.max_rate.set_kb = 0
+# Maximum number of simultaneous downloads and uploads slots (global slots!) (`max_downloads_global`, `max_uploads_global`)
+throttle.max_downloads.global.set = 0
+throttle.max_uploads.global.set = 0
+# Maximum number of simultaneous downloads and uploads slots per torrent (`max_uploads`) Default: `50` for both
+throttle.max_downloads.set = 0
+throttle.max_uploads.set = 0
+# Maximum and minimum number of peers to connect to per torrent while downloading (`min_peers`, `max_peers`) Default: `100` and `200` respectively
+throttle.min_peers.normal.set = 0
+throttle.max_peers.normal.set = 0
+# Same as above but for seeding completed torrents (seeds per torrent), `-1` for same as downloading (`min_peers_seed`, `max_peers_seed`) Default: `-1` for both
+throttle.min_peers.seed.set = -1
+throttle.max_peers.seed.set = -1
+# Set the numwant field sent to the tracker, which indicates how many peers we want. A negative value disables this feature. Default: `-1`
+trackers.numwant.set = -1
+protocol.encryption.set = allow_incoming,try_outgoing,enable_retry
+
+## Limits for file handle resources. These are the maximum configuration values of rT.
+## This is typically overwritten by DefaultLimitNOFILE anyway
+network.http.max_open.set = {{ maximum_number_of_open_file_descriptors }}
+network.max_open_files.set = 65536
+network.max_open_sockets.set = {{ maximum_number_of_open_file_descriptors }}
+
+## Memory resource usage (increase if you have a large number of items loaded,
+## and/or the available resources to spend)
+pieces.memory.max.set = {{ rt_memory_max_set }}
+network.xmlrpc.size_limit.set = 4M
+# Preloading a piece of a file. Default: `0` Possible values: `0` (Off) , `1` (Madvise) , `2` (Direct paging).
+pieces.preload.type.set = 2
+
+## Basic operational settings (no need to change these)
+session.path.set = (cat, (cfg.session))
+directory.default.set = (cat, (cfg.download))
+# log.execute = (cat, (cfg.logs), "execute.log")
+# log.xmlrpc = (cat, (cfg.logs), "xmlrpc.log")
+execute.nothrow = sh, -c, (cat, "echo >",\
+  (session.path), "rtorrent.pid", " ",(system.pid))
+
+## Other operational settings (check & adapt)
+encoding.add = UTF-8
+system.umask.set = 0000
+system.cwd.set = (directory.default)
+system.files.advise_random.hashing.set = true
+system.files.advise_random.set = true
+network.http.dns_cache_timeout.set = 25
+schedule2 = monitor_diskspace, 15, 60, ((close_low_diskspace, 500M))
+pieces.hash.on_completion.set = no
+# view.sort_current = seeding, greater=d.ratio=
+# keys.layout.set = qwerty
+# network.http.capath.set = "/etc/ssl/certs"
+network.http.ssl_verify_peer.set = 0
+network.http.ssl_verify_host.set = 0
+
+## Some additional values and commands
+method.insert = system.startup_time, value|const, (system.time)
+method.insert = d.data_path, simple,\
+  "if=(d.is_multi_file),\
+    (cat, (d.directory), /),\
+    (cat, (d.directory), /, (d.name))"
+method.insert = d.session_file, simple, "cat=(session.path), (d.hash), .torrent"
+{% if cross_seed %}
+method.set_key=event.download.finished,cross_seed,"execute={{ '{' }}{{ cross_seed_webhook }},$d.hash={{ '}' }}"
+{% endif %}
+
+## Watch directories (add more as you like, but use unique schedule names)
+schedule2 = untied_directory,1,2,remove_untied=
+schedule2 = watch_directory_1,7,7,"load.start=/home/{{ ansible_user }}/site/.WatchAPPZ/*.torrent,d.directory.set=/home/{{ ansible_user }}/site/APPZ/"
+schedule2 = watch_directory_2,7,7,"load.start=/home/{{ ansible_user }}/site/.WatchGAMES/*.torrent,d.directory.set=/home/{{ ansible_user }}/site/GAMES/"
+schedule2 = watch_directory_3,7,7,"load.start=/home/{{ ansible_user }}/site/.WatchMISC/*.torrent,d.directory.set=/home/{{ ansible_user }}/site/MISC/"
+schedule2 = watch_directory_4,7,7,"load.start=/home/{{ ansible_user }}/site/.WatchMP3/*.torrent,d.directory.set=/home/{{ ansible_user }}/site/MP3/"
+schedule2 = watch_directory_5,7,7,"load.start=/home/{{ ansible_user }}/site/.WatchTV-HD/*.torrent,d.directory.set=/home/{{ ansible_user }}/site/TV-HD/"
+schedule2 = watch_directory_6,7,7,"load.start=/home/{{ ansible_user }}/site/.WatchTV-SD/*.torrent,d.directory.set=/home/{{ ansible_user }}/site/TV-SD/"
+schedule2 = watch_directory_7,7,7,"load.start=/home/{{ ansible_user }}/site/.WatchMOVIES-SD/*.torrent,d.directory.set=/home/{{ ansible_user }}/site/MOVIES-SD/"
+schedule2 = watch_directory_8,7,7,"load.start=/home/{{ ansible_user }}/site/.WatchMOVIES-HD/*.torrent,d.directory.set=/home/{{ ansible_user }}/site/MOVIES-HD/"
+schedule2 = watch_directory_9,7,7,"load.start=/home/{{ ansible_user }}/site/.WatchXXX/*.torrent,d.directory.set=/home/{{ ansible_user }}/site/XXX/"
+
+# Ratio limits
+ratio.enable =
+ratio.min.set = {{ ratio_min }}00
+ratio.max.set = {{ ratio_max }}00
+ratio.upload.set = 50M
+method.set = group.seeding.ratio.command,d.close=
+
+## Run the rTorrent process as a daemon in the background
+## (and control via XMLRPC sockets)
+system.daemon.set = false
+network.scgi.open_local = (cat,(session.path),rpc.socket)
+execute.nothrow = chmod,777,(cat,(session.path),rpc.socket)
+
+## Logging:
+##   Levels = critical error warn notice info debug
+##   Groups = connection_* dht_* peer_* rpc_* storage_* thread_* tracker_* torrent_*
+# print = (cat, "Logging to ", (cfg.logfile))
+# log.open_file = "log", (cfg.logfile)
+# log.add_output = "info", "log"
+# log.add_output = "tracker_debug", "log"
+
+### END of .rtorrent.rc ###

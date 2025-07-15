@@ -1,0 +1,38 @@
+---
+galaxy_info:
+  author: "Lucian Maly <lmaly@redhat.com>"
+  description: |
+    "Configures vanilla RHEL system to be lightweight and secure seedbox running
+    rTorrent and ruTorrent. It has modern autodownloading capability as well."
+  company: "Red Hat"
+  role_name: "zero_footprint_rutorrent_seedbox"
+  namespace: "luckylittle"
+
+  license: "MIT"
+
+  min_ansible_version: 2.16.14
+
+  platforms:
+    - name: "Fedora"
+      versions:
+        - "36"
+    - name: "EL"
+      versions:
+        - "8"
+        - "9"
+
+  galaxy_tags:
+    - "autobrr"
+    - "autodownload"
+    - "centos"
+    - "libtorrent"
+    - "lightweight"
+    - "redhat"
+    - "rtorrent"
+    - "rutorrent"
+    - "secure"
+    - "seedbox"
+    - "torrent"
+    - "vsftpd"
+
+dependencies: []

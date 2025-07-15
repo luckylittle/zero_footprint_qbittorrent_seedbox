@@ -1,0 +1,32 @@
+---
+# tasks file for ansible-role-zero-footprint-ruT-seedbox/07-reboot
+
+- name: REBOOT | 7.1 Set Autobrr service as fact
+  ansible.builtin.set_fact:
+    autobrr_service: "autobrr@{{ ansible_user }}"
+  tags:
+    - reboot
+
+- name: REBOOT | 7.2 Enable all required services
+  ansible.builtin.systemd:
+    state: "stopped"
+    enabled: true
+    daemon_reload: true
+    name: "{{ item }}"
+  become: true
+  loop: "{{ required_services }}"
+  tags:
+    - reboot
+
+- name: REBOOT | 7.3 Reboot a machine
+  ansible.builtin.reboot:
+    reboot_timeout: "{{ reboot_timeout }}"
+  become: true
+  when: require_reboot
+  tags:
+    - reboot
+
+- name: REBOOT | 7.4 Test we can logon back after the reboot
+  ansible.builtin.ping:
+  tags:
+    - reboot

@@ -1,0 +1,14 @@
+# {{ ansible_managed }}
+[Unit]
+Description=cross-seed daemon
+
+[Service]
+Environment=PATH=/home/{{ ansible_user }}/.nvm/versions/node/v{{ node_ver }}/bin:/home/{{ ansible_user }}/.local/bin:/home/{{ ansible_user }}/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin
+ExecStart={{ cross_seed_start_file }}
+Group={{ ansible_user }}
+Restart=always
+Type=simple
+User={{ ansible_user }}
+
+[Install]
+WantedBy=multi-user.target

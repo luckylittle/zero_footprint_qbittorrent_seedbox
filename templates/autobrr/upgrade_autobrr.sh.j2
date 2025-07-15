@@ -1,0 +1,49 @@
+#!/bin/bash
+# {{ ansible_managed }}
+
+##############################################
+export AUTOBRR_VERSION="{{ autobrr_ver }}"
+##############################################
+
+echo "Downloading & unpacking a new version of Autobrr..."
+cd
+wget https://github.com/autobrr/autobrr/releases/download/v${AUTOBRR_VERSION}/autobrr_${AUTOBRR_VERSION}_linux_x86_64.tar.gz
+tar xvzf autobrr_${AUTOBRR_VERSION}_linux_x86_64.tar.gz
+
+echo "Stopping Autobrr service..."
+sudo systemctl stop autobrr@{{ ansible_user }}.service
+
+echo "Upgrading the Autobrr binaries..."
+sudo mv -v autobrr autobrrctl /usr/local/bin/
+
+echo "Restoring default SELinux security contexts..."
+sudo /usr/sbin/restorecon -Rv /usr/local/bin/
+
+echo "Storing the current Autobrr version information inside the backup..."
+export AUTOBRR_CURRENT_VERSION=$(/usr/local/bin/autobrrctl version | grep 'Version: ' | cut -d ' ' -f 2)
+echo "${AUTOBRR_CURRENT_VERSION}" > /home/{{ ansible_user }}/.config/autobrr/.current_version
+
+echo "Cleaning up the current filters exports..."
+rm -rvf /home/{{ ansible_user }}/.config/autobrr/filters
+mkdir -p /home/{{ ansible_user }}/.config/autobrr/filters
+
+echo "Export all filters to individual JSON files..."
+cd /home/{{ ansible_user }}/.config/autobrr/filters && /usr/local/bin/autobrrctl --config /home/{{ ansible_user }}/.config/autobrr/ export-filters
+
+echo "Backing up..."
+cd
+tar cvzf autobrr_backup_$(date +%Y-%m-%d_%H%M%S).tgz /home/{{ ansible_user }}/.config/autobrr
+
+echo "Starting the Autobrr service again..."
+sudo systemctl start autobrr@{{ ansible_user }}.service
+sudo systemctl is-active autobrr@{{ ansible_user }}.service
+
+echo "Cleanup..."
+rm -vf autobrr_${AUTOBRR_VERSION}_linux_x86_64.tar.gz LICENSE README.md
+rm -rvf /home/{{ ansible_user }}/.config/autobrr/filters
+
+echo "Moving the backup file to the site/UPLOAD folder..."
+mv -v autobrr_backup_$(date +%Y-%m-%d_%H%M%S).tgz /home/{{ ansible_user }}/site/UPLOAD/
+restorecon -Rv /home/{{ ansible_user }}/site/UPLOAD/
+
+echo "Upgrade of Autobrr to version ${AUTOBRR_VERSION} finished!"

@@ -1,0 +1,6 @@
+# Managed by Ansible
+[lighttpd-auth]
+enabled = true
+backend = systemd
+filter  = lighttpd-auth
+journalmatch = _SYSTEMD_UNIT=lighttpd.service + _COMM=lighttpd

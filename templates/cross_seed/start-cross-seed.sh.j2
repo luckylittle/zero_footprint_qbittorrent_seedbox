@@ -1,0 +1,8 @@
+#!/bin/bash
+# {{ ansible_managed }}
+export PATH=/home/{{ ansible_user }}/.nvm/versions/node/v{{ node_ver }}/bin:/home/{{ ansible_user }}/.local/bin:/home/{{ ansible_user }}/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin
+export NVM_DIR="/home/{{ ansible_user }}/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+nvm use {{ node_ver }}
+/home/{{ ansible_user }}/.nvm/versions/node/v{{ node_ver }}/bin/cross-seed daemon

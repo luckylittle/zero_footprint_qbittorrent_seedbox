@@ -1,0 +1,319 @@
+---
+sysctl_settings:
+  # Maximum number of asynchronous I/O requests system-wide.
+  fs.aio-max-nr: "1048576"
+
+  # Sets the maximum number of open files system-wide; extremely high value
+  # allows virtually unlimited file handles.
+  fs.file-max: "9223372036854775807"
+
+  # Maximum number of inotify watches per user.
+  # Increased for applications monitoring many files/directories.
+  fs.inotify.max_user_watches: "524288"
+
+  # Disables core dumps from setuid programs for security.
+  fs.suid_dumpable: "0"
+
+  # Adds PID to core dump filenames for easier debugging.
+  kernel.core_uses_pid: "1"
+
+  # Restricts access to kernel symbol addresses to improve security.
+  kernel.kptr_restrict: "1"
+
+  # Sets the maximum size of a single message (bytes) in a System V message
+  # queue.
+  kernel.msgmax: "65535"
+
+  # Sets the default maximum size (bytes) of a message queue.
+  kernel.msgmnb: "65535"
+
+  # Sets the maximum number of process IDs; 65535 is standard and sufficient
+  # for most workloads.
+  kernel.pid_max: "65535"
+
+  # Enables full Address Space Layout Randomization (ASLR) for enhanced
+  # memory protection.
+  kernel.randomize_va_space: "2"
+
+  # Disables scheduler autogrouping for potentially better server
+  # responsiveness. Server workloads may benefit from tasks not being grouped
+  # by session.
+  kernel.sched_autogroup_enabled: "0"
+
+  # Sets total system-wide shared memory pages; suitable for large file caching.
+  kernel.shmall: "268435456"
+
+  # Sets the maximum size (bytes) of a single shared memory segment.
+  kernel.shmmax: "268435456"
+
+  # Disables the magic SysRq key for security reasons.
+  kernel.sysrq: "0"
+
+  # Uses Fair Queuing (FQ) as the default queuing discipline to improve latency
+  # under load.
+  net.core.default_qdisc: "fq"
+
+  # Sets the number of packets processed per device poll cycle.
+  net.core.dev_weight: "128"
+
+  # Maximum number of packets allowed to queue when the interface receives
+  # packets faster than the kernel can process.
+  net.core.netdev_max_backlog: "16384"
+
+  # Sets maximum memory per socket buffer for ancillary (control) data.
+  net.core.optmem_max: "65535"
+
+  # Default size of receive buffers for network sockets.
+  net.core.rmem_default: "262144"
+
+  # Maximum receive buffer size for network sockets; suitable for
+  # high-throughput environments.
+  net.core.rmem_max: "16777216"
+
+  # Sets the maximum number of incoming connections in the backlog queue.
+  net.core.somaxconn: "32768"
+
+  # Default size of send buffers for network sockets.
+  net.core.wmem_default: "262144"
+
+  # Maximum send buffer size for network sockets.
+  net.core.wmem_max: "16777216"
+
+  # Disables acceptance of ICMP redirect messages to improve security.
+  net.ipv4.conf.all.accept_redirects: "0"
+
+  # Disables acceptance of source-routed packets to prevent spoofing.
+  net.ipv4.conf.all.accept_source_route: "0"
+
+  # Disables BOOTP relay agent functionality.
+  net.ipv4.conf.all.bootp_relay: "0"
+
+  # Disables IPv4 packet forwarding.
+  net.ipv4.conf.all.forwarding: "0"
+
+  # Logs packets with suspicious source addresses.
+  net.ipv4.conf.all.log_martians: "1"
+
+  # Disables proxy ARP.
+  net.ipv4.conf.all.proxy_arp: "0"
+
+  # Enables reverse path filtering to prevent IP spoofing.
+  net.ipv4.conf.all.rp_filter: "1"
+
+  # Disables acceptance of secure ICMP redirects for additional security.
+  net.ipv4.conf.all.secure_redirects: "0"
+
+  # Disables sending of ICMP redirect messages.
+  net.ipv4.conf.all.send_redirects: "0"
+
+  # Applies the same redirect settings to default interface settings.
+  net.ipv4.conf.default.accept_redirects: "0"
+  net.ipv4.conf.default.accept_source_route: "0"
+  net.ipv4.conf.default.forwarding: "0"
+  net.ipv4.conf.default.log_martians: "1"
+  net.ipv4.conf.default.rp_filter: "1"
+  net.ipv4.conf.default.secure_redirects: "0"
+  net.ipv4.conf.default.send_redirects: "0"
+
+  # Disables responses to ICMP echo requests (ping).
+  net.ipv4.icmp_echo_ignore_all: "1"
+
+  # Ignores broadcast pings to avoid Smurf attacks.
+  net.ipv4.icmp_echo_ignore_broadcasts: "1"
+
+  # Ignores bogus ICMP error responses to prevent log clutter.
+  net.ipv4.icmp_ignore_bogus_error_responses: "1"
+
+  # Disables IPv4 forwarding.
+  net.ipv4.ip_forward: "0"
+
+  # Defines the ephemeral port range for outgoing connections.
+  net.ipv4.ip_local_port_range: "16384 65535"
+
+  # Sets lower threshold for IP fragment memory cleanup.
+  # Low threshold must be applied first, otherwise Invalid argument
+  net.ipv4.ipfrag_low_thresh: "3145728"
+
+  # Sets upper threshold for IP fragment memory usage.
+  net.ipv4.ipfrag_high_thresh: "4194304"
+
+  # Sets the interval for garbage collection of neighbor entries.
+  net.ipv4.neigh.default.gc_interval: "30"
+
+  # Minimum threshold for neighbor table garbage collection.
+  net.ipv4.neigh.default.gc_thresh1: "32"
+
+  # Soft limit for neighbor table garbage collection.
+  net.ipv4.neigh.default.gc_thresh2: "1024"
+
+  # Hard limit for neighbor table garbage collection.
+  net.ipv4.neigh.default.gc_thresh3: "2048"
+
+  # Sets maximum queue length for proxy neighbor entries.
+  net.ipv4.neigh.default.proxy_qlen: "96"
+
+  # Sets maximum queue length for unresolved ARP requests.
+  net.ipv4.neigh.default.unres_qlen: "6"
+
+  # Uses BBR (Bottleneck Bandwidth and Round-trip propagation time) as
+  # TCP congestion control algorithm for better throughput.
+  net.ipv4.tcp_congestion_control: "bbr"
+
+  # Enables Explicit Congestion Notification to avoid packet loss.
+  net.ipv4.tcp_ecn: "2"
+
+  # Enables TCP Fast Open for reduced latency on connection setup.
+  net.ipv4.tcp_fastopen: "3"
+
+  # Sets the FIN-WAIT-2 timeout to close inactive TCP connections faster.
+  net.ipv4.tcp_fin_timeout: "20"
+
+  # Interval between keepalive probes.
+  net.ipv4.tcp_keepalive_intvl: "15"
+
+  # Number of failed keepalive probes before dropping the connection.
+  net.ipv4.tcp_keepalive_probes: "5"
+
+  # Idle time before keepalive probes are sent.
+  net.ipv4.tcp_keepalive_time: "300"
+
+  # Prioritize TCP low latency.
+  # Hints the TCP stack to make decisions favoring latency over throughput.
+  net.ipv4.tcp_low_latency: "1"
+
+  # Sets maximum number of orphaned (unreferenced) TCP connections.
+  net.ipv4.tcp_max_orphans: "65536"
+
+  # Sets the maximum number of queued SYN requests for incoming connections.
+  net.ipv4.tcp_max_syn_backlog: "4096"
+
+  # Maximum number of TIME-WAIT sockets.
+  net.ipv4.tcp_max_tw_buckets: "1440000"
+
+  # Enables automatic tuning of TCP receive buffers.
+  net.ipv4.tcp_moderate_rcvbuf: "1"
+
+  # Enable TCP MTU Probing (RFC 4821).
+  # Helps with paths where ICMP blackholes prevent PMTU discovery.
+  net.ipv4.tcp_mtu_probing: "1"
+
+  # Disables saving of TCP metrics on connection close.
+  net.ipv4.tcp_no_metrics_save: "1"
+
+  # Sets a low threshold for unsent TCP data to trigger wake-up sooner.
+  net.ipv4.tcp_notsent_lowat: "65536"
+
+  # Prevents retries on orphaned sockets to reduce memory usage.
+  net.ipv4.tcp_orphan_retries: "0"
+
+  # Sets the TCP packet reordering threshold.
+  net.ipv4.tcp_reordering: "3"
+
+  # Initial retry count for establishing TCP connections.
+  net.ipv4.tcp_retries1: "3"
+
+  # Maximum number of retries for data transmission failures.
+  net.ipv4.tcp_retries2: "15"
+
+  # Enables RFC 1337 fix to avoid TIME-WAIT assassination.
+  net.ipv4.tcp_rfc1337: "1"
+
+  # Sets minimum, default (1MB), and maximum (32MB) TCP receive buffer sizes,
+  # increased for high performance.
+  net.ipv4.tcp_rmem: "4096 1048576 33554432"
+
+  # Disables slow start after idle, maintaining throughput.
+  net.ipv4.tcp_slow_start_after_idle: "0"
+
+  # Sets number of SYN retries before giving up.
+  net.ipv4.tcp_syn_retries: "3"
+
+  # Sets number of SYN-ACK retries before giving up.
+  net.ipv4.tcp_synack_retries: "3"
+
+  # Enables SYN cookies to prevent SYN flood attacks.
+  net.ipv4.tcp_syncookies: "1"
+
+  # Enables TCP timestamps for better round-trip time estimation.
+  net.ipv4.tcp_timestamps: "0"
+
+  # Reuses sockets in TIME-WAIT state for new connections.
+  net.ipv4.tcp_tw_reuse: "1"
+
+  # Recycle has been removed from Linux in 4.12
+  # net.ipv4.tcp_tw_recycle: "1"
+
+  # Enables TCP window scaling for large file transfers.
+  net.ipv4.tcp_window_scaling: "1"
+
+  # Sets minimum, default (1MB), and maximum (32MB) TCP send buffer sizes,
+  # increased for high performance.
+  net.ipv4.tcp_wmem: "4096 1048576 33554432"
+
+  # Sets minimum UDP receive buffer size.
+  net.ipv4.udp_rmem_min: "16384"
+
+  # Sets minimum UDP send buffer size.
+  net.ipv4.udp_wmem_min: "16384"
+
+  # Disables IPv6 Router Advertisements.
+  net.ipv6.conf.all.accept_ra: "0"
+
+  # Disables acceptance of IPv6 ICMP redirects.
+  net.ipv6.conf.all.accept_redirects: "0"
+
+  # Disables acceptance of source-routed IPv6 packets.
+  net.ipv6.conf.all.accept_source_route: "0"
+
+  # Disables IPv6 autoconfiguration.
+  net.ipv6.conf.all.autoconf: "0"
+
+  # Disables IPv6 packet forwarding.
+  net.ipv6.conf.all.forwarding: "0"
+
+  # Same settings for default IPv6 interface configuration.
+  net.ipv6.conf.default.accept_ra: "0"
+  net.ipv6.conf.default.accept_redirects: "0"
+  net.ipv6.conf.default.accept_source_route: "0"
+  net.ipv6.conf.default.autoconf: "0"
+  net.ipv6.conf.default.forwarding: "0"
+
+  # Sets low threshold for IPv6 fragment memory cleanup.
+  # Low threshold must be applied first, otherwise Invalid argument
+  net.ipv6.ip6frag_low_thresh: "3145728"
+
+  # Sets high threshold for IPv6 fragment memory usage.
+  net.ipv6.ip6frag_high_thresh: "4194304"
+
+  # Sets maximum datagram queue length for UNIX domain sockets.
+  net.unix.max_dgram_qlen: "50"
+
+  # Percentage of memory for background page flushing; adjusted to balance I/O
+  # and responsiveness.
+  vm.dirty_background_ratio: "10"
+
+  # Controls kernel's tendency to reclaim dentry and inode caches.
+  # Lower value (e.g., 50) makes kernel prefer to keep them,
+  # good for file servers.
+  vm.vfs_cache_pressure: "50"
+
+  # Maximum percentage of memory for dirty pages before synchronous writes;
+  # reduced to mitigate I/O stalls.
+  vm.dirty_ratio: "20"
+
+  # Sets minimum amount of memory to keep free (in KB).
+  vm.min_free_kbytes: "65535"
+
+  # Prevents mmap from mapping below this address, mitigating null
+  # pointer dereference attacks.
+  vm.mmap_min_addr: "4096"
+
+  # Controls memory overcommit behavior; '0' is conservative and safer.
+  vm.overcommit_memory: "0"
+
+  # Sets the percentage of RAM usable for overcommit allocations.
+  vm.overcommit_ratio: "50"
+
+  # Significantly reduces tendency to swap, favoring filesystem cache over
+  # swapping (10 is low, 0-100).
+  vm.swappiness: "10"
