@@ -1,0 +1,34 @@
+# {{ ansible_managed }}
+[Application]
+FileLogger\Enabled=false
+MemoryWorkingSetLimit={{ qt_memory_max_set }}
+
+[BitTorrent]
+Session\DHTEnabled=false
+Session\ExcludedFileNames=
+Session\LSDEnabled=false
+Session\PeXEnabled=false
+Session\Port={{ qtorrent_port }}
+Session\QueueingSystemEnabled=false
+
+[AutoRun]
+enabled=true
+program="/usr/bin/curl -s http://127.0.0.1:2468/api/webhook?apikey=1234567890abcdefghijklmnopqrstuvwxyz1234567890ab -d infoHash=%I -d includeSingleEpisodes=true"
+
+[Core]
+AutoDeleteAddedTorrentFile=Never
+
+[LegalNotice]
+Accepted=true
+
+[Meta]
+MigrationVersion=8
+
+[Preferences]
+Advanced\IgnoreSSLErrors=true
+Connection\ResolvePeerCountries=false
+MailNotification\req_auth=true
+WebUI\AuthSubnetWhitelist=192.168.0.1/16,10.0.0.0/8,172.16.0.0/12,{{ ipv4_whitelist | join(',') }}
+WebUI\AuthSubnetWhitelistEnabled=true
+WebUI\LocalHostAuth=false
+WebUI\Port=80

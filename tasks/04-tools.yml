@@ -1,0 +1,207 @@
+---
+# tasks file for zero_footprint_qbittorrent_seedbox/04-tools
+
+- name: TOOLS | 4.1 Add Autobrr service
+  ansible.builtin.template:
+    src: "autobrr/autobrr.service.j2"
+    dest: "{{ autobrr_service_file }}"
+    backup: false
+    mode: "0644"
+  become: true
+  tags:
+    - tools
+
+- name: TOOLS | 4.2 Add Autobrr config directory
+  ansible.builtin.file:
+    path: "/home/{{ ansible_user }}/.config/autobrr/"
+    state: "directory"
+    mode: "0755"
+  tags:
+    - tools
+
+- name: TOOLS | 4.3 Generate session secret for Autobrr
+  ansible.builtin.shell:
+    cmd: "set -o pipefail && head /dev/urandom | tr -dc A-Za-z0-9 | head -c32"
+    executable: "/bin/bash"
+  changed_when: true
+  register: session_secret
+  tags:
+    - tools
+
+- name: TOOLS | 4.4 Add Autobrr configuration file
+  ansible.builtin.template:
+    src: "autobrr/config.toml.j2"
+    dest: "{{ autobrr_config_file }}"
+    backup: true
+    mode: "0644"
+  tags:
+    - tools
+
+- name: TOOLS | 4.5 Add required package tar
+  ansible.builtin.dnf:
+    name: "tar"
+    state: present
+  become: true
+  tags:
+    - tools
+
+- name: TOOLS | 4.6 Unarchive Autobrr
+  ansible.builtin.unarchive:
+    src: "{{ autobrr_url }}/\
+          v{{ autobrr_ver }}/autobrr_{{ autobrr_ver }}_\
+          linux_x86_64.tar.gz"
+    dest: "/home/{{ ansible_user }}"
+    remote_src: true
+  tags:
+    - tools
+
+- name: TOOLS | 4.7 Unarchive Sizechecker
+  ansible.builtin.unarchive:
+    src: "{{ sizechecker_url }}/\
+          v{{ sizechecker_ver }}/sizechecker_{{ sizechecker_ver }}_\
+          linux_amd64.tar.gz"
+    dest: "/home/{{ ansible_user }}"
+    remote_src: true
+  tags:
+    - tools
+
+- name: TOOLS | 4.8 Unarchive Mkbrr
+  ansible.builtin.unarchive:
+    src: "{{ mkbrr_url }}/\
+          v{{ mkbrr_ver }}/mkbrr_{{ mkbrr_ver }}_\
+          linux_x86_64.tar.gz"
+    dest: "/home/{{ ansible_user }}"
+    remote_src: true
+  tags:
+    - tools
+
+- name: TOOLS | 4.9 Install Autobrr, Mkbrr & Sizechecker binaries
+  ansible.builtin.command: "mv -v /home/{{ ansible_user }}/autobrr \
+                            /home/{{ ansible_user }}/autobrrctl \
+                            /home/{{ ansible_user }}/sizechecker \
+                            /home/{{ ansible_user }}/mkbrr \
+                            /usr/local/bin/"
+  args:
+    creates: "/usr/local/bin/autobrr"
+  become: true
+  tags:
+    - tools
+
+- name: TOOLS | 4.10 Add Autobrr backup & upgrade shell script
+  ansible.builtin.template:
+    src: "autobrr/upgrade_autobrr.sh.j2"
+    dest: "{{ upgrade_autobrr_file }}"
+    backup: true
+    mode: "0755"
+  tags:
+    - tools
+
+- name: TOOLS | 4.11 Add systemd-tmpfiles Autobrr configuration
+  ansible.builtin.copy:
+    src: "tmpfiles.d/autobrr.conf"
+    dest: "{{ systemd_tmpfiles_configuration_autobrr }}"
+    backup: true
+    mode: "0644"
+  become: true
+  tags:
+    - tools
+
+- name: TOOLS | 4.12 Add panic shell script
+  ansible.builtin.template:
+    src: "common/panic.sh.j2"
+    dest: "{{ panic_file }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    backup: true
+    mode: "0755"
+  become: true
+  tags:
+    - tools
+
+- name: TOOLS | 4.13 Deploy benchmarking script
+  ansible.builtin.copy:
+    src: "benchmark/bench.sh"
+    dest: "{{ benchmark_file }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    backup: true
+    mode: "0755"
+  become: true
+  tags:
+    - tools
+
+- name: TOOLS | 4.14 Install & configure cross-seed (Optional)
+  when: cross_seed
+  tags:
+    - tools
+  block:
+    - name: TOOLS | 1.14.1 Download Node.js Version Manager
+      ansible.builtin.get_url:
+        url: "https://raw.githubusercontent.com/nvm-sh/nvm/\
+              v{{ nvm_ver }}/install.sh"
+        dest: "{{ temporary_nvm_install_script_file }}"
+        mode: "0755"
+
+    - name: TOOLS | 1.14.2 Upgrade Node.js package manager
+      ansible.builtin.command: "{{ temporary_nvm_install_script_file }}"
+      changed_when: true
+
+    - name: TOOLS | 1.14.3 Install cross-seed via Node.js package manager
+      ansible.builtin.shell: |
+        export NVM_DIR="/home/{{ ansible_user }}/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        npm install -g npm --lts
+        nvm install {{ node_ver }} --lts
+        npm install -g cross-seed
+      args:
+        creates: "{{ ansible_env.HOME }}/.nvm/versions/node"
+
+    - name: TOOLS | 1.14.4 Add cross-seed config directory
+      ansible.builtin.file:
+        path: "/home/{{ ansible_user }}/.cross-seed"
+        state: "directory"
+        mode: "0755"
+
+    - name: TOOLS | 1.14.5 Configure cross-seed
+      ansible.builtin.template:
+        src: "cross_seed/config.js.j2"
+        dest: "{{ cross_seed_config_file }}"
+        backup: true
+        mode: "0644"
+
+    - name: TOOLS | 1.14.6 Add cross-seed start script
+      ansible.builtin.template:
+        src: "cross_seed/start-cross-seed.sh.j2"
+        dest: "{{ cross_seed_start_file }}"
+        backup: true
+        mode: "0755"
+      become: true
+
+    - name: TOOLS | 1.14.7 Add cross-seed webhook for rT
+      ansible.builtin.copy:
+        src: "cross_seed/cross-seed-webhook.sh"
+        dest: "{{ cross_seed_webhook }}"
+        backup: true
+        mode: "0755"
+      become: true
+
+    - name: TOOLS | 1.14.8 Add cross-seed service
+      ansible.builtin.template:
+        src: "cross_seed/cross-seed.service.j2"
+        dest: "{{ cross_seed_service_file }}"
+        backup: true
+        mode: "0644"
+      become: true
+
+    - name: TOOLS | 1.14.9 Add systemd-tmpfiles cross-seed configuration
+      ansible.builtin.template:
+        src: "tmpfiles.d/cross-seed.conf.j2"
+        dest: "{{ systemd_tmpfiles_configuration_cross_seed }}"
+        backup: true
+        mode: "0644"
+      become: true
+
+    - name: TOOLS | 1.14.10 Remove temporary install-nvm.sh
+      ansible.builtin.file:
+        path: "{{ temporary_nvm_install_script_file }}"
+        state: "absent"

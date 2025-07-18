@@ -1,19 +1,9 @@
 ---
-# vars file for ansible-role-zero-footprint-ruT-seedbox
+# vars file for zero_footprint_qbittorrent_seedbox
 
 # 01-common
 create_folders:
-  - ".session"
   - "site"
-  - "site/.WatchAPPZ"
-  - "site/.WatchGAMES"
-  - "site/.WatchMISC"
-  - "site/.WatchMP3"
-  - "site/.WatchTV-HD"
-  - "site/.WatchTV-SD"
-  - "site/.WatchMOVIES-HD"
-  - "site/.WatchMOVIES-SD"
-  - "site/.WatchXXX"
   - "site/APPZ"
   - "site/GAMES"
   - "site/MISC"
@@ -44,7 +34,7 @@ cross_seed_api_key: "1234567890abcdefghijklmnopqrstuvwxyz1234567890ab"
 systemd_tmpfiles_configuration_autobrr: "/etc/tmpfiles.d/autobrr.conf"
 systemd_tmpfiles_configuration_cross_seed: "/etc/tmpfiles.d/cross-seed.conf"
 
-# 02-rtorrent
+# 02-qtorrent
 epel_url: "https://dl.fedoraproject.org/pub/epel"
 epel_dl: "{{ epel_url }}/epel-release-latest-9.noarch.rpm"
 rtorrent_required_rpms:
@@ -58,15 +48,13 @@ rtorrent_required_rpms:
   - "tmux"
   - "wget"
   - "zlib-devel"
-libtorrent_url: "https://github.com/rakshasa/rtorrent/releases/download"
-libtorrent_dl: "{{ libtorrent_url }}/v{{ libtorrent_ver }}/libtorrent-\
-  {{ libtorrent_ver }}.tar.gz"
-rtorrent_url: "https://github.com/rakshasa/rtorrent/releases/download"
-rtorrent_dl: "{{ rtorrent_url }}/v{{ rtorrent_ver }}/rtorrent-{{ rtorrent_ver \
-  }}.tar.gz"
-rtorrent_config_file: "/home/{{ ansible_user }}/.rtorrent.rc"
-rtorrent_service_file: "/etc/systemd/system/rtorrent.service"
-rt_memory_max_set: "{{ ((ansible_memtotal_mb * 3) / 4) | round | int }}M"
+qtorrent_nox_static_url: "https://github.com/userdocs/qbittorrent-nox-static/releases/download"
+qtorrent_nox_libtorrent_ver: "2.0.11"
+qtorrent_nox_asset: "x86_64-qbittorrent-nox"
+qtorrent_nox_release: "release-{{ qtorrent_ver }}_v{{ qtorrent_nox_libtorrent_ver }}/
+                        {{ qtorrent_nox_asset }}"
+qtorrent_url: "{{ qtorrent_nox_static_url }}/{{ qtorrent_nox_release }}"
+qt_memory_max_set: "{{ ((ansible_memtotal_mb * 3) / 4) | round | int }}M"
 ratio_min: 4
 ratio_max: 5
 
@@ -86,55 +74,14 @@ vsftpd_cert_email: "none@none.none"
 vsftpd_config_file: "/etc/vsftpd/vsftpd.conf"
 vsftpd_pam_config_file: "/etc/pam.d/vsftpd"
 
-# 04-rutorrent
-rutorrent_required_rpms:
-  - "lighttpd-fastcgi"
-  - "lighttpd"
-  - "php-dom"
-  - "php-fpm"
-  - "php-json"
-  - "php-libxml"
-  - "php-mbstring"
-  - "php"
-  - "python3-passlib"
-rutorrent_path: "/var/www/ruTorrent"
-rutorrent_url: "https://github.com/Novik/ruTorrent/archive/refs/tags"
-rutorrent_dl: "{{ rutorrent_url }}/v{{ rutorrent_ver }}.tar.gz"
-rutorrent_disabled_plugins:
-  - "_cloudflare"
-  - "autotools"
-  - "dump"
-  - "extratio"
-  - "extsearch"
-  - "feeds"
-  - "filedrop"
-  - "geoip"
-  - "history"
-  - "ipad"
-  - "lookat"
-  - "mediainfo"
-  - "ratio"
-  - "rss"
-  - "rssurlrewrite"
-  - "screenshots"
-  - "spectrogram"
-  - "throttle"
-  - "trafic"
-  - "unpack"
-  - "uploadeta"
-  - "xmpp"
-phpfpm_config_file: "/etc/php-fpm.d/www.conf"
-lighttpd_config_file: "/etc/lighttpd/lighttpd.conf"
-lighttpd_modules_config_file: "/etc/lighttpd/modules.conf"
-lighttpd_auth_config_file: "/etc/lighttpd/conf.d/auth.conf"
-lighttpd_fastcgi_config_file: "/etc/lighttpd/conf.d/fastcgi.conf"
-lighttpd_proxy_config_file: "/etc/lighttpd/conf.d/proxy.conf"
+# 04-tools
 
 # 05-security
 security_required_rpms:
   - "fail2ban"
   - "firewalld"
   - "policycoreutils-devel"
+  - "policycoreutils-python-utils"
 sshd_config_file: "/etc/ssh/sshd_config"
 fail2ban_jail_local_file: "/etc/fail2ban/jail.local"
 fail2ban_jail_lighttpd_file: "/etc/fail2ban/jail.d/lighttpd-auth.local"

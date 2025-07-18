@@ -1,5 +1,5 @@
 ---
-# tasks file for ansible-role-zero-footprint-ruT-seedbox/06-cleanup
+# tasks file for zero_footprint_qbittorrent_seedbox/06-cleanup
 
 - name: CLEANUP | 6.1 Remove unnecessary packages
   ansible.builtin.dnf:
@@ -10,35 +10,7 @@
   tags:
     - cleanup
 
-- name: CLEANUP | 6.2 Remove unnecessary source files
-  ansible.builtin.file:
-    path: "/home/{{ ansible_user }}/{{ item }}"
-    state: "absent"
-  loop:
-    - "{{ libtorrent_dl | urlsplit('path') | basename \
-      | regex_replace('.tar.gz') }}"
-    - "{{ rtorrent_dl | urlsplit('path') | basename | \
-      regex_replace('.tar.gz') }}"
-  tags:
-    - cleanup
-
-- name: CLEANUP | 6.3 Remove unnecessary SELinux files
-  ansible.builtin.file:
-    path: "/tmp/{{ item }}"
-    state: "absent"
-  loop: "{{ selinux_modules_junk }}"
-  tags:
-    - cleanup
-
-- name: CLEANUP | 6.4 Remove unnecessary .github folder from ruTorrent
-  ansible.builtin.file:
-    path: "{{ rutorrent_path }}/.github"
-    state: "absent"
-  become: true
-  tags:
-    - cleanup
-
-- name: CLEANUP | 6.5 Remove unnecessary Autobrr & Sizechecker, Mkbrr files
+- name: CLEANUP | 6.2 Remove unnecessary Autobrr & Sizechecker, Mkbrr files
   ansible.builtin.file:
     path: "/home/{{ ansible_user }}/{{ item }}"
     state: "absent"
@@ -46,7 +18,7 @@
   tags:
     - cleanup
 
-- name: CLEANUP | 6.6 Change journald storage to RAM
+- name: CLEANUP | 6.3 Change journald storage to RAM
   ansible.builtin.lineinfile:
     path: "{{ journald_config_file }}"
     regexp: '^#Storage=.*'
@@ -58,7 +30,7 @@
   tags:
     - cleanup
 
-- name: CLEANUP | 6.7 Lower jourland RuntimeMaxUse
+- name: CLEANUP | 6.4 Lower jourland RuntimeMaxUse
   ansible.builtin.lineinfile:
     path: "{{ journald_config_file }}"
     regexp: '^#RuntimeMaxUse=.*'
@@ -69,7 +41,7 @@
   tags:
     - cleanup
 
-- name: CLEANUP | 6.8 Lower jourland RuntimeMaxFileSize
+- name: CLEANUP | 6.5 Lower jourland RuntimeMaxFileSize
   ansible.builtin.lineinfile:
     path: "{{ journald_config_file }}"
     regexp: '^#RuntimeMaxFileSize=.*'
@@ -80,7 +52,7 @@
   tags:
     - cleanup
 
-- name: CLEANUP | 6.9 Lower jourland RuntimeMaxFiles
+- name: CLEANUP | 6.6 Lower jourland RuntimeMaxFiles
   ansible.builtin.lineinfile:
     path: "{{ journald_config_file }}"
     regexp: '^#RuntimeMaxFiles=100.*'
@@ -91,7 +63,7 @@
   tags:
     - cleanup
 
-- name: CLEANUP | 6.10 Ensure rhsm logging is disabled
+- name: CLEANUP | 6.7 Ensure rhsm logging is disabled
   community.general.ini_file:
     path: "{{ rhsm_config_file }}"
     section: "rhsmcertd"
@@ -103,7 +75,7 @@
   tags:
     - cleanup
 
-- name: CLEANUP | 6.11 Ensure rhsm logging is only ERROR
+- name: CLEANUP | 6.8 Ensure rhsm logging is only ERROR
   community.general.ini_file:
     path: "{{ rhsm_config_file }}"
     section: "logging"
@@ -114,7 +86,7 @@
   tags:
     - cleanup
 
-- name: CLEANUP | 6.12 Disable DNF logging
+- name: CLEANUP | 6.9 Disable DNF logging
   ansible.builtin.lineinfile:
     path: "{{ dnf_config_file }}"
     line: "logfilelevel=0"
@@ -125,7 +97,7 @@
   tags:
     - cleanup
 
-- name: CLEANUP | 6.13 Find all logs in /var/log
+- name: CLEANUP | 6.10 Find all logs in /var/log
   ansible.builtin.find:
     paths: "/var/log"
     recurse: true
@@ -135,7 +107,7 @@
   tags:
     - cleanup
 
-- name: CLEANUP | 6.14 Remove all var_log_files
+- name: CLEANUP | 6.11 Remove all var_log_files
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: "absent"
@@ -144,7 +116,7 @@
   tags:
     - cleanup
 
-- name: CLEANUP | 6.15 Create a symbolic link pointing to \
+- name: CLEANUP | 6.12 Create a symbolic link pointing to \
         /dev/null for all remaining logs (CentOS)
   ansible.builtin.file:
     src: "/dev/null"
@@ -156,7 +128,7 @@
   tags:
     - cleanup
 
-- name: CLEANUP | 6.15 Create a symbolic link pointing to \
+- name: CLEANUP | 6.12 Create a symbolic link pointing to \
         /dev/null for all remaining logs (Red Hat)
   ansible.builtin.file:
     src: "/dev/null"
@@ -168,14 +140,14 @@
   tags:
     - cleanup
 
-- name: CLEANUP | 6.16 Remove all remaining packages that are not being used
+- name: CLEANUP | 6.13 Remove all remaining packages that are not being used
   ansible.builtin.dnf:
     autoremove: true
   become: true
   tags:
     - cleanup
 
-- name: CLEANUP | 6.17 Remove logrotate without dependency (vsftpd)
+- name: CLEANUP | 6.14 Remove logrotate without dependency (vsftpd)
   # Doing this with dnf causes vsftpd to be removed
   ansible.builtin.command: "rpm -e --nodeps \
                       logrotate"  # noqa: command-instead-of-module
@@ -185,7 +157,7 @@
   tags:
     - cleanup
 
-- name: CLEANUP | 6.18 Remove /etc/logrotate.d/
+- name: CLEANUP | 6.15 Remove /etc/logrotate.d/
   ansible.builtin.file:
     path: "/etc/logrotate.d/"
     state: "absent"
@@ -193,7 +165,7 @@
   tags:
     - cleanup
 
-- name: CLEANUP | 6.19 Clean all DNF caches
+- name: CLEANUP | 6.16 Clean all DNF caches
   ansible.builtin.command: "dnf clean all"  # noqa: command-instead-of-module
   register: dnf_clean_all
   changed_when: "'files removed' in dnf_clean_all.stdout"
@@ -201,7 +173,7 @@
   tags:
     - cleanup
 
-- name: CLEANUP | 6.20 Disable unnecessary services
+- name: CLEANUP | 6.17 Disable unnecessary services
   ansible.builtin.systemd:
     state: "stopped"
     enabled: false

@@ -9,7 +9,7 @@ module.exports = {
   port: 2468,
   notificationWebhookUrls: [],
   torrentClients: [
-    "rtorrent:http://{{ ansible_user }}:{{ htpasswd }}@127.0.0.1/plugins/httprpc/action.php",
+    "qbittorrent:http://127.0.0.1:80",
   ],
   useClientTorrents: true,
   delay: 30,

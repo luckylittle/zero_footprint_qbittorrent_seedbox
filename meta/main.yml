@@ -3,9 +3,9 @@ galaxy_info:
   author: "Lucian Maly <lmaly@redhat.com>"
   description: |
     "Configures vanilla RHEL system to be lightweight and secure seedbox running
-    rTorrent and ruTorrent. It has modern autodownloading capability as well."
+    qBittorrent. It has modern autodownloading capability as well."
   company: "Red Hat"
-  role_name: "zero_footprint_rutorrent_seedbox"
+  role_name: "zero_footprint_qbittorrent_seedbox"
   namespace: "luckylittle"
 
   license: "MIT"
@@ -25,11 +25,13 @@ galaxy_info:
     - "autobrr"
     - "autodownload"
     - "centos"
+    - "cross-seed"
     - "libtorrent"
     - "lightweight"
+    - "qbittorrent-nox-static"
+    - "qbittorrent"
+    - "qtorrent"
     - "redhat"
-    - "rtorrent"
-    - "rutorrent"
     - "secure"
     - "seedbox"
     - "torrent"

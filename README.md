@@ -7,7 +7,7 @@ luckylittle.zero_footprint_qbittorrent_seedbox
 
 # THIS IS CURENTLY UNDER DEVELOPMENT - IT IS A FORK OF MY [RTORRENT/RUTORRENT ANSIBLE ROLE WHICH THIS IS BASED ON](https://github.com/luckylittle/zero_footprint_rutorrent_seedbox).
 
-Configures vanilla RHEL8/9 (or CentOS 9) system to be lightweight and bulletproof seedbox running [rTorrent](https://github.com/rakshasa/rtorrent) and [ruTorrent](https://github.com/Novik/ruTorrent). It aims to be secure (SELinux, firewalld, SSL/TLS, [Fail2Ban](https://github.com/fail2ban/fail2ban) enabled) and creates absolutely no logs (a.k.a "zero footprint)". It also provides modern autodownloading capabilities with [Autobrr](https://github.com/autobrr/autobrr) and optional [cross-seed](https://github.com/cross-seed/cross-seed)ing. Missing logs will make troubleshooting difficult, but ephemeral journal should be sufficient. Security and simplicity was priroitised over anything else. PRs are most welcome!
+Configures vanilla RHEL8/9 (or CentOS 9) system to be lightweight and bulletproof seedbox running [](). It aims to be secure (SELinux, firewalld, SSL/TLS, enabled) and creates absolutely no logs (a.k.a "zero footprint)". It also provides modern autodownloading capabilities with [Autobrr](https://github.com/autobrr/autobrr) and [cross-seed](https://github.com/cross-seed/cross-seed)ing. Missing logs will make troubleshooting difficult, but ephemeral journal should be sufficient. Security and simplicity was priroitised over anything else. PRs are most welcome!
 
 </p>
 
@@ -18,7 +18,7 @@ Requirements
 
 * It is expected, that you have a brand new RHEL8/9 or CentOS 9 stream system and have passwordless Ansible access sorted out - including working `sudo` (you can use my other role [luckylittle/ansible-role-create-user](https://github.com/luckylittle/ansible-role-create-user) for passwordless SSH access and sudo).
 * :warning: **THIS ROLE REQUIRES PASSWORDLESS ACCESS TO YOUR SYSTEM USING SSH KEYPAIR AND NOT THE PASSWORD** (e.g. `ssh-copy-id`) - otherwise you will **lock** yourself out, because sshd config will change to `PasswordAuthentication no`! :warning:
-* :warning: Make sure to add your home IP address (or multiple addresses you connect from) to `fail2ban_ignore_ipv4`, or you risk **locking** yourself out, as it is also enforced by firewalld! :warning:
+* :warning: Make sure to add your home IP address (or multiple addresses you connect from) to `ipv4_whitelist`, or you risk **locking** yourself out, as it is also enforced by firewalld! :warning:
 
 Role Variables
 --------------
@@ -58,7 +58,7 @@ ruTorrent (section 4):
 
 Security (section 5):
 
-* `fail2ban_ignore_ipv4` - what IP addresses should be excluded from being banned by Fail2Ban, and the same value is also used in the **firewalld** limited zone for SSH (only these specified addresses are allowed to SSH to the seedbox). Whitelisted is arbitrary address `X.X.X.X` and the private IP ranges. :warning: You **need** to [change it](defaults/main.yml#L40) to your own :warning:
+* `ipv4_whitelist` - what IP addresses should be excluded from being banned by Fail2Ban, and the same value is also used in the **firewalld** limited zone for SSH (only these specified addresses are allowed to SSH to the seedbox). Whitelisted is arbitrary address `X.X.X.X` and the private IP ranges. :warning: You **need** to [change it](defaults/main.yml#L40) to your own :warning:
 
 Reboot (section 7):
 
@@ -97,10 +97,10 @@ Example Playbook
 Testing
 -------
 
-|OS     |Version 2.3.0     |Version 2.3.1     |Version 2.4.0     |
-|-------|------------------|------------------|------------------|
-|RHEL9  |:white_check_mark:|:white_check_mark:|:white_check_mark:|
-|CentOS9|:white_check_mark:|Not attempted     |Not attempted     |
+|OS     |Version 0.0.1     |
+|-------|------------------|
+|RHEL9  |Not attempted     |
+|CentOS9|Not attempted     |
 
 On a brand new RHEL8.6, 1x vCPU, 4GB RAM playbook took 18m 32s to finish on VirtualBox.
 On a brand new Red Hat Enterprise Linux release 9.5 (Plow) on AWS (t3.medium), it took 18m 29s.
@@ -108,10 +108,6 @@ The following versions were installed during the last RHEL9 test:
 
 |Package name|Package version      |
 |------------|---------------------|
-|fail2ban    |1.1.0-6.el9.noarch   |
-|libdb-utils |5.3.28-57.el9.x86_64 |
-|lighttpd    |1.4.67-1.el9.x86_64  |
-|php         |8.0.30-3.el9_6.x86_64|
 |tmux        |3.2a-5.el9.x86_64    |
 |vsftpd      |3.0.5-6.el9.x86_64   |
 
@@ -402,10 +398,8 @@ After you succesfully apply this role, you should be able to see a similar outpu
 |autobrr               |https://<IP_ADDR>:<https_port>/autobrr/                    |
 |autobrr healthz       |https://<IP_ADDR>:<https_port>/autobrr/api/healthz/liveness|
 |ftp                   |ftps://<IP_ADDR>:<ftp_port>                                |
-|rtorrent rpc          |https://<IP_ADDR>:<https_port>/plugins/httprpc/action.php  |
-|rutorrent             |https://<IP_ADDR>:<https_port>                             |
 |ssh                   |ssh://<IP_ADDR>:22                                         |
-|cross-seed (optional) |http://<127.0.0.1>:2468 (optional)                         |
+|cross-seed            |http://<127.0.0.1>:2468                                    |
 
 License
 -------
@@ -422,4 +416,4 @@ Author Information
 
 Lucian Maly <<lmaly@redhat.com>>
 
-_Last update: Tue 15 Jul 2025 01:33:49 UTC_
+_Last update: Fri 18 Jul 2025 01:50:43 UTC_

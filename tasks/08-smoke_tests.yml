@@ -1,5 +1,5 @@
 ---
-# tasks file for ansible-role-zero-footprint-ruT-seedbox/08-smoke_test
+# tasks file for zero_footprint_qbittorrent_seedbox/08-smoke_test
 
 - name: TEST | 8.1 Populate service_facts
   ansible.builtin.service_facts:

@@ -1,5 +1,5 @@
 ---
-# tasks file for ansible-role-zero-footprint-ruT-seedbox/01-common
+# tasks file for zero_footprint_qbittorrent_seedbox/01-common
 
 - name: COMMON | 1.1 Upgrade all existing packages
   ansible.builtin.dnf:
@@ -29,18 +29,7 @@
   tags:
     - common
 
-- name: COMMON | 1.4 Add the user with a specific uid and a primary \
-        group of 'wheel' (Optional)
-  ansible.builtin.user:
-    name: "{{ new_user }}"
-    comment: "{{ new_user }}"
-    uid: 1000
-    group: "wheel"
-  when: create_new_user
-  tags:
-    - common
-
-- name: COMMON | 1.5 Create a directory structure
+- name: COMMON | 1.4 Create a directory structure
   ansible.builtin.file:
     path: "/home/{{ ansible_user }}/{{ item }}"
     state: "directory"
@@ -49,14 +38,7 @@
   tags:
     - common
 
-- name: COMMON | 1.6 Change home folder permissions
-  ansible.builtin.file:
-    path: "/home/{{ ansible_user }}"
-    mode: "0711"
-  tags:
-    - common
-
-- name: COMMON | 1.7 Remove unnecessary messages of the day
+- name: COMMON | 1.5 Remove unnecessary messages of the day
   ansible.builtin.file:
     path: "/etc/motd.d/{{ item }}"
     state: "absent"
@@ -67,167 +49,7 @@
   tags:
     - common
 
-- name: COMMON | 1.8 Add cleanup cron for Torrent files
-  ansible.builtin.cron:
-    name: "Remove *.torrent files older than 120 days every 1st \
-          day of the month (at 12:00AM)"
-    day: "1"
-    minute: "0"
-    hour: "0"
-    job: "find /home/{{ ansible_user }}/site/.Watch*/*.torrent \
-          -type f -ctime +120 -delete"
-    backup: true
-  tags:
-    - common
-
-- name: COMMON | 1.9 Add cleanup cron for the Torrent data
-  ansible.builtin.cron:
-    name: "Remove site sub-folders older than 120 days every 1st \
-          day of the month (at 12:02AM)"
-    day: "1"
-    minute: "2"
-    hour: "0"
-    job: "find /home/{{ ansible_user }}/site/ -maxdepth 2 -mindepth \
-          2 -type d -ctime +120 -exec rm -rf \"{}\" +"
-  tags:
-    - common
-
-- name: COMMON | 1.10 Add useful alias rt
-  ansible.builtin.lineinfile:
-    path: "~/.bashrc"
-    line: "alias rt=\"tmux a\""
-    create: true
-    backup: true
-    mode: "0644"
-  tags:
-    - common
-
-- name: COMMON | 1.11 Add Autobrr service
-  ansible.builtin.template:
-    src: "autobrr/autobrr.service.j2"
-    dest: "{{ autobrr_service_file }}"
-    backup: false
-    mode: "0644"
-  become: true
-  tags:
-    - common
-
-- name: COMMON | 1.12 Add Autobrr config directory
-  ansible.builtin.file:
-    path: "/home/{{ ansible_user }}/.config/autobrr/"
-    state: "directory"
-    mode: "0755"
-  tags:
-    - common
-
-- name: COMMON | 1.13 Generate session secret for Autobrr
-  ansible.builtin.shell:
-    cmd: "set -o pipefail && head /dev/urandom | tr -dc A-Za-z0-9 | head -c32"
-    executable: "/bin/bash"
-  changed_when: true
-  register: session_secret
-  tags:
-    - common
-
-- name: COMMON | 1.14 Add Autobrr configuration file
-  ansible.builtin.template:
-    src: "autobrr/config.toml.j2"
-    dest: "{{ autobrr_config_file }}"
-    backup: true
-    mode: "0644"
-  tags:
-    - common
-
-- name: COMMON | 1.15 Add required package tar
-  ansible.builtin.dnf:
-    name: "tar"
-    state: present
-  become: true
-  tags:
-    - common
-
-- name: COMMON | 1.16 Unarchive Autobrr
-  ansible.builtin.unarchive:
-    src: "{{ autobrr_url }}/\
-          v{{ autobrr_ver }}/autobrr_{{ autobrr_ver }}_\
-          linux_x86_64.tar.gz"
-    dest: "/home/{{ ansible_user }}"
-    remote_src: true
-  tags:
-    - common
-
-- name: COMMON | 1.17 Unarchive Sizechecker
-  ansible.builtin.unarchive:
-    src: "{{ sizechecker_url }}/\
-          v{{ sizechecker_ver }}/sizechecker_{{ sizechecker_ver }}_\
-          linux_amd64.tar.gz"
-    dest: "/home/{{ ansible_user }}"
-    remote_src: true
-  tags:
-    - common
-
-- name: COMMON | 1.18 Unarchive Mkbrr
-  ansible.builtin.unarchive:
-    src: "{{ mkbrr_url }}/\
-          v{{ mkbrr_ver }}/mkbrr_{{ mkbrr_ver }}_\
-          linux_x86_64.tar.gz"
-    dest: "/home/{{ ansible_user }}"
-    remote_src: true
-  tags:
-    - common
-
-- name: COMMON | 1.19 Install Autobrr, Mkbrr & Sizechecker binaries
-  ansible.builtin.command: "mv -v /home/{{ ansible_user }}/autobrr \
-                            /home/{{ ansible_user }}/autobrrctl \
-                            /home/{{ ansible_user }}/sizechecker \
-                            /home/{{ ansible_user }}/mkbrr \
-                            /usr/local/bin/"
-  args:
-    creates: "/usr/local/bin/autobrr"
-  become: true
-  tags:
-    - common
-
-- name: COMMON | 1.20 Add required package policycoreutils-python-utils
-  ansible.builtin.dnf:
-    name: "policycoreutils-python-utils"
-    state: present
-  become: true
-  tags:
-    - common
-
-- name: COMMON | 1.21 Ensure port 7474 is labeled with http_port_t for Autobrr
-  community.general.seport:
-    ports: "7474"
-    proto: "tcp"
-    setype: "http_port_t"
-    state: present
-  become: true
-  tags:
-    - common
-
-- name: COMMON | 1.22 Add Autobrr backup & upgrade shell script
-  ansible.builtin.template:
-    src: "autobrr/upgrade_autobrr.sh.j2"
-    dest: "{{ upgrade_autobrr_file }}"
-    backup: true
-    mode: "0755"
-  tags:
-    - common
-
-- name: COMMON | 1.23 Add panic shell script
-  ansible.builtin.template:
-    src: "common/panic.sh.j2"
-    dest: "{{ panic_file }}"
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-    backup: true
-    mode: "0755"
-  become: true
-  tags:
-    - common
-
-- name: COMMON | 1.24 Systemd wide DefaultLimitNOFILE
+- name: COMMON | 1.6 Systemd wide DefaultLimitNOFILE
   ansible.builtin.lineinfile:
     path: "/etc/systemd/system.conf"
     regexp: '^#DefaultLimitNOFILE=.*'
@@ -237,7 +59,7 @@
   tags:
     - common
 
-- name: COMMON | 1.25 Set soft nofile limit
+- name: COMMON | 1.7 Set soft nofile limit
   ansible.builtin.lineinfile:
     path: "/etc/security/limits.conf"
     line: "* soft nofile \
@@ -248,7 +70,7 @@
   tags:
     - common
 
-- name: COMMON | 1.26 Set hard nofile limit
+- name: COMMON | 1.8 Set hard nofile limit
   ansible.builtin.lineinfile:
     path: "/etc/security/limits.conf"
     line: "* hard nofile \
@@ -259,13 +81,13 @@
   tags:
     - common
 
-- name: COMMON | 1.27 Include sysctl vars
+- name: COMMON | 1.9 Include sysctl vars
   ansible.builtin.include_vars: "vars/sysctl.yml"
   when: sysctl_tunables
   tags:
     - common
 
-- name: COMMON | 1.28 Set various sysctl settings
+- name: COMMON | 1.10 Set various sysctl settings
   ansible.posix.sysctl:
     name: "{{ item.key }}"
     value: "{{ item.value }}"
@@ -278,14 +100,14 @@
   tags:
     - common
 
-- name: COMMON | 1.29 Get /home mount information
+- name: COMMON | 1.11 Get /home mount information
   ansible.builtin.set_fact:
     home_mount: "{{ ansible_mounts | selectattr('mount', 'equalto', '/home')
                   | list | first }}"
   tags:
     - common
 
-- name: COMMON | 1.30 Remount a /home and change atime options
+- name: COMMON | 1.12 Remount a /home and change atime options
   ansible.posix.mount:
     src: "UUID={{ home_mount.uuid }}"
     path: "/home"
@@ -297,7 +119,7 @@
   tags:
     - common
 
-- name: COMMON | 1.31 Install dynamic adaptive system tuning daemon
+- name: COMMON | 1.13 Install dynamic adaptive system tuning daemon
   ansible.builtin.dnf:
     name: "tuned"
     state: present
@@ -305,118 +127,11 @@
   tags:
     - common
 
-- name: COMMON | 1.32 Configure tuned for latency-performance
+- name: COMMON | 1.14 Configure tuned for latency-performance
   ansible.builtin.command: "tuned-adm profile latency-performance"
   changed_when: true
   notify:
     - "Restart tuned"
-  become: true
-  tags:
-    - common
-
-- name: COMMON | 1.33 Deploy benchmarking script
-  ansible.builtin.copy:
-    src: "benchmark/bench.sh"
-    dest: "{{ benchmark_file }}"
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-    backup: true
-    mode: "0755"
-  become: true
-  tags:
-    - common
-
-- name: COMMON | 1.34 Install & configure cross-seed
-  when: cross_seed
-  tags:
-    - common
-  block:
-    - name: COMMON | 1.34.1 Download Node.js Version Manager
-      ansible.builtin.get_url:
-        url: "https://raw.githubusercontent.com/nvm-sh/nvm/\
-              v{{ nvm_ver }}/install.sh"
-        dest: "{{ temporary_nvm_install_script_file }}"
-        mode: "0755"
-
-    - name: COMMON | 1.34.2 Upgrade Node.js package manager
-      ansible.builtin.command: "{{ temporary_nvm_install_script_file }}"
-      changed_when: true
-
-    - name: COMMON | 1.34.3 Install cross-seed via Node.js package manager
-      ansible.builtin.shell: |
-        export NVM_DIR="/home/{{ ansible_user }}/.nvm"
-        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-        npm install -g npm --lts
-        nvm install {{ node_ver }} --lts
-        npm install -g cross-seed
-      args:
-        creates: "{{ ansible_env.HOME }}/.nvm/versions/node"
-
-    - name: COMMON | 1.34.4 Add cross-seed config directory
-      ansible.builtin.file:
-        path: "/home/{{ ansible_user }}/.cross-seed"
-        state: "directory"
-        mode: "0755"
-
-    - name: COMMON | 1.34.5 Configure cross-seed
-      ansible.builtin.template:
-        src: "cross_seed/config.js.j2"
-        dest: "{{ cross_seed_config_file }}"
-        backup: true
-        mode: "0644"
-
-    - name: COMMON | 1.34.6 Add cross-seed start script
-      ansible.builtin.template:
-        src: "cross_seed/start-cross-seed.sh.j2"
-        dest: "{{ cross_seed_start_file }}"
-        backup: true
-        mode: "0755"
-      become: true
-
-    - name: COMMON | 1.34.7 Add cross-seed webhook for rT
-      ansible.builtin.copy:
-        src: "cross_seed/cross-seed-webhook.sh"
-        dest: "{{ cross_seed_webhook }}"
-        backup: true
-        mode: "0755"
-      become: true
-
-    - name: COMMON | 1.34.8 Add cross-seed service
-      ansible.builtin.template:
-        src: "cross_seed/cross-seed.service.j2"
-        dest: "{{ cross_seed_service_file }}"
-        backup: true
-        mode: "0644"
-      become: true
-
-    - name: COMMON | 1.34.9 Add systemd-tmpfiles cross-seed configuration
-      ansible.builtin.template:
-        src: "tmpfiles.d/cross-seed.conf.j2"
-        dest: "{{ systemd_tmpfiles_configuration_cross_seed }}"
-        backup: true
-        mode: "0644"
-      become: true
-
-    - name: COMMON | 1.34.10 Remove temporary install-nvm.sh
-      ansible.builtin.file:
-        path: "{{ temporary_nvm_install_script_file }}"
-        state: "absent"
-
-- name: COMMON | 1.35 Restore Autobrr, Mkbrr & Sizechecker files default \
-        SELinux security contexts
-  ansible.builtin.command: "restorecon -Rv /usr/local/bin/"
-  register: restorecon_usr_local_bin
-  changed_when: "'Relabeled' in restorecon_usr_local_bin.stdout"
-  become: true
-  tags:
-    - common
-
-- name: COMMON | 1.36 Add systemd-tmpfiles Autobrr configuration
-  ansible.builtin.copy:
-    src: "tmpfiles.d/autobrr.conf"
-    dest: "{{ systemd_tmpfiles_configuration_autobrr }}"
-    backup: true
-    mode: "0644"
   become: true
   tags:
     - common
