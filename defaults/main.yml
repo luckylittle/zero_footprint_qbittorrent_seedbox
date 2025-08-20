@@ -3,12 +3,12 @@
 
 # 01-common
 set_google_dns:   true
-set_timezone:     "Europe/Prague"
+set_timezone:     "Australia/Sydney"
 sysctl_tunables:  true
 
-# 02-qbittorrent
-qtorrent_port:    55442
-qtorrent_ver:     "5.1.2"
+# 02-qbt
+qbt_port:         55442
+qbt_ver:          "5.1.2"
 
 # 03-vsftpd
 ftp_port:         55443
@@ -16,10 +16,11 @@ pasv_port_range:  "64000-64321"
 single_user:      true
 
 # 04-tools
-autobrr_ver:      "1.63.1"
+autobrr_ver:      "1.65.0"
 cross_seed:       true
-mkbrr_ver:        "1.13.0"
+mkbrr_ver:        "1.15.0"
 sizechecker_ver:  "1.4.0"
+tqm_ver:          "1.16.0"
 
 # 05-security
 ipv4_whitelist: >-

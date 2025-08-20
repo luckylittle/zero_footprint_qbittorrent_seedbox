@@ -12,10 +12,10 @@
   tags:
     - common
 
-- name: MAIN | 2.0 Include 02-qtorrent.yml
-  ansible.builtin.include_tasks: "02-qtorrent.yml"
+- name: MAIN | 2.0 Include 02-qbt.yml
+  ansible.builtin.include_tasks: "02-qbt.yml"
   tags:
-    - rtorrent
+    - qbt
 
 - name: MAIN | 3.0 Include 03-vsftpd.yml
   ansible.builtin.include_tasks: "03-vsftpd.yml"
@@ -25,7 +25,7 @@
 - name: MAIN | 4.0 Include 04-tools.yml
   ansible.builtin.include_tasks: "04-tools.yml"
   tags:
-    - rutorrent
+    - tools
 
 - name: MAIN | 5.0 Include 05-security.yml
   ansible.builtin.include_tasks: "05-security.yml"

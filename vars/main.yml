@@ -7,56 +7,71 @@ create_folders:
   - "site/APPZ"
   - "site/GAMES"
   - "site/MISC"
-  - "site/MP3"
-  - "site/TV-HD"
-  - "site/TV-SD"
   - "site/MOVIES-HD"
   - "site/MOVIES-SD"
-  - "site/XXX"
+  - "site/MUSIC"
+  - "site/TV-HD"
+  - "site/TV-SD"
   - "site/UPLOAD"
-autobrr_service_file: "/etc/systemd/system/autobrr@.service"
-autobrr_config_file: "/home/{{ ansible_user }}/.config/autobrr/config.toml"
-autobrr_url: "https://github.com/autobrr/autobrr/releases/download"
-sizechecker_url: "https://github.com/s0up4200/sizechecker/releases/download"
-mkbrr_url: "https://github.com/autobrr/mkbrr/releases/download"
-upgrade_autobrr_file: "/home/{{ ansible_user }}/upgrade_autobrr.sh"
-panic_file: "/usr/local/bin/panic.sh"
-maximum_number_of_open_file_descriptors: "262144"
-benchmark_file: "/usr/local/bin/bench.sh"
-nvm_ver: "0.40.3"
-node_ver: "22.17.0"
-temporary_nvm_install_script_file: "/tmp/install-nvm.sh"
-cross_seed_config_file: "/home/{{ ansible_user }}/.cross-seed/config.js"
-cross_seed_start_file: "/usr/local/bin/start-cross-seed.sh"
-cross_seed_webhook: "/home/{{ ansible_user }}/cross-seed-webhook.sh"
-cross_seed_service_file: "/etc/systemd/system/cross-seed.service"
-cross_seed_api_key: "1234567890abcdefghijklmnopqrstuvwxyz1234567890ab"
-systemd_tmpfiles_configuration_autobrr: "/etc/tmpfiles.d/autobrr.conf"
-systemd_tmpfiles_configuration_cross_seed: "/etc/tmpfiles.d/cross-seed.conf"
+  - "site/XXX"
 
-# 02-qtorrent
+# 02-qbt
 epel_url: "https://dl.fedoraproject.org/pub/epel"
 epel_dl: "{{ epel_url }}/epel-release-latest-9.noarch.rpm"
-rtorrent_required_rpms:
-  - "{{ epel_dl }}"
-  - "gcc-c++"
-  - "gcc"
-  - "libcurl-devel"
-  - "make"
-  - "ncurses-devel"
-  - "openssl-devel"
-  - "tmux"
-  - "wget"
-  - "zlib-devel"
-qtorrent_nox_static_url: "https://github.com/userdocs/qbittorrent-nox-static/releases/download"
-qtorrent_nox_libtorrent_ver: "2.0.11"
-qtorrent_nox_asset: "x86_64-qbittorrent-nox"
-qtorrent_nox_release: "release-{{ qtorrent_ver }}_v{{ qtorrent_nox_libtorrent_ver }}/
-                        {{ qtorrent_nox_asset }}"
-qtorrent_url: "{{ qtorrent_nox_static_url }}/{{ qtorrent_nox_release }}"
-qt_memory_max_set: "{{ ((ansible_memtotal_mb * 3) / 4) | round | int }}M"
-ratio_min: 4
-ratio_max: 5
+qbt_nox_static_url: "https://github.com/userdocs/qbittorrent-nox-static/releases/download"
+qbt_nox_libtorrent_ver: "2.0.11"
+qbt_nox_asset: "x86_64-qbittorrent-nox"
+qbt_nox_release: "release-{{ qbt_ver }}_v{{ qbt_nox_libtorrent_ver }}"
+qbt_url: "{{ qbt_nox_static_url }}/{{ qbt_nox_release }}/{{ qbt_nox_asset }}"
+qbt_config_directory: "/home/{{ ansible_user }}/.config/qBittorrent/"
+qbt_config_file: "/home/{{ ansible_user }}/.config/qBittorrent/qBittorrent.conf"
+qbt_service_file: "/etc/systemd/system/qbt.service"
+qbt_application_FileLogger_Age: 1
+qbt_application_FileLogger_AgeType: 1
+qbt_application_FileLogger_Backup: true
+qbt_application_FileLogger_DeleteOld: true
+qbt_application_FileLogger_Enabled: false
+qbt_application_FileLogger_MaxSizeBytes: 66560
+qbt_application_FileLogger_Path: /home/{{ ansible_user }}/.local/share/qBittorrent/logs
+qbt_application_MemoryWorkingSetLimit: "{{ ((ansible_memtotal_mb * 3) / 4) | round | int }}"
+qbt_autorun_enabled: true
+qbt_autorun_program: "/usr/bin/curl -s http://127.0.0.1:2468/api/webhook?apikey=1234567890abcdefghijklmnopqrstuvwxyz1234567890ab -d infoHash=%I -d includeSingleEpisodes=true"
+qbt_bittorrent_SessionAlternativeGlobalDLSpeedLimit: 0
+qbt_bittorrent_SessionAlternativeGlobalUPSpeedLimit: 0
+qbt_bittorrent_SessionBTProtocol: TCP
+qbt_bittorrent_SessionCheckingMemUsageSize: 1024
+qbt_bittorrent_SessionDHTEnabled: false
+qbt_bittorrent_SessionDefaultSavePath: /home/{{ ansible_user }}/site
+qbt_bittorrent_SessionExcludedFileNames: ""
+qbt_bittorrent_SessionHashingThreadsCount: 2
+qbt_bittorrent_SessionLSDEnabled: false
+qbt_bittorrent_SessionMaxConnections: -1
+qbt_bittorrent_SessionMaxConnectionsPerTorrent: -1
+qbt_bittorrent_SessionMaxUploads: -1
+qbt_bittorrent_SessionMaxUploadsPerTorrent: -1
+qbt_bittorrent_SessionPeXEnabled: false
+qbt_bittorrent_SessionPeerToS: 0
+qbt_bittorrent_SessionPreallocation: true
+qbt_bittorrent_SessionQueueingSystemEnabled: false
+qbt_bittorrent_SessionRefreshInterval: 2000
+qbt_bittorrent_SessionSSLPort: 0
+qbt_bittorrent_SessionSSRFMitigation: false
+qbt_bittorrent_SessionSaveStatisticsInterval: 120
+qbt_bittorrent_SessionSendBufferLowWatermark: 3072
+qbt_bittorrent_SessionSendBufferWatermark: 10240
+qbt_bittorrent_SessionSendBufferWatermarkFactor: 200
+qbt_bittorrent_SessionSocketBacklogSize: 3000
+qbt_bittorrent_SessionSuggestMode: true
+qbt_bittorrent_SessionTags: cross-seed, autobrr
+qbt_bittorrent_SessionValidateHTTPSTrackerCertificate: false
+qbt_core_AutoDeleteAddedTorrentFile: Never
+qbt_preferences_AdvancedIgnoreSSLErrors: true
+qbt_preferences_ConnectionResolvePeerCountries: false
+qbt_preferences_GeneralLocale: en
+qbt_preferences_MailNotificationreq_auth: true
+qbt_preferences_WebUIAuthSubnetWhitelistEnabled: true
+qbt_preferences_WebUILocalHostAuth: false
+qbt_preferences_WebUIPort: 8080
 
 # 03-vsftpd
 vsftpd_required_rpms:
@@ -73,24 +88,81 @@ vsftpd_cert_ou: "RH"
 vsftpd_cert_email: "none@none.none"
 vsftpd_config_file: "/etc/vsftpd/vsftpd.conf"
 vsftpd_pam_config_file: "/etc/pam.d/vsftpd"
+vsftpd_max_clients: 8
+vsftpd_max_per_ip: 8
+vsftpd_pasv_enable: "YES"
+vsftpd_port_enable: "YES"
+vsftpd_pasv_addr_resolve: "NO"
+vsftpd_reverse_lookup_enable: "NO"
+vsftpd_anonymous_enable: "NO"
+vsftpd_local_enable: "YES"
+vsftpd_write_enable: "YES"
+vsftpd_local_umask: 000
+vsftpd_file_open_mode: 0777
+vsftpd_dirmessage_enable: "NO"
+vsftpd_xferlog_enable: "NO"
+vsftpd_xferlog_std_format: "NO"
+vsftpd_log_ftp_protocol: "YES"
+vsftpd_dual_log_enable: "YES"
+vsftpd_xferlog_file: "/dev/null"
+vsftpd_vsftpd_log_file: "/dev/null"
+vsftpd_syslog_enable: "YES"
+vsftpd_idle_session_timeout: 60
+vsftpd_data_connection_timeout: 120
+vsftpd_chroot_local_user: "YES"
+vsftpd_allow_writeable_chroot: "YES"
+vsftpd_listen: "YES"
+vsftpd_listen_ipv6: "NO"
+vsftpd_pam_service_name: "vsftpd"
+vsftpd_userlist_enable: "YES"
+vsftpd_ssl_enable: "YES"
+vsftpd_debug_ssl: "NO"
+vsftpd_force_local_data_ssl: "YES"
+vsftpd_force_local_logins_ssl: "YES"
+vsftpd_ssl_tlsv1_2: "YES"
+vsftpd_ssl_tlsv1: "NO"
+vsftpd_ssl_sslv2: "NO"
+vsftpd_ssl_sslv3: "NO"
+vsftpd_require_ssl_reuse: "NO"
+vsftpd_ssl_ciphers: "MEDIUM"
 
 # 04-tools
+autobrr_service_file: "/etc/systemd/system/autobrr@.service"
+autobrr_config_file: "/home/{{ ansible_user }}/.config/autobrr/config.toml"
+autobrr_cfg_host: 0.0.0.0
+autobrr_cfg_port: 7474
+autobrr_cfg_baseUrl: /autobrr/
+autobrr_cfg_baseUrlModeLegacy: true
+autobrr_cfg_logLevel: ERROR
+autobrr_cfg_checkForUpdates: false
+autobrr_cfg_customDefinitions: /home/{{ ansible_user }}/.config/autobrr/definitions
+autobrr_url: "https://github.com/autobrr/autobrr/releases/download"
+sizechecker_url: "https://github.com/s0up4200/sizechecker/releases/download"
+mkbrr_url: "https://github.com/autobrr/mkbrr/releases/download"
+tqm_url: "https://github.com/autobrr/tqm/releases/download"
+autobrr_src: "{{ autobrr_url }}/v{{ autobrr_ver }}/autobrr_{{ autobrr_ver }}_linux_x86_64.tar.gz"
+sizechecker_src: "{{ sizechecker_url }}/v{{ sizechecker_ver }}/sizechecker_{{ sizechecker_ver }}_linux_amd64.tar.gz"
+mkbrr_src: "{{ mkbrr_url }}/v{{ mkbrr_ver }}/mkbrr_{{ mkbrr_ver }}_linux_x86_64.tar.gz"
+tqm_src: "{{ tqm_url }}/v{{ tqm_ver }}/tqm_{{ tqm_ver }}_linux_amd64.tar.gz"
+tqm_config_file: "/home/{{ ansible_user }}/.config/tqm/config.yaml"
+upgrade_autobrr_file: "/home/{{ ansible_user }}/upgrade_autobrr.sh"
+panic_file: "/usr/local/bin/panic.sh"
+maximum_number_of_open_file_descriptors: "262144"
+benchmark_file: "/usr/local/bin/bench.sh"
+nvm_ver: "0.40.3"
+node_ver: "22.17.0"
+temporary_nvm_install_script_file: "/tmp/install-nvm.sh"
+cross_seed_config_file: "/home/{{ ansible_user }}/.cross-seed/config.js"
+cross_seed_start_file: "/usr/local/bin/start-cross-seed.sh"
+cross_seed_service_file: "/etc/systemd/system/cross-seed.service"
+cross_seed_api_key: "1234567890abcdefghijklmnopqrstuvwxyz1234567890ab"
 
 # 05-security
 security_required_rpms:
-  - "fail2ban"
   - "firewalld"
   - "policycoreutils-devel"
   - "policycoreutils-python-utils"
 sshd_config_file: "/etc/ssh/sshd_config"
-fail2ban_jail_local_file: "/etc/fail2ban/jail.local"
-fail2ban_jail_lighttpd_file: "/etc/fail2ban/jail.d/lighttpd-auth.local"
-fail2ban_sshd_local_file: "/etc/fail2ban/jail.d/sshd.local"
-fail2ban_vsftpd_local_file: "/etc/fail2ban/jail.d/vsftpd.local"
-fail2ban_jail_config_file: "/etc/fail2ban/jail.conf"
-fail2ban_config_file: "/etc/fail2ban/fail2ban.conf"
-fail2ban_lighttpd_config_file: "/etc/fail2ban/filter.d/lighttpd-auth.conf"
-fail2ban_vsftpd_config_file: "/etc/fail2ban/filter.d/vsftpd.conf"
 restricted_sudo_commands:
   - "/usr/bin/dnf"
   - "/usr/bin/make"
@@ -102,47 +174,25 @@ restricted_sudo_commands:
 
 # 06-cleanup
 cleanup_junk_rpms:
-  - "*man-pages"
   - "audit"
-  - "bind*"
-  - "cockpit"
-  - "gcc-c++"
-  - "gcc"
   - "insights-client"
-  - "kdump"
   - "langpacks-*"
-  - "libcurl-devel"
   - "make"
-  - "ncurses-devel"
-  - "openssl-devel"
-  - "policycoreutils-devel"
   - "python3-cryptography"
-  - "python3-passlib"
   - "rsyslog"
-  - "sos"
-  - "wireless-tools"
-  - "wpa_supplicant"
-  - "zlib-devel"
-selinux_modules_junk:
-  - "rutorrent.fc"
-  - "rutorrent.if"
-  - "rutorrent.pp"
-  - "rutorrent.te"
-  - "tmux.fc"
-  - "tmux.if"
-  - "tmux.pp"
-  - "tmux.te"
 common_tools_homefolder_junk:
   - ".lesshst"
   - ".wget-hsts"
   - "autobrr_{{ autobrr_ver }}_linux_x86_64.tar.gz"
   - "autobrr"
   - "autobrrctl"
+  - "LICENSE.md"
   - "LICENSE"
   - "mkbrr"
   - "README.md"
   - "sizechecker_{{ sizechecker_ver }}_linux_amd64.tar.gz"
   - "sizechecker"
+  - "tqm"
 journald_config_file: "/etc/systemd/journald.conf"
 rhsm_config_file: "/etc/rhsm/rhsm.conf"
 dnf_config_file: "/etc/dnf/dnf.conf"
@@ -162,13 +212,7 @@ rhel_logs: "{{ centos_logs + \
             '/var/log/rhsm/rhsmcertd.log', \
             '/var/log/tuned/tuned.log'] }}"
 cleanup_junk_services:
-  - "avahi-daemon"
-  - "bluetooth"
-  - "cups"
   - "dnf-makecache.timer"
-  - "ModemManager"
-  - "postfix"
-  - "smartd"
 
 # 07-reboot
 required_services: >-
@@ -179,11 +223,8 @@ required_services: >-
   }}
 base_required_services:
   - "{{ autobrr_service }}"
-  - "fail2ban"
   - "fstrim.timer"
-  - "lighttpd"
-  - "php-fpm"
-  - "rtorrent"
+  - "qbt"
   - "tuned"
   - "vsftpd"
 reboot_timeout: 1200

@@ -9,7 +9,7 @@ module.exports = {
   port: 2468,
   notificationWebhookUrls: [],
   torrentClients: [
-    "qbittorrent:http://127.0.0.1:80",
+    "qbittorrent:http://127.0.0.1:{{ qbt_preferences_WebUIPort }}",
   ],
   useClientTorrents: true,
   delay: 30,

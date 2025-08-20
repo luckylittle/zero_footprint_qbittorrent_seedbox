@@ -24,6 +24,8 @@
       - 8.8.8.8
       - 8.8.4.4
     state: "present"
+  notify:
+    - "Restart NetworkManager"
   become: true
   when: set_google_dns
   tags:

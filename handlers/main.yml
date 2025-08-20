@@ -8,6 +8,19 @@
     state: "restarted"
   become: true
 
+- name: Restart NetworkManager
+  ansible.builtin.systemd:
+    name: "NetworkManager"
+    state: "restarted"
+  become: true
+
+# 02-qbt
+- name: Restart qBittorrent
+  ansible.builtin.systemd:
+    name: "tuned"
+    state: "restarted"
+  become: true
+
 # 05-security
 - name: Reload firewalld
   ansible.builtin.systemd:

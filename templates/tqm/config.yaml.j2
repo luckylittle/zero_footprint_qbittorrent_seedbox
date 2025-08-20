@@ -1,0 +1,25 @@
+---
+# {{ ansible_managed }}
+clients:
+  qbt:
+    download_path: /home/{{ ansible_user }}/site/
+    enabled: true
+    filter: default
+    type: qbittorrent
+    url: http://127.0.0.1:{{ qbt_preferences_WebUIPort }}
+notifications:
+filters:
+  default:
+    ignore:
+      - IsTrackerDown()
+      - Downloaded == false && !IsUnregistered()
+    remove:
+      - IsUnregistered()
+    pause:
+      - HasAllTags("cross-seed")
+    label:
+    tag:
+    orphan:
+      grace_period: 10m
+      ignore_paths:
+        - /home/{{ ansible_user }}/site/UPLOAD/

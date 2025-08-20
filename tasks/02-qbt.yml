@@ -1,0 +1,42 @@
+---
+# tasks file for zero_footprint_qbittorrent_seedbox/02-qtorrent
+
+- name: QBT | 2.1 Download qBittorrent
+  ansible.builtin.get_url:
+    url: "{{ qbt_url }}"
+    dest: "/usr/local/bin/qbittorrent"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0755"
+  become: true
+  tags:
+    - qbt
+
+- name: QBT | 2.2 Create a directory structure for qBittorrent config
+  ansible.builtin.file:
+    path: "{{ qbt_config_directory }}"
+    state: "directory"
+    mode: "0755"
+  tags:
+    - qbt
+
+- name: QBT | 2.3 Template the configuration for qBittorrent
+  ansible.builtin.template:
+    src: "qbittorrent/qBittorrent.conf.j2"
+    dest: "{{ qbt_config_file }}"
+    backup: true
+    mode: "0644"
+  tags:
+    - qbt
+
+- name: QBT | 2.4 Template a service file for qBittorrent
+  ansible.builtin.template:
+    backup: true
+    src: "templates/qbittorrent/qbt.service.j2"
+    dest: "{{ qbt_service_file }}"
+    mode: "0644"
+  become: true
+  # notify:
+  #   - "Restart qBittorrent"
+  tags:
+    - qbt

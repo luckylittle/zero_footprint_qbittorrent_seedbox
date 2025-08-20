@@ -5,6 +5,14 @@
 export AUTOBRR_VERSION="{{ autobrr_ver }}"
 ##############################################
 
+# Check if required commands are installed
+for cmd in wget tar; do
+  if ! command -v "$cmd" >/dev/null 2>&1; then
+    echo "Error: $cmd is not installed." >&2
+    exit 1
+  fi
+done
+
 echo "Downloading & unpacking a new version of Autobrr..."
 cd
 wget https://github.com/autobrr/autobrr/releases/download/v${AUTOBRR_VERSION}/autobrr_${AUTOBRR_VERSION}_linux_x86_64.tar.gz

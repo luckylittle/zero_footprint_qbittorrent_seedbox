@@ -48,109 +48,58 @@
   tags:
     - security
 
-- name: SECURITY | 5.6 Add ipv4_whitelist to a new firewalld zone "public"
+- name: SECURITY | 5.6 Allow incoming traffic from whitelisted IPv4 addresses
   ansible.posix.firewalld:
-    zone: "public"
-    source: "{{ item }}"
-    state: "enabled"
+    rich_rule: 'rule family="ipv4" source address="{{ item }}" accept'
+    zone: public
+    state: enabled
     permanent: true
-  become: true
-  notify:
-    - "Reload firewalld"
+    immediate: true
   loop: "{{ ipv4_whitelist | split(' ') }}"
-  tags:
-    - security
-
-- name: SECURITY | 5.7 Permit traffic in "default" zone for http service
-  ansible.posix.firewalld:
-    service: "http"
-    permanent: true
-    state: "enabled"
   become: true
-  notify:
-    - "Reload firewalld"
-  loop:
-    - "{{ ftp_port }}/tcp"
-    - "{{ pasv_port_range }}/tcp"
   tags:
     - security
 
-- name: SECURITY | 5.8 Permit traffic in "default" zone for qtorrent
+- name: SECURITY | 5.7 Allow incoming traffic on TCP port 55442 from anywhere
   ansible.posix.firewalld:
     port: "{{ item }}"
+    zone: public
+    state: enabled
     permanent: true
-    state: "enabled"
-  become: true
-  notify:
-    - "Reload firewalld"
+    immediate: true
   loop:
-    - "{{ qtorrent_port }}/tcp"
-    - "{{ qtorrent_port }}/udp"
+    - "{{ qbt_port }}/tcp"
+    - "{{ qbt_port }}/udp"
+  become: true
   tags:
     - security
 
-- name: SECURITY | 5.9 Deny traffic in "default" zone for cockpit and ssh
+- name: SECURITY | 5.8 Remove services
   ansible.posix.firewalld:
     service: "{{ item }}"
+    zone: public
+    state: disabled
     permanent: true
-    state: "disabled"
-  become: true
-  notify:
-    - "Reload firewalld"
+    immediate: true
   loop:
+    - "ssh"
     - "cockpit"
-    - "ssh"
-  tags:
-    - security
-
-- name: SECURITY | 5.10 Deny ICMP traffic in "default" zone
-  ansible.posix.firewalld:
-    icmp_block: "{{ item }}"
-    permanent: true
-    state: "enabled"
+    - "dhcpv6-client"
   become: true
-  notify:
-    - "Reload firewalld"
-  loop:
-    - "echo-request"
-    - "echo-reply"
   tags:
     - security
 
-- name: SECURITY | 5.11 Permit traffic in "limited" zone for various rtorrent, \
-        vsftpd, autobrr ports
+- name: SECURITY | 5.9 Set default zone target to DROP (block all incoming by default)
   ansible.posix.firewalld:
-    zone: "limited"
-    port: "{{ item }}"
+    zone: public
+    state: enabled
+    target: DROP
     permanent: true
-    state: "enabled"
   become: true
-  notify:
-    - "Reload firewalld"
-  loop:
-    - "{{ rtorrent_port }}/tcp"
-    - "{{ rtorrent_port }}/udp"
-    - "{{ ftp_port }}/tcp"
-    - "{{ pasv_port_range }}/tcp"
   tags:
     - security
 
-- name: SECURITY | 5.12 Permit traffic in "limited" zone for https, sshd service
-  ansible.posix.firewalld:
-    zone: "limited"
-    service: "{{ item }}"
-    permanent: true
-    state: "enabled"
-  become: true
-  notify:
-    - "Reload firewalld"
-  loop:
-    - "https"
-    - "ssh"
-  tags:
-    - security
-
-- name: SECURITY | 5.13 Template the configuration for SSHD
+- name: SECURITY | 5.10 Template the configuration for SSHD
   ansible.builtin.template:
     src: "sshd/sshd_config.j2"
     dest: "{{ sshd_config_file }}"
@@ -162,7 +111,7 @@
   tags:
     - security
 
-- name: SECURITY | 5.14 Disable shell history
+- name: SECURITY | 5.11 Disable shell history
   ansible.builtin.lineinfile:
     path: "/etc/profile"
     regexp: '^HISTSIZE=1000$'
@@ -172,7 +121,7 @@
   tags:
     - security
 
-- name: SECURITY | 5.15 Configure restricted sudo for ansible_user
+- name: SECURITY | 5.12 Configure restricted sudo for ansible_user
   community.general.sudoers:
     name: "ansible-{{ ansible_user }}-custom-sudo"
     user: "{{ ansible_user }}"

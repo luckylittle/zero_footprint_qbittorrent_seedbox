@@ -70,9 +70,9 @@ Dependencies
 ------------
 
 * Ansible core v`2.16.14`
-* community.general v`10.6.0` (Install: `ansible-galaxy collection install community.general`)
-* community.crypto v`2.26.1` (Install: `ansible-galaxy collection install community.crypto`)
-* ansible.posix v`2.0.0` (Install: `ansible-galaxy collection install ansible.posix`)
+* community.general v`11.2.1` (Install: `ansible-galaxy collection install community.general`)
+* community.crypto v`3.0.3` (Install: `ansible-galaxy collection install community.crypto`)
+* ansible.posix v`2.1.0` (Install: `ansible-galaxy collection install ansible.posix`)
 
 Example Playbook
 ----------------
