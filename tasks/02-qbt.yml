@@ -29,6 +29,15 @@
   tags:
     - qbt
 
+- name: QBT | 2.3 Template the categories for qBittorrent
+  ansible.builtin.template:
+    src: "qbittorrent/categories.json.j2"
+    dest: "{{ qbt_categories_file }}"
+    backup: true
+    mode: "0644"
+  tags:
+    - qbt
+
 - name: QBT | 2.4 Template a service file for qBittorrent
   ansible.builtin.template:
     backup: true
