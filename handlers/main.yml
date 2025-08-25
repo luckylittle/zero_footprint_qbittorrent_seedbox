@@ -17,8 +17,9 @@
 # 02-qbt
 - name: Restart qBittorrent
   ansible.builtin.systemd:
-    name: "tuned"
+    name: "qbt"
     state: "restarted"
+    daemon_reload: true
   become: true
 
 # 05-security

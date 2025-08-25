@@ -22,7 +22,7 @@ echo "Stopping Autobrr service..."
 sudo systemctl stop autobrr@{{ ansible_user }}.service
 
 echo "Upgrading the Autobrr binaries..."
-sudo mv -v autobrr autobrrctl /usr/local/bin/
+sudo /usr/bin/mv -v autobrr autobrrctl /usr/local/bin/
 
 echo "Restoring default SELinux security contexts..."
 sudo /usr/sbin/restorecon -Rv /usr/local/bin/

@@ -17,6 +17,7 @@ ExecStart=/usr/local/bin/qbittorrent
 # uncomment this to use "Network interface" and/or "Optional IP address to bind to" options
 # without this binding will fail and qBittorrent's traffic will go through the default route
 # AmbientCapabilities=CAP_NET_RAW
+Restart=always
 
 [Install]
 WantedBy=multi-user.target

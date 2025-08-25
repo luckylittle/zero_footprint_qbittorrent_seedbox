@@ -5,7 +5,7 @@ luckylittle.zero_footprint_qbittorrent_seedbox
 
 <p align="center">
 
-# THIS IS CURENTLY UNDER DEVELOPMENT - IT IS A FORK OF MY [RTORRENT/RUTORRENT ANSIBLE ROLE WHICH THIS IS BASED ON](https://github.com/luckylittle/zero_footprint_rutorrent_seedbox).
+# THIS IS CURRENTLY UNDER DEVELOPMENT - IT IS A FORK OF MY [RTORRENT/RUTORRENT ANSIBLE ROLE WHICH THIS IS BASED ON](https://github.com/luckylittle/zero_footprint_rutorrent_seedbox).
 
 Configures vanilla RHEL8/9 (or CentOS 9) system to be lightweight and bulletproof seedbox running [](). It aims to be secure (SELinux, firewalld, SSL/TLS, enabled) and creates absolutely no logs (a.k.a "zero footprint)". It also provides modern autodownloading capabilities with [Autobrr](https://github.com/autobrr/autobrr) and [cross-seed](https://github.com/cross-seed/cross-seed)ing. Missing logs will make troubleshooting difficult, but ephemeral journal should be sufficient. Security and simplicity was priroitised over anything else. PRs are most welcome!
 
@@ -19,6 +19,11 @@ Requirements
 * It is expected, that you have a brand new RHEL8/9 or CentOS 9 stream system and have passwordless Ansible access sorted out - including working `sudo` (you can use my other role [luckylittle/ansible-role-create-user](https://github.com/luckylittle/ansible-role-create-user) for passwordless SSH access and sudo).
 * :warning: **THIS ROLE REQUIRES PASSWORDLESS ACCESS TO YOUR SYSTEM USING SSH KEYPAIR AND NOT THE PASSWORD** (e.g. `ssh-copy-id`) - otherwise you will **lock** yourself out, because sshd config will change to `PasswordAuthentication no`! :warning:
 * :warning: Make sure to add your home IP address (or multiple addresses you connect from) to `ipv4_whitelist`, or you risk **locking** yourself out, as it is also enforced by firewalld! :warning:
+
+Architecture
+------------
+
+![img](architecture.png)
 
 Role Variables
 --------------
@@ -100,7 +105,6 @@ Testing
 |OS     |Version 0.0.1     |
 |-------|------------------|
 |RHEL9  |Not attempted     |
-|CentOS9|Not attempted     |
 
 On a brand new RHEL8.6, 1x vCPU, 4GB RAM playbook took 18m 32s to finish on VirtualBox.
 On a brand new Red Hat Enterprise Linux release 9.5 (Plow) on AWS (t3.medium), it took 18m 29s.
@@ -108,7 +112,7 @@ The following versions were installed during the last RHEL9 test:
 
 |Package name|Package version      |
 |------------|---------------------|
-|tmux        |3.2a-5.el9.x86_64    |
+|        |3.2a-5.el9.x86_64    |
 |vsftpd      |3.0.5-6.el9.x86_64   |
 
 The following Terraform can be used to create necessary infrastructure (based on RHEL9.X on AWS):
@@ -166,99 +170,13 @@ resource "aws_security_group" "rhel9_sg" {
   }
 }
 
-resource "aws_vpc_security_group_ingress_rule" "allow_rtorrent_port_tcp" {
+resource "aws_vpc_security_group_ingress_rule" "allow_all" {
   security_group_id = aws_security_group.rhel9_sg.id
   cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 55442
-  ip_protocol       = "tcp"
-  to_port           = 55442
-  description       = "Default rtorrent_port (TCP)"
+  ip_protocol       = "-1"
+  description       = "Generally a bad practice, but we need to test firewalld functionality"
   tags = {
-    Name = "allow_rtorrent_port_tcp"
-  }
-}
-
-resource "aws_vpc_security_group_ingress_rule" "allow_rtorrent_port_udp" {
-  security_group_id = aws_security_group.rhel9_sg.id
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 55442
-  ip_protocol       = "udp"
-  to_port           = 55442
-  description       = "Default rtorrent_port (UDP)"
-  tags = {
-    Name = "allow_rtorrent_port_udp"
-  }
-}
-
-resource "aws_vpc_security_group_ingress_rule" "allow_pasv_port_range" {
-  security_group_id = aws_security_group.rhel9_sg.id
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 64000
-  ip_protocol       = "tcp"
-  to_port           = 64321
-  description       = "Default pasv_port_range (TCP)"
-  tags = {
-    Name = "allow_pasv_port_range"
-  }
-}
-
-resource "aws_vpc_security_group_ingress_rule" "allow_ftp_port" {
-  security_group_id = aws_security_group.rhel9_sg.id
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 55443
-  ip_protocol       = "tcp"
-  to_port           = 55443
-  description       = "Default ftp_port (TCP)"
-  tags = {
-    Name = "allow_ftp_port"
-  }
-}
-
-resource "aws_vpc_security_group_ingress_rule" "allow_tls_ipv4" {
-  security_group_id = aws_security_group.rhel9_sg.id
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 443
-  ip_protocol       = "tcp"
-  to_port           = 443
-  description       = "Default ruTorrent port (IPv4)"
-  tags = {
-    Name = "allow_tls_ipv4"
-  }
-}
-
-resource "aws_vpc_security_group_ingress_rule" "allow_autobrr_port" {
-  security_group_id = aws_security_group.rhel9_sg.id
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 7474
-  ip_protocol       = "tcp"
-  to_port           = 7474
-  description       = "Default Autobrr port (TCP)"
-  tags = {
-    Name = "allow_autobrr_port"
-  }
-}
-
-resource "aws_vpc_security_group_ingress_rule" "allow_ssh_port" {
-  security_group_id = aws_security_group.rhel9_sg.id
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 22
-  ip_protocol       = "tcp"
-  to_port           = 22
-  description       = "Default SSH port (TCP)"
-  tags = {
-    Name = "allow_ssh_port"
-  }
-}
-
-resource "aws_vpc_security_group_ingress_rule" "allow_tls_ipv6" {
-  security_group_id = aws_security_group.rhel9_sg.id
-  cidr_ipv6         = "::/0"
-  from_port         = 443
-  ip_protocol       = "tcp"
-  to_port           = 443
-  description       = "Default ruTorrent port (IPv6)"
-  tags = {
-    Name = "allow_tls_ipv6"
+    Name = "allow_all"
   }
 }
 
@@ -391,7 +309,7 @@ Then you can just add `instance_public_ip` to the [inventory](tests/inventory) a
 Services Installed
 ------------------
 
-After you succesfully apply this role, you should be able to see a similar output and access the following services:
+After you successfully apply this role, you should be able to see a similar output and access the following services:
 
 |Service               |URL                                                        |
 |----------------------|-----------------------------------------------------------|

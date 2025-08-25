@@ -29,9 +29,9 @@
   tags:
     - security
 
-- name: SECURITY | 5.4 Ensure port 7474 is labeled with http_port_t for Autobrr
+- name: SECURITY | 5.4 Ensure Autobrr port is labeled with http_port_t
   community.general.seport:
-    ports: "7474"
+    ports: "{{ autobrr_cfg_port }}"
     proto: "tcp"
     setype: "http_port_t"
     state: present
@@ -60,7 +60,7 @@
   tags:
     - security
 
-- name: SECURITY | 5.7 Allow incoming traffic on TCP port 55442 from anywhere
+- name: SECURITY | 5.7 Allow incoming traffic to qbt from anywhere
   ansible.posix.firewalld:
     port: "{{ item }}"
     zone: public
@@ -74,7 +74,7 @@
   tags:
     - security
 
-- name: SECURITY | 5.8 Remove services
+- name: SECURITY | 5.8 Remove allowed public services
   ansible.posix.firewalld:
     service: "{{ item }}"
     zone: public
@@ -89,7 +89,7 @@
   tags:
     - security
 
-- name: SECURITY | 5.9 Set default zone target to DROP (block all incoming by default)
+- name: SECURITY | 5.9 Block all incoming by default
   ansible.posix.firewalld:
     zone: public
     state: enabled
@@ -126,7 +126,7 @@
     name: "ansible-{{ ansible_user }}-custom-sudo"
     user: "{{ ansible_user }}"
     commands: "{{ restricted_sudo_commands }}"
-    nopassword: true
+    nopassword: false
     state: "present"
   become: true
   tags:

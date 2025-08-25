@@ -47,7 +47,10 @@
     - smoke_tests
 
 - name: TEST | 8.7 Check for port 22 to be open and contain "OpenSSH"
-  ansible.builtin.wait_for:
+  local_action:
+    module: ansible.builtin.wait_for
+    host: "{{ hostvars[inventory_hostname].ansible_host | \
+          default(inventory_hostname) }}"
     port: 22
     search_regex: "OpenSSH"
     timeout: "{{ test_timeout }}"
@@ -57,17 +60,24 @@
     - smoke_tests
 
 - name: TEST | 8.8 Check for FTP port to be open and contain "220 Welcome to"
-  ansible.builtin.wait_for:
+  local_action:
+    module: ansible.builtin.wait_for
+    host: "{{ hostvars[inventory_hostname].ansible_host | \
+          default(inventory_hostname) }}"
     port: "{{ ftp_port }}"
     search_regex: "220 Welcome to"
     timeout: "{{ test_timeout }}"
   register: test_ftp
+  delegate_to: 127.0.0.1
   changed_when: false
   tags:
     - smoke_tests
 
 - name: TEST | 8.9 Check for qBt port to be open
-  ansible.builtin.wait_for:
+  local_action:
+    module: ansible.builtin.wait_for
+    host: "{{ hostvars[inventory_hostname].ansible_host | \
+          default(inventory_hostname) }}"
     port: "{{ qbt_port }}"
     timeout: "{{ test_timeout }}"
   register: test_qbt
@@ -76,9 +86,10 @@
     - smoke_tests
 
 - name: TEST | 8.10 Check for qbt HTTP endpoint to be open
-  ansible.builtin.uri:
-    url: "http://{{ (ansible_ssh_host | default(ansible_host)) \
-        | default(inventory_hostname) }}:{{ qbt_preferences_WebUIPort }}"
+  local_action:
+    module: ansible.builtin.uri
+    url: "http://{{ hostvars[inventory_hostname].ansible_host \
+          | default(inventory_hostname) }}:{{ qbt_preferences_webuiport }}"
     return_content: true
     timeout: "{{ test_timeout }}"
   register: test_http
@@ -88,9 +99,10 @@
   tags:
     - smoke_tests
 
-- name: TEST | 8.12 Check for Autobrr to be responding
-  ansible.builtin.uri:
-    url: "http://{{ (ansible_ssh_host | default(ansible_host)) | \
+- name: TEST | 8.11 Check for Autobrr to be responding
+  local_action:
+    module: ansible.builtin.uri
+    url: "http://{{ hostvars[inventory_hostname].ansible_host | \
           default(inventory_hostname) }}:{{ autobrr_cfg_port }}"
     return_content: true
     timeout: "{{ test_timeout }}"
@@ -101,9 +113,10 @@
   tags:
     - smoke_tests
 
-- name: TEST | 8.13 Check for Autobrr healtcheck to be reporting OK
-  ansible.builtin.uri:
-    url: "http://{{ (ansible_ssh_host | default(ansible_host)) | \
+- name: TEST | 8.12 Check for Autobrr healtcheck to be reporting OK
+  local_action:
+    module: ansible.builtin.uri
+    url: "http://{{ hostvars[inventory_hostname].ansible_host | \
           default(inventory_hostname) }}:{{ autobrr_cfg_port }}/api/\
           healthz/liveness"
     return_content: true
@@ -115,7 +128,7 @@
   tags:
     - smoke_tests
 
-- name: TEST | 8.14 Check for cross-seed webhook to be responding
+- name: TEST | 8.13 Check for cross-seed webhook to be responding
   ansible.builtin.uri:
     url: "http://127.0.0.1:2468/api/webhook?apikey={{ cross_seed_api_key }}"
     return_content: true
@@ -134,7 +147,7 @@
   tags:
     - smoke_tests
 
-- name: TEST | 8.15 Show the smoke test results
+- name: TEST | 8.14 Show the smoke test results
   ansible.builtin.debug:
     msg:
       - "Results:"
@@ -161,23 +174,26 @@
   tags:
     - smoke_tests
 
-- name: TEST | 8.16 Output
+- name: TEST | 8.15 Output
   ansible.builtin.debug:
     msg:
       - "----------------------------------------------------------------"
       - "Autobrr URL:"
       - "http://{{ (ansible_ssh_host | \
-          default(ansible_host)) | default(inventory_hostname) }}:{{ autobrr_cfg_port }}/\
+          default(ansible_host)) | default(inventory_hostname) }}:\
+          {{ autobrr_cfg_port }}/\
           onboard"
       - "----------------------------------------------------------------"
       - "Autobrr Healthz URL:"
       - "http://{{ (ansible_ssh_host | \
-          default(ansible_host)) | default(inventory_hostname) }}:{{ autobrr_cfg_port }}/\
+          default(ansible_host)) | default(inventory_hostname) }}:\
+          {{ autobrr_cfg_port }}/\
           api/healthz/liveness"
       - "----------------------------------------------------------------"
-      - "qBt URL:"
+      - "qBt WebUI:"
       - "http://{{ (ansible_ssh_host | \
-          default(ansible_host)) | default(inventory_hostname) }}:{{ qbt_port }}"
+          default(ansible_host)) | default(inventory_hostname) }}:\
+          {{ qbt_preferences_webuiport }}"
       - "----------------------------------------------------------------"
       - "vsFTPd URL:"
       - "ftps://{{ (ansible_ssh_host | default(ansible_host)) | \

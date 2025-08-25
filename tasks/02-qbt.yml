@@ -1,7 +1,7 @@
 ---
-# tasks file for zero_footprint_qbittorrent_seedbox/02-qtorrent
+# tasks file for zero_footprint_qbittorrent_seedbox/02-qbt
 
-- name: QBT | 2.1 Download qBittorrent
+- name: QBt | 2.1 Download qBittorrent
   ansible.builtin.get_url:
     url: "{{ qbt_url }}"
     dest: "/usr/local/bin/qbittorrent"
@@ -12,7 +12,7 @@
   tags:
     - qbt
 
-- name: QBT | 2.2 Create a directory structure for qBittorrent config
+- name: QBt | 2.2 Create a directory structure for qBittorrent config
   ansible.builtin.file:
     path: "{{ qbt_config_directory }}"
     state: "directory"
@@ -20,7 +20,7 @@
   tags:
     - qbt
 
-- name: QBT | 2.3 Template the configuration for qBittorrent
+- name: QBt | 2.3 Template the configuration for qBittorrent
   ansible.builtin.template:
     src: "qbittorrent/qBittorrent.conf.j2"
     dest: "{{ qbt_config_file }}"
@@ -29,7 +29,7 @@
   tags:
     - qbt
 
-- name: QBT | 2.3 Template the categories for qBittorrent
+- name: QBt | 2.3 Template the categories for qBittorrent
   ansible.builtin.template:
     src: "qbittorrent/categories.json.j2"
     dest: "{{ qbt_categories_file }}"
@@ -38,14 +38,19 @@
   tags:
     - qbt
 
-- name: QBT | 2.4 Template a service file for qBittorrent
+- name: QBt | 2.4 Template a service file for qBittorrent
   ansible.builtin.template:
     backup: true
     src: "templates/qbittorrent/qbt.service.j2"
     dest: "{{ qbt_service_file }}"
     mode: "0644"
   become: true
-  # notify:
-  #   - "Restart qBittorrent"
+  notify:
+    - "Restart qBittorrent"
+  tags:
+    - qbt
+
+- name: QBt | 2.5 Flush handlers
+  ansible.builtin.meta: flush_handlers
   tags:
     - qbt
