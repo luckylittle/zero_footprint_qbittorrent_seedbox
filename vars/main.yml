@@ -168,6 +168,7 @@ cross_seed_service_file: "/etc/systemd/system/cross-seed.service"
 cross_seed_api_key: "1234567890abcdefghijklmnopqrstuvwxyz1234567890ab"
 
 # 05-security
+ssh_port: "22"
 security_required_rpms:
   - "firewalld"
 sshd_config_file: "/etc/ssh/sshd_config"

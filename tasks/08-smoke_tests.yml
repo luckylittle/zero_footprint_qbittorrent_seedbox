@@ -47,21 +47,20 @@
     - smoke_tests
 
 - name: TEST | 8.7 Check for port 22 to be open and contain "OpenSSH"
-  local_action:
-    module: ansible.builtin.wait_for
+  ansible.builtin.wait_for:
     host: "{{ hostvars[inventory_hostname].ansible_host | \
           default(inventory_hostname) }}"
-    port: 22
+    port: "{{ ssh_port }}"
     search_regex: "OpenSSH"
     timeout: "{{ test_timeout }}"
   register: test_ssh
+  delegate_to: localhost
   changed_when: false
   tags:
     - smoke_tests
 
 - name: TEST | 8.8 Check for FTP port to be open and contain "220 Welcome to"
-  local_action:
-    module: ansible.builtin.wait_for
+  ansible.builtin.wait_for:
     host: "{{ hostvars[inventory_hostname].ansible_host | \
           default(inventory_hostname) }}"
     port: "{{ ftp_port }}"
@@ -74,25 +73,25 @@
     - smoke_tests
 
 - name: TEST | 8.9 Check for qBt port to be open
-  local_action:
-    module: ansible.builtin.wait_for
+  ansible.builtin.wait_for:
     host: "{{ hostvars[inventory_hostname].ansible_host | \
           default(inventory_hostname) }}"
     port: "{{ qbt_port }}"
     timeout: "{{ test_timeout }}"
   register: test_qbt
+  delegate_to: localhost
   changed_when: false
   tags:
     - smoke_tests
 
 - name: TEST | 8.10 Check for qbt HTTP endpoint to be open
-  local_action:
-    module: ansible.builtin.uri
+  ansible.builtin.uri:
     url: "http://{{ hostvars[inventory_hostname].ansible_host \
           | default(inventory_hostname) }}:{{ qbt_preferences_webuiport }}"
     return_content: true
     timeout: "{{ test_timeout }}"
   register: test_http
+  delegate_to: localhost
   failed_when: "test_http.status != 200 or \
                 'qBittorrent' not in test_http.content"
   changed_when: false
@@ -100,13 +99,13 @@
     - smoke_tests
 
 - name: TEST | 8.11 Check for Autobrr to be responding
-  local_action:
-    module: ansible.builtin.uri
+  ansible.builtin.uri:
     url: "http://{{ hostvars[inventory_hostname].ansible_host | \
           default(inventory_hostname) }}:{{ autobrr_cfg_port }}"
     return_content: true
     timeout: "{{ test_timeout }}"
   register: test_autobrr
+  delegate_to: localhost
   failed_when: "test_autobrr.status != 200 or \
                 'autobrr' not in test_autobrr.content"
   changed_when: false
@@ -114,14 +113,14 @@
     - smoke_tests
 
 - name: TEST | 8.12 Check for Autobrr healtcheck to be reporting OK
-  local_action:
-    module: ansible.builtin.uri
+  ansible.builtin.uri:
     url: "http://{{ hostvars[inventory_hostname].ansible_host | \
           default(inventory_hostname) }}:{{ autobrr_cfg_port }}/api/\
           healthz/liveness"
     return_content: true
     timeout: "{{ test_timeout }}"
   register: healthz_autobrr
+  delegate_to: localhost
   failed_when: "healthz_autobrr.status != 200 or \
                 'OK' not in healthz_autobrr.content"
   changed_when: false
@@ -130,7 +129,8 @@
 
 - name: TEST | 8.13 Check for cross-seed webhook to be responding
   ansible.builtin.uri:
-    url: "http://127.0.0.1:2468/api/webhook?apikey={{ cross_seed_api_key }}"
+    url: "http://127.0.0.1:{{ cross_seed_port }}/api/webhook?\
+          apikey={{ cross_seed_api_key }}"
     return_content: true
     method: "POST"
     body_format: "json"
