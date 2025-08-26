@@ -1,5 +1,0 @@
-# Managed by Ansible
-[DEFAULT]
-bantime = 8h
-findtime = 1h
-maxretry = 5

@@ -1,13 +1,13 @@
 ---
-# tasks file for ansible-role-zero-footprint-ruT-seedbox/00-preflight
+# tasks file for zero_footprint_qbittorrent_seedbox/00-preflight
 
-- name: PREFLIGHT | 0.1 Ensure 'fail2ban_ignore_ipv4' does not contain \
+- name: PREFLIGHT | 0.1 Ensure 'ipv4_whitelist' does not contain \
         placeholder 'X.X.X.X'
   ansible.builtin.fail:
     msg: >-
-      The 'fail2ban_ignore_ipv4' variable contains a placeholder (X.X.X.X).
+      The 'ipv4_whitelist' variable contains a placeholder (X.X.X.X).
       Please replace it with a valid IPv4 address first!
-  when: "'X.X.X.X' in fail2ban_ignore_ipv4"
+  when: "'X.X.X.X' in ipv4_whitelist"
   tags:
     - common
     - preflight

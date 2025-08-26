@@ -1,5 +1,5 @@
 ---
-- name: Test playbook for zero_footprint_rutorrent_seedbox role
+- name: Test playbook for zero_footprint_qbittorrent_seedbox role
   hosts: all
   roles:
-    - "zero_footprint_rutorrent_seedbox"
+    - "zero_footprint_qbittorrent_seedbox"

@@ -6,10 +6,10 @@ module.exports = {
   sonarr: [],
   radarr: [],
   host: "127.0.0.1",
-  port: 2468,
+  port: {{ cross_seed_port }},
   notificationWebhookUrls: [],
   torrentClients: [
-    "rtorrent:http://{{ ansible_user }}:{{ htpasswd }}@127.0.0.1/plugins/httprpc/action.php",
+    "qbittorrent:http://127.0.0.1:{{ qbt_preferences_webuiport }}",
   ],
   useClientTorrents: true,
   delay: 30,

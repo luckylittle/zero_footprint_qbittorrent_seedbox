@@ -5,62 +5,73 @@ luckylittle.zero_footprint_qbittorrent_seedbox
 
 <p align="center">
 
-# THIS IS CURENTLY UNDER DEVELOPMENT - IT IS A FORK OF MY [RTORRENT/RUTORRENT ANSIBLE ROLE WHICH THIS IS BASED ON](https://github.com/luckylittle/zero_footprint_rutorrent_seedbox).
+Project overview
+----------------
 
-Configures vanilla RHEL8/9 (or CentOS 9) system to be lightweight and bulletproof seedbox running [rTorrent](https://github.com/rakshasa/rtorrent) and [ruTorrent](https://github.com/Novik/ruTorrent). It aims to be secure (SELinux, firewalld, SSL/TLS, [Fail2Ban](https://github.com/fail2ban/fail2ban) enabled) and creates absolutely no logs (a.k.a "zero footprint)". It also provides modern autodownloading capabilities with [Autobrr](https://github.com/autobrr/autobrr) and optional [cross-seed](https://github.com/cross-seed/cross-seed)ing. Missing logs will make troubleshooting difficult, but ephemeral journal should be sufficient. Security and simplicity was priroitised over anything else. PRs are most welcome!
+This Ansible role provisions a standard [Red Hat Enterprise Linux 9 (RHEL 9)](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux) system as a secure, efficient and lightweight peer-to-peer (P2P) seedbox, running [qBittorrent](https://www.qbittorrent.org/).
+
+The configuration prioritizes security and simplicity, utilizing integrated tools such as SELinux and firewalld. To maintain a minimal system footprint, it is configured for zero-logging operation and no shell history. Among others, the role incorporates [Autobrr](https://github.com/autobrr/autobrr) for modern automated downloads and [cross-seed](https://github.com/cross-seed/cross-seed) for enhanced seeding.
+
+Please be aware that the absence of persistent logs may complicate troubleshooting, though the ephemeral journal should be sufficient for most diagnostics. This project is an enhanced fork of my [zero_footprint_rutorrent_seedbox](https://github.com/luckylittle/zero_footprint_rutorrent_seedbox) repository, simplified and adapted for qBittorrent (lot of lessons learned!). [Contributions](CONTRIBUTING.md) via pull requests are welcome.
 
 </p>
 
 ![GitHub Release](https://img.shields.io/github/v/release/luckylittle/zero_footprint_qbittorrent_seedbox?style=for-the-badge) ![Ansible Role](https://img.shields.io/ansible/role/d/luckylittle/zero_footprint_qbittorrent_seedbox?style=for-the-badge) ![GitHub last commit](https://img.shields.io/github/last-commit/luckylittle/zero_footprint_qbittorrent_seedbox?style=for-the-badge)
 
-Requirements
+Prerequisites
+-------------
+
+* A clean installation of RHEL 9 (CentOS 9 Stream should also work, but is not always tested).
+* Pre-configured, passwordless Ansible access with `sudo` privileges. The [luckylittle/ansible-role-create-user](https://github.com/luckylittle/ansible-role-create-user) role may be used to establish this access.
+* Access via password should also be in place (mainly due to single-user vsftpd) - e.g. `sudo passwd <user>`.
+
+:warning: Important configuration notes :warning
+------------------------------------------------
+
+* **SSH Key Authentication is mandatory**: This role will disable password-based SSH access by setting `PasswordAuthentication no`. You must configure SSH key-pair authentication BEFORE execution to avoid being completely locked out of the system.
+* **Firewall IP whitelisting**: To ensure you can access the system after the firewall is enabled, you must add your client IP address(es) to the `ipv4_whitelist` variable. Failure to do so will result in a system lockout as well.
+
+Architecture
 ------------
 
-* It is expected, that you have a brand new RHEL8/9 or CentOS 9 stream system and have passwordless Ansible access sorted out - including working `sudo` (you can use my other role [luckylittle/ansible-role-create-user](https://github.com/luckylittle/ansible-role-create-user) for passwordless SSH access and sudo).
-* :warning: **THIS ROLE REQUIRES PASSWORDLESS ACCESS TO YOUR SYSTEM USING SSH KEYPAIR AND NOT THE PASSWORD** (e.g. `ssh-copy-id`) - otherwise you will **lock** yourself out, because sshd config will change to `PasswordAuthentication no`! :warning:
-* :warning: Make sure to add your home IP address (or multiple addresses you connect from) to `fail2ban_ignore_ipv4`, or you risk **locking** yourself out, as it is also enforced by firewalld! :warning:
+![img](architecture.png)
 
 Role Variables
 --------------
 
 [Default variables](defaults/main.yml) are:
 
-Common (section 1):
+[Common (section 1)](tasks/01-common.yml):
 
-* `set_timezone` - change the time zone of the server, defaults to Europe/Prague.
 * `set_google_dns` - if `true`, it will add Google DNS servers to the primary interface. Defaults to true.
-* `create_new_user` - whether you want to also create another user. Defaults to false. Relevant to the `new_user` variable.
-* `autobrr_ver`, `mkbrr_ver` & `sizechecker_ver` - contains the latest [Autobrr](https://github.com/autobrr/autobrr/releases), [Mkbrr](https://github.com/autobrr/mkbrr) and [Sizechecker](https://github.com/s0up4200/sizechecker/releases) versions. This gets regularly updated after the tests.
+* `set_timezone` - change the time zone of the server, defaults to Australia/Sydney.
 * `sysctl_tunables` - on/off for various tuning options in [sysctl.yml](vars/sysctl.yml). Default is on.
-* `cross_seed` - Optional installation and configuration of the latest [cross-seed](https://github.com/cross-seed/cross-seed/releases) automation tool. Default is false.
 
 _Note:_ Lot of the tasks rely on `remote_user` / `ansible_user` variable (user who logs in to the remote machine via Ansible). For example, it creates directory structure under that user.
 
-rTorrent (section 2):
+[qBt (section 2)](tasks/02-qbt.yml):
 
-* `libtorrent_ver` - Version of the [libtorrent](https://github.com/rakshasa/rtorrent/releases). It should be identical to `rtorrent_ver`.
-* `rtorrent_ver` - Version of the [rtorrent](https://github.com/rakshasa/rtorrent/releases). It should be identical to `libtorrent_ver`.
-* `rtorrent_port` - what port should rtorrent listen on. Default is **55442**.
+* `qbt_port` - what port should qBittorrent listen on. Default is **55442**.
+* `qbt_ver` - what version should be used/installed?
 
-_Note:_ The ratio defaults should be sufficient (between [400%](vars/main.yml#L70)-[500%](vars/main.yml#L71)).
-
-vsFTPd (section 3):
+[vsFTPd (section 3)](tasks/03-vsftpd.yml):
 
 * `ftp_port` - what port should vsftpd listen on. Default is **55443**.
 * `pasv_port_range` - what port range should be used for FTP PASV, by default this is **64000-64321**.
 * `single_user` - when `true` only one FTP user will be used and it is the same username who runs this playbook. :warning: When `false`, [this](files/vsftpd/users.txt) file is used, update accordingly :warning: This is now true by default.
 
-ruTorrent (section 4):
+[Tools (section 4)](tasks/04-tools.yml):
 
-* `rutorrent_ver` - Version of the [ruTorrent](https://github.com/Novik/ruTorrent/releases).
-* `https_port` - what port should rutorrent listen on, by default HTTPS (**443**).
-* `htpasswd` - HTTP basic password to log in to ruTorrent interface. Default is r3dh4t. :warning: It is recommended to change this to your own :warning:
+* `autobrr_ver`, `mkbrr_ver` & `sizechecker_ver` etc. - contains the latest [Autobrr](https://github.com/autobrr/autobrr/releases), [Mkbrr](https://github.com/autobrr/mkbrr), [Sizechecker](https://github.com/s0up4200/sizechecker/releases) and [tqm](https://github.com/autobrr/tqm/releases) versions.
+* `cross_seed` - Optional installation and configuration of the latest [cross-seed](https://github.com/cross-seed/cross-seed/releases) automation tool. Default is true.
 
-Security (section 5):
+[Security (section 5)](tasks/05-security.yml):
 
-* `fail2ban_ignore_ipv4` - what IP addresses should be excluded from being banned by Fail2Ban, and the same value is also used in the **firewalld** limited zone for SSH (only these specified addresses are allowed to SSH to the seedbox). Whitelisted is arbitrary address `X.X.X.X` and the private IP ranges. :warning: You **need** to [change it](defaults/main.yml#L40) to your own :warning:
+* `ipv4_whitelist` - what IP addresses should be used in the **firewalld** zone for access to services. Default whitelisted is arbitrary address `X.X.X.X`. :warning: You **need** to [change it](defaults/main.yml#L27) to your own :warning:
 
-Reboot (section 7):
+_Example:_ `192.168.0.0/16 10.0.0.0/8 172.16.0.0/12 123.222.11.111`
+
+[Reboot (section 7)](tasks/07-reboot.yml):
 
 * `require_reboot` - does the machine require reboot after the playbook is finished. It is recommended & default to be true.
 
@@ -70,16 +81,14 @@ Dependencies
 ------------
 
 * Ansible core v`2.16.14`
-* community.general v`10.6.0` (Install: `ansible-galaxy collection install community.general`)
-* community.crypto v`2.26.1` (Install: `ansible-galaxy collection install community.crypto`)
-* ansible.posix v`2.0.0` (Install: `ansible-galaxy collection install ansible.posix`)
+* community.general v`11.2.1` (Install with: `ansible-galaxy collection install community.general`)
+* community.crypto v`3.0.3` (Install with: `ansible-galaxy collection install community.crypto`)
+* ansible.posix v`2.1.0` (Install with: `ansible-galaxy collection install ansible.posix`)
 
 Example Playbook
 ----------------
 
-`echo 'password1' > password.txt`
-
-`ansible-playbook -i inventory --vault-password-file=password.txt site.yml`
+`time ansible-playbook -i inventory -u ansible test.yml`
 
 ```ini
 [seedbox]
@@ -97,27 +106,21 @@ Example Playbook
 Testing
 -------
 
-|OS     |Version 2.3.0     |Version 2.3.1     |Version 2.4.0     |
-|-------|------------------|------------------|------------------|
-|RHEL9  |:white_check_mark:|:white_check_mark:|:white_check_mark:|
-|CentOS9|:white_check_mark:|Not attempted     |Not attempted     |
+|OS        |Version 0.0.1     |
+|----------|------------------|
+|9.6 (Plow)|:white_check_mark:|
 
-On a brand new RHEL8.6, 1x vCPU, 4GB RAM playbook took 18m 32s to finish on VirtualBox.
-On a brand new Red Hat Enterprise Linux release 9.5 (Plow) on AWS (t3.medium), it took 18m 29s.
+On a brand new Red Hat Enterprise Linux release 9.6 (Plow) on AWS (t3.medium - 2 vCPU, 4GiB RAM), it took 13m 38s.
 The following versions were installed during the last RHEL9 test:
 
-|Package name|Package version      |
-|------------|---------------------|
-|fail2ban    |1.1.0-6.el9.noarch   |
-|libdb-utils |5.3.28-57.el9.x86_64 |
-|lighttpd    |1.4.67-1.el9.x86_64  |
-|php         |8.0.30-3.el9_6.x86_64|
-|tmux        |3.2a-5.el9.x86_64    |
-|vsftpd      |3.0.5-6.el9.x86_64   |
+|Package name |Package version          |
+|-------------|-------------------------|
+|curl         |7.76.1-31.el9_6.1.x86_64 |
+|tar          |1.34-7.el9.x86_64        |
+|tuned        |2.25.1-2.el9_6.noarch    |
+|vsftpd       |3.0.5-6.el9.x86_64       |
 
 The following Terraform can be used to create necessary infrastructure (based on RHEL9.X on AWS):
-
-`terraform apply -var=key_name=<NAME_OF_THE_EXISTING_KEY_PAIR_IN_AWS>`
 
 <details>
 
@@ -170,99 +173,13 @@ resource "aws_security_group" "rhel9_sg" {
   }
 }
 
-resource "aws_vpc_security_group_ingress_rule" "allow_rtorrent_port_tcp" {
+resource "aws_vpc_security_group_ingress_rule" "allow_all" {
   security_group_id = aws_security_group.rhel9_sg.id
   cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 55442
-  ip_protocol       = "tcp"
-  to_port           = 55442
-  description       = "Default rtorrent_port (TCP)"
+  ip_protocol       = "-1"
+  description       = "Generally a bad practice, but we need to test firewalld functionality"
   tags = {
-    Name = "allow_rtorrent_port_tcp"
-  }
-}
-
-resource "aws_vpc_security_group_ingress_rule" "allow_rtorrent_port_udp" {
-  security_group_id = aws_security_group.rhel9_sg.id
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 55442
-  ip_protocol       = "udp"
-  to_port           = 55442
-  description       = "Default rtorrent_port (UDP)"
-  tags = {
-    Name = "allow_rtorrent_port_udp"
-  }
-}
-
-resource "aws_vpc_security_group_ingress_rule" "allow_pasv_port_range" {
-  security_group_id = aws_security_group.rhel9_sg.id
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 64000
-  ip_protocol       = "tcp"
-  to_port           = 64321
-  description       = "Default pasv_port_range (TCP)"
-  tags = {
-    Name = "allow_pasv_port_range"
-  }
-}
-
-resource "aws_vpc_security_group_ingress_rule" "allow_ftp_port" {
-  security_group_id = aws_security_group.rhel9_sg.id
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 55443
-  ip_protocol       = "tcp"
-  to_port           = 55443
-  description       = "Default ftp_port (TCP)"
-  tags = {
-    Name = "allow_ftp_port"
-  }
-}
-
-resource "aws_vpc_security_group_ingress_rule" "allow_tls_ipv4" {
-  security_group_id = aws_security_group.rhel9_sg.id
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 443
-  ip_protocol       = "tcp"
-  to_port           = 443
-  description       = "Default ruTorrent port (IPv4)"
-  tags = {
-    Name = "allow_tls_ipv4"
-  }
-}
-
-resource "aws_vpc_security_group_ingress_rule" "allow_autobrr_port" {
-  security_group_id = aws_security_group.rhel9_sg.id
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 7474
-  ip_protocol       = "tcp"
-  to_port           = 7474
-  description       = "Default Autobrr port (TCP)"
-  tags = {
-    Name = "allow_autobrr_port"
-  }
-}
-
-resource "aws_vpc_security_group_ingress_rule" "allow_ssh_port" {
-  security_group_id = aws_security_group.rhel9_sg.id
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 22
-  ip_protocol       = "tcp"
-  to_port           = 22
-  description       = "Default SSH port (TCP)"
-  tags = {
-    Name = "allow_ssh_port"
-  }
-}
-
-resource "aws_vpc_security_group_ingress_rule" "allow_tls_ipv6" {
-  security_group_id = aws_security_group.rhel9_sg.id
-  cidr_ipv6         = "::/0"
-  from_port         = 443
-  ip_protocol       = "tcp"
-  to_port           = 443
-  description       = "Default ruTorrent port (IPv6)"
-  tags = {
-    Name = "allow_tls_ipv6"
+    Name = "allow_all"
   }
 }
 
@@ -390,22 +307,34 @@ output "instance_dns" {
 
 </details>
 
-Then you can just add `instance_public_ip` to the [inventory](tests/inventory) and run this Ansible role against the EC2 machine like: `time ansible-playbook -i inventory -u ec2-user test.yml --ask-vault-pass` within the [tests](tests/) folder (`cd tests; ln -s ../../zero_footprint_qbittorrent_seedbox .`).
+To test:
+
+1. `terraform init; terraform apply -var=key_name=<NAME_OF_THE_EXISTING_KEY_PAIR_IN_AWS>`
+2. `cd zero_footprint_qbittorrent_seedbox/tests`
+3. `ln -s ../../zero_footprint_qbittorrent_seedbox .`
+4. Insert AWS `instance_public_ip` (step 1.) to the [inventory](tests/inventory)
+5. `time ansible-playbook -i inventory -u ec2-user test.yml`
 
 Services Installed
 ------------------
 
-After you succesfully apply this role, you should be able to see a similar output and access the following services:
+After you successfully apply this role, you should be able to see a similar output and access the following services:
 
-|Service               |URL                                                        |
-|----------------------|-----------------------------------------------------------|
-|autobrr               |https://<IP_ADDR>:<https_port>/autobrr/                    |
-|autobrr healthz       |https://<IP_ADDR>:<https_port>/autobrr/api/healthz/liveness|
-|ftp                   |ftps://<IP_ADDR>:<ftp_port>                                |
-|rtorrent rpc          |https://<IP_ADDR>:<https_port>/plugins/httprpc/action.php  |
-|rutorrent             |https://<IP_ADDR>:<https_port>                             |
-|ssh                   |ssh://<IP_ADDR>:22                                         |
-|cross-seed (optional) |http://<127.0.0.1>:2468 (optional)                         |
+```bash
+"----------------------------------------------------------------"
+"Autobrr URL:"
+"http://123.124.125.126:7474/onboard"
+"----------------------------------------------------------------"
+"Autobrr Healthz URL:"
+"http://123.124.125.126:7474/api/healthz/liveness"
+"----------------------------------------------------------------"
+"qBt WebUI:"
+"http://123.124.125.126:8080"
+"----------------------------------------------------------------"
+"vsFTPd URL:"
+"ftps://123.124.125.126:55443"
+"----------------------------------------------------------------"
+```
 
 License
 -------
@@ -422,4 +351,4 @@ Author Information
 
 Lucian Maly <<lmaly@redhat.com>>
 
-_Last update: Tue 15 Jul 2025 01:33:49 UTC_
+_Last update: Tue 26 Aug 2025 02:23:57 UTC_

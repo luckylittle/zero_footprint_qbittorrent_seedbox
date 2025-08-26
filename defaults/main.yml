@@ -1,43 +1,30 @@
 ---
-# defaults file for ansible-role-zero-footprint-ruT-seedbox
+# defaults file for zero_footprint_qbittorrent_seedbox
 
 # 01-common
-set_timezone: "Europe/Prague"
 set_google_dns: true
-create_new_user: false
-new_user: "redhat"
-autobrr_ver: "1.63.1"
-sizechecker_ver: "1.4.0"
-mkbrr_ver: "1.13.0"
+set_timezone: "Australia/Sydney"
 sysctl_tunables: true
-cross_seed: false
 
-# 02-rtorrent
-libtorrent_ver: "0.15.5"
-rtorrent_ver: "0.15.5"
-rtorrent_port: 55442
+# 02-qbt
+qbt_port: 55442
+qbt_ver: "5.1.2"
 
 # 03-vsftpd
 ftp_port: 55443
 pasv_port_range: "64000-64321"
 single_user: true
 
-# 04-rutorrent
-rutorrent_ver: "5.2.10"
-https_port: 443
-htpasswd: !vault |
-  $ANSIBLE_VAULT;1.1;AES256
-  39366139313265343563616538376138313264623665653362303662303131383439326539613266
-  3562353165663230343539393537376666383362363765350a353936353364613337363332383933
-  66336562613766346562316132353662346535363364613434323631303165376531373865376636
-  3364363065613636370a663231333035383966383938313037313531356163316330633036303665
-  6239
-# ^^ An example of the encrypted variable with `ansible-vault encrypt_string`
-# command. The value is `r3dh4t`, password to decrypt is `password1`.
+# 04-tools
+autobrr_ver: "1.65.0"
+cross_seed: true
+mkbrr_ver: "1.15.0"
+sizechecker_ver: "1.4.0"
+tqm_ver: "1.16.0"
 
 # 05-security
-fail2ban_ignore_ipv4: >-
-  127.0.0.1/8 ::1 192.168.0.1/16 10.0.0.0/8 172.16.0.0/12 X.X.X.X
+ipv4_whitelist: >-
+  X.X.X.X Y.Y.Y.Y/YY
 
 # 07-reboot
 require_reboot: true

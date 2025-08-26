@@ -5,46 +5,30 @@
 # Panic button - initiate panic mode! #
 #######################################
 
-# Stop all services
+# Stop all the services
 sudo systemctl stop autobrr@{{ ansible_user }}
-sudo systemctl stop rtorrent
+sudo systemctl stop cross-seed
+sudo systemctl stop qbt
 sudo systemctl stop vsftpd
-sudo systemctl stop php-fpm
-sudo systemctl stop lighttpd
 
 # Show if they are all stopped
 sudo systemctl is-active autobrr@{{ ansible_user }}
-sudo systemctl is-active rtorrent
+sudo systemctl is-active cross-seed
+sudo systemctl is-active qbt
 sudo systemctl is-active vsftpd
-sudo systemctl is-active php-fpm
-sudo systemctl is-active lighttpd
 
-# Remove data
-rm -rvf /home/{{ ansible_user }}/.session
+# Remove all the data
 rm -rvf /home/{{ ansible_user }}/site
 
 # Re-create an empty folder structure
-mkdir -pv /home/{{ ansible_user }}/.session
-mkdir -pv /home/{{ ansible_user }}/site/.WatchAPPZ
-mkdir -pv /home/{{ ansible_user }}/site/.WatchGAMES
-mkdir -pv /home/{{ ansible_user }}/site/.WatchMISC
-mkdir -pv /home/{{ ansible_user }}/site/.WatchMOVIES-HD
-mkdir -pv /home/{{ ansible_user }}/site/.WatchMOVIES-SD
-mkdir -pv /home/{{ ansible_user }}/site/.WatchMP3
-mkdir -pv /home/{{ ansible_user }}/site/.WatchTV-HD
-mkdir -pv /home/{{ ansible_user }}/site/.WatchTV-SD
-mkdir -pv /home/{{ ansible_user }}/site/.WatchXXX
 mkdir -pv /home/{{ ansible_user }}/site/APPZ
 mkdir -pv /home/{{ ansible_user }}/site/GAMES
 mkdir -pv /home/{{ ansible_user }}/site/MISC
-mkdir -pv /home/{{ ansible_user }}/site/MOVIES-HD
-mkdir -pv /home/{{ ansible_user }}/site/MOVIES-SD
-mkdir -pv /home/{{ ansible_user }}/site/MP3
-mkdir -pv /home/{{ ansible_user }}/site/TV-HD
-mkdir -pv /home/{{ ansible_user }}/site/TV-SD
+mkdir -pv /home/{{ ansible_user }}/site/MOVIES
+mkdir -pv /home/{{ ansible_user }}/site/MUSIC
+mkdir -pv /home/{{ ansible_user }}/site/TV
 mkdir -pv /home/{{ ansible_user }}/site/UPLOAD
 mkdir -pv /home/{{ ansible_user }}/site/XXX
 
 # Change permissions of the newly created structure
-chmod -Rv 777 /home/{{ ansible_user }}/.session
 chmod -Rv 777 /home/{{ ansible_user }}/site

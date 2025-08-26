@@ -1,5 +1,5 @@
 ---
-# tasks file for ansible-role-zero-footprint-ruT-seedbox/main
+# tasks file for zero_footprint_qbittorrent_seedbox/main
 
 - name: MAIN | 0.0 Include 00-preflight.yml
   ansible.builtin.include_tasks: "00-preflight.yml"
@@ -12,20 +12,20 @@
   tags:
     - common
 
-- name: MAIN | 2.0 Include 02-rtorrent.yml
-  ansible.builtin.include_tasks: "02-rtorrent.yml"
+- name: MAIN | 2.0 Include 02-qbt.yml
+  ansible.builtin.include_tasks: "02-qbt.yml"
   tags:
-    - rtorrent
+    - qbt
 
 - name: MAIN | 3.0 Include 03-vsftpd.yml
   ansible.builtin.include_tasks: "03-vsftpd.yml"
   tags:
     - vsftpd
 
-- name: MAIN | 4.0 Include 04-rutorrent.yml
-  ansible.builtin.include_tasks: "04-rutorrent.yml"
+- name: MAIN | 4.0 Include 04-tools.yml
+  ansible.builtin.include_tasks: "04-tools.yml"
   tags:
-    - rutorrent
+    - tools
 
 - name: MAIN | 5.0 Include 05-security.yml
   ansible.builtin.include_tasks: "05-security.yml"

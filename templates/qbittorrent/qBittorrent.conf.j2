@@ -1,0 +1,69 @@
+# {{ ansible_managed }}
+[Application]
+FileLogger\Age={{ qbt_application_filelogger_age }}
+FileLogger\AgeType={{ qbt_application_filelogger_agetype }}
+FileLogger\Backup={{ qbt_application_filelogger_backup }}
+FileLogger\DeleteOld={{ qbt_application_filelogger_deleteold }}
+FileLogger\Enabled={{ qbt_application_filelogger_enabled }}
+FileLogger\MaxSizeBytes={{ qbt_application_filelogger_maxsizebytes }}
+FileLogger\Path={{ qbt_application_filelogger_path }}
+MemoryWorkingSetLimit={{ qbt_application_memoryworkingsetlimit }}
+
+[AutoRun]
+enabled={{ qbt_autorun_enabled }}
+program={{ qbt_autorun_program }}
+
+[BitTorrent]
+Session\AlternativeGlobalDLSpeedLimit={{ qbt_bittorrent_sessionalternativeglobaldlspeedlimit }}
+Session\AlternativeGlobalUPSpeedLimit={{ qbt_bittorrent_sessionalternativeglobalupspeedlimit }}
+Session\BTProtocol={{ qbt_bittorrent_sessionbtprotocol }}
+Session\CheckingMemUsageSize={{ qbt_bittorrent_sessioncheckingmemusagesize }}
+Session\DHTEnabled={{ qbt_bittorrent_sessiondhtenabled }}
+Session\DefaultSavePath={{ qbt_bittorrent_sessiondefaultsavepath }}
+Session\DisableAutoTMMByDefault={{ qbt_bittorrent_session_disableautotmmbydefault }}
+Session\ExcludedFileNames={{ qbt_bittorrent_sessionexcludedfilenames }}
+Session\HashingThreadsCount={{ qbt_bittorrent_sessionhashingthreadscount }}
+Session\LSDEnabled={{ qbt_bittorrent_sessionlsdenabled }}
+Session\MaxConnections={{ qbt_bittorrent_sessionmaxconnections }}
+Session\MaxConnectionsPerTorrent={{ qbt_bittorrent_sessionmaxconnectionspertorrent }}
+Session\MaxUploads={{ qbt_bittorrent_sessionmaxuploads }}
+Session\MaxUploadsPerTorrent={{ qbt_bittorrent_sessionmaxuploadspertorrent }}
+Session\PeXEnabled={{ qbt_bittorrent_sessionpexenabled }}
+Session\PeerToS={{ qbt_bittorrent_sessionpeertos }}
+Session\Port={{ qbt_port }}
+Session\Preallocation={{ qbt_bittorrent_sessionpreallocation }}
+Session\QueueingSystemEnabled={{ qbt_bittorrent_sessionqueueingsystemenabled }}
+Session\RefreshInterval={{ qbt_bittorrent_sessionrefreshinterval }}
+Session\SSL\Port={{ qbt_bittorrent_sessionsslport }}
+Session\SSRFMitigation={{ qbt_bittorrent_sessionssrfmitigation }}
+Session\SaveStatisticsInterval={{ qbt_bittorrent_sessionsavestatisticsinterval }}
+Session\SendBufferLowWatermark={{ qbt_bittorrent_sessionsendbufferlowwatermark }}
+Session\SendBufferWatermark={{ qbt_bittorrent_sessionsendbufferwatermark }}
+Session\SendBufferWatermarkFactor={{ qbt_bittorrent_sessionsendbufferwatermarkfactor }}
+Session\SocketBacklogSize={{ qbt_bittorrent_sessionsocketbacklogsize }}
+Session\SuggestMode={{ qbt_bittorrent_sessionsuggestmode }}
+Session\Tags={{ qbt_bittorrent_sessiontags }}
+Session\ValidateHTTPSTrackerCertificate={{ qbt_bittorrent_sessionvalidatehttpstrackercertificate }}
+
+[Core]
+AutoDeleteAddedTorrentFile={{ qbt_core_autodeleteaddedtorrentfile }}
+
+[LegalNotice]
+Accepted=true
+
+[Meta]
+MigrationVersion=8
+
+[Preferences]
+Advanced\IgnoreSSLErrors={{ qbt_preferences_advancedignoresslerrors }}
+Connection\ResolvePeerCountries={{ qbt_preferences_connectionresolvepeercountries }}
+General\Locale={{ qbt_preferences_generallocale }}
+MailNotification\req_auth={{ qbt_preferences_mailnotificationreq_auth }}
+WebUI\AuthSubnetWhitelist={{ ipv4_whitelist.split() | join(',') }}
+WebUI\AuthSubnetWhitelistEnabled={{ qbt_preferences_webuiauthsubnetwhitelistenabled }}
+WebUI\LocalHostAuth={{ qbt_preferences_webuilocalhostauth }}
+WebUI\Port={{ qbt_preferences_webuiport }}
+
+[RSS]
+AutoDownloader\DownloadRepacks=true
+AutoDownloader\SmartEpisodeFilter=s(\\d+)e(\\d+), (\\d+)x(\\d+), "(\\d{4}[.\\-]\\d{1,2}[.\\-]\\d{1,2})", "(\\d{1,2}[.\\-]\\d{1,2}[.\\-]\\d{4})"

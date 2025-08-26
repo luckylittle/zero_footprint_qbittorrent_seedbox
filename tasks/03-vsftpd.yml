@@ -1,5 +1,5 @@
 ---
-# tasks file for ansible-role-zero-footprint-ruT-seedbox/03-vsftpd
+# tasks file for zero_footprint_qbittorrent_seedbox/03-vsftpd
 
 - name: VSFTPD | 3.1 Install required packages
   ansible.builtin.dnf:
