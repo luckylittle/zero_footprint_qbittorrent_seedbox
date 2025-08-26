@@ -133,6 +133,7 @@ vsftpd_require_ssl_reuse: "NO"
 vsftpd_ssl_ciphers: "MEDIUM"
 
 # 04-tools
+cross_seed: true
 autobrr_service_file: "/etc/systemd/system/autobrr@.service"
 autobrr_config_file: "/home/{{ ansible_user }}/.config/autobrr/config.toml"
 autobrr_cfg_host: "0.0.0.0"

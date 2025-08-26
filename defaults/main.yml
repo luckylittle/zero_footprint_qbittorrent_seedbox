@@ -17,7 +17,6 @@ single_user: true
 
 # 04-tools
 autobrr_ver: "1.65.0"
-cross_seed: true
 mkbrr_ver: "1.15.0"
 sizechecker_ver: "1.4.0"
 tqm_ver: "1.16.0"

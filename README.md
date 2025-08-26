@@ -25,8 +25,8 @@ Prerequisites
 * Pre-configured, passwordless Ansible access with `sudo` privileges. The [luckylittle/ansible-role-create-user](https://github.com/luckylittle/ansible-role-create-user) role may be used to establish this access.
 * Access via password should also be in place (mainly due to single-user vsftpd) - e.g. `sudo passwd <user>`.
 
-:warning: Important configuration notes :warning
-------------------------------------------------
+:warning: Important configuration notes :warning:
+-------------------------------------------------
 
 * **SSH Key Authentication is mandatory**: This role will disable password-based SSH access by setting `PasswordAuthentication no`. You must configure SSH key-pair authentication BEFORE execution to avoid being completely locked out of the system.
 * **Firewall IP whitelisting**: To ensure you can access the system after the firewall is enabled, you must add your client IP address(es) to the `ipv4_whitelist` variable. Failure to do so will result in a system lockout as well.
@@ -63,11 +63,10 @@ _Note:_ Lot of the tasks rely on `remote_user` / `ansible_user` variable (user w
 [Tools (section 4)](tasks/04-tools.yml):
 
 * `autobrr_ver`, `mkbrr_ver` & `sizechecker_ver` etc. - contains the latest [Autobrr](https://github.com/autobrr/autobrr/releases), [Mkbrr](https://github.com/autobrr/mkbrr), [Sizechecker](https://github.com/s0up4200/sizechecker/releases) and [tqm](https://github.com/autobrr/tqm/releases) versions.
-* `cross_seed` - Optional installation and configuration of the latest [cross-seed](https://github.com/cross-seed/cross-seed/releases) automation tool. Default is true.
 
 [Security (section 5)](tasks/05-security.yml):
 
-* `ipv4_whitelist` - what IP addresses should be used in the **firewalld** zone for access to services. Default whitelisted is arbitrary address `X.X.X.X`. :warning: You **need** to [change it](defaults/main.yml#L27) to your own :warning:
+* `ipv4_whitelist` - what IP addresses should be used in the **firewalld** zone for access to services. Default whitelisted is arbitrary address `X.X.X.X`. :warning: You **need** to [change it](defaults/main.yml#L26) to your own :warning:
 
 _Example:_ `192.168.0.0/16 10.0.0.0/8 172.16.0.0/12 123.222.11.111`
 
@@ -351,4 +350,4 @@ Author Information
 
 Lucian Maly <<lmaly@redhat.com>>
 
-_Last update: Tue 26 Aug 2025 02:23:57 UTC_
+_Last update: Tue 26 Aug 2025 23:21:59 UTC_
