@@ -67,7 +67,7 @@
     search_regex: "220 Welcome to"
     timeout: "{{ test_timeout }}"
   register: test_ftp
-  delegate_to: 127.0.0.1
+  delegate_to: localhost
   changed_when: false
   tags:
     - smoke_tests
@@ -141,6 +141,9 @@
       }
     timeout: "{{ test_timeout }}"
   register: test_cross_seed
+  until: test_cross_seed.status == 204
+  retries: 6
+  delay: 10
   failed_when: "test_cross_seed.status != 204"
   changed_when: false
   when: cross_seed

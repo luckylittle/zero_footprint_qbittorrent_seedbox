@@ -113,18 +113,18 @@
   tags:
     - tools
   block:
-    - name: TOOLS | 1.11.1 Download Node.js Version Manager
+    - name: TOOLS | 4.11.1 Download Node.js Version Manager
       ansible.builtin.get_url:
         url: "https://raw.githubusercontent.com/nvm-sh/nvm/\
               v{{ nvm_ver }}/install.sh"
         dest: "{{ temporary_nvm_install_script_file }}"
         mode: "0755"
 
-    - name: TOOLS | 1.11.2 Upgrade Node.js package manager
+    - name: TOOLS | 4.11.2 Upgrade Node.js package manager
       ansible.builtin.command: "{{ temporary_nvm_install_script_file }}"
       changed_when: true
 
-    - name: TOOLS | 1.11.3 Install cross-seed via Node.js package manager
+    - name: TOOLS | 4.11.3 Install cross-seed via Node.js package manager
       ansible.builtin.shell: |
         export NVM_DIR="/home/{{ ansible_user }}/.nvm"
         [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
@@ -134,20 +134,20 @@
       args:
         creates: "{{ ansible_env.HOME }}/.nvm/versions/node"
 
-    - name: TOOLS | 1.11.4 Add cross-seed config directory
+    - name: TOOLS | 4.11.4 Add cross-seed config directory
       ansible.builtin.file:
         path: "/home/{{ ansible_user }}/.cross-seed"
         state: "directory"
         mode: "0755"
 
-    - name: TOOLS | 1.11.5 Configure cross-seed
+    - name: TOOLS | 4.11.5 Configure cross-seed
       ansible.builtin.template:
         src: "cross_seed/config.js.j2"
         dest: "{{ cross_seed_config_file }}"
         backup: true
         mode: "0644"
 
-    - name: TOOLS | 1.11.6 Add cross-seed start script
+    - name: TOOLS | 4.11.6 Add cross-seed start script
       ansible.builtin.template:
         src: "cross_seed/start-cross-seed.sh.j2"
         dest: "{{ cross_seed_start_file }}"
@@ -157,7 +157,7 @@
         mode: "0755"
       become: true
 
-    - name: TOOLS | 1.11.7 Add cross-seed service
+    - name: TOOLS | 4.11.7 Add cross-seed service
       ansible.builtin.template:
         src: "cross_seed/cross-seed.service.j2"
         dest: "{{ cross_seed_service_file }}"
@@ -165,7 +165,7 @@
         mode: "0644"
       become: true
 
-    - name: TOOLS | 1.11.8 Remove temporary install-nvm.sh
+    - name: TOOLS | 4.11.8 Remove temporary install-nvm.sh
       ansible.builtin.file:
         path: "{{ temporary_nvm_install_script_file }}"
         state: "absent"

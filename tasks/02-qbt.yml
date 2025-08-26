@@ -29,7 +29,7 @@
   tags:
     - qbt
 
-- name: QBt | 2.3 Template the categories for qBittorrent
+- name: QBt | 2.4 Template the categories for qBittorrent
   ansible.builtin.template:
     src: "qbittorrent/categories.json.j2"
     dest: "{{ qbt_categories_file }}"
@@ -38,7 +38,7 @@
   tags:
     - qbt
 
-- name: QBt | 2.4 Template a service file for qBittorrent
+- name: QBt | 2.5 Template a service file for qBittorrent
   ansible.builtin.template:
     backup: true
     src: "templates/qbittorrent/qbt.service.j2"
@@ -50,7 +50,7 @@
   tags:
     - qbt
 
-- name: QBt | 2.5 Flush handlers
+- name: QBt | 2.6 Flush handlers
   ansible.builtin.meta: flush_handlers
   tags:
     - qbt

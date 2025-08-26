@@ -88,13 +88,32 @@
   tags:
     - common
 
-- name: COMMON | 1.10 Include sysctl vars
+- name: COMMON | 1.10 Get /home mount information
+  ansible.builtin.set_fact:
+    home_mount: "{{ ansible_mounts | selectattr('mount', 'equalto', '/home')
+                  | list | first }}"
+  tags:
+    - common
+
+- name: COMMON | 1.11 Remount a /home and change atime options
+  ansible.posix.mount:
+    src: "UUID={{ home_mount.uuid }}"
+    path: "/home"
+    fstype: "{{ home_mount.fstype }}"
+    state: "present"
+    opts: "defaults,noatime,nodiratime"
+    backup: true
+  become: true
+  tags:
+    - common
+
+- name: COMMON | 1.12 Include sysctl vars
   ansible.builtin.include_vars: "vars/sysctl.yml"
   when: sysctl_tunables
   tags:
     - common
 
-- name: COMMON | 1.11 Set various sysctl settings
+- name: COMMON | 1.13 Set various sysctl settings
   ansible.posix.sysctl:
     name: "{{ item.key }}"
     value: "{{ item.value }}"
@@ -104,25 +123,6 @@
   loop: "{{ sysctl_settings | dict2items }}"
   become: true
   when: sysctl_tunables
-  tags:
-    - common
-
-- name: COMMON | 1.12 Get /home mount information
-  ansible.builtin.set_fact:
-    home_mount: "{{ ansible_mounts | selectattr('mount', 'equalto', '/home')
-                  | list | first }}"
-  tags:
-    - common
-
-- name: COMMON | 1.13 Remount a /home and change atime options
-  ansible.posix.mount:
-    src: "UUID={{ home_mount.uuid }}"
-    path: "/home"
-    fstype: "{{ home_mount.fstype }}"
-    state: "present"
-    opts: "defaults,noatime,nodiratime"
-    backup: true
-  become: true
   tags:
     - common
 
