@@ -16,8 +16,8 @@ jobs:
           ansible-galaxy collection install ansible.posix
           ansible-galaxy collection install community.crypto
       - name: "Symlink role for tests"
-        run: "ln -s ${{ github.workspace }} /home/runner/work/\
-              zero_footprint_qbittorrent_seedbox/tests/"
+        run: "ln -s ${{ github.workspace }} \
+              ${{ github.workspace }}/tests/"
       - name: "Run ansible-lint"
         uses: ansible/ansible-lint@main
         # optional (see below):
