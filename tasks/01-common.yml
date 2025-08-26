@@ -24,6 +24,9 @@
     - common
 
 - name: COMMON | 1.4 Add two IPv4 Google DNS servers (Optional)
+  # Can be tricky sometimes, if multiple connections of the same
+  # type are present - e.g. `eth0` and `System eth0`. Manual
+  # check is required to see if it was applied to the correct one!
   community.general.nmcli:
     conn_name: "{{ ansible_default_ipv4.alias }}"
     type: "ethernet"

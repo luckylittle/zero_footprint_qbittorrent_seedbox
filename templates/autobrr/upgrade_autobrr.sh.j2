@@ -15,7 +15,7 @@ done
 
 echo "Downloading & unpacking a new version of Autobrr..."
 cd
-/usr/bin/curl -O https://github.com/autobrr/autobrr/releases/download/v${AUTOBRR_VERSION}/autobrr_${AUTOBRR_VERSION}_linux_x86_64.tar.gz
+/usr/bin/curl -LO https://github.com/autobrr/autobrr/releases/download/v${AUTOBRR_VERSION}/autobrr_${AUTOBRR_VERSION}_linux_x86_64.tar.gz
 /usr/bin/tar xvzf autobrr_${AUTOBRR_VERSION}_linux_x86_64.tar.gz
 
 echo "Stopping Autobrr service..."

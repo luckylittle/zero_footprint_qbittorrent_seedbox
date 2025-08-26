@@ -122,6 +122,7 @@
     - security
 
 - name: SECURITY | 5.12 Configure restricted sudo for ansible_user
+  # This will end up in /etc/sudoers.d/ folder
   community.general.sudoers:
     name: "ansible-{{ ansible_user }}-custom-sudo"
     user: "{{ ansible_user }}"
