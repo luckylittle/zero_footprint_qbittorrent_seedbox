@@ -11,14 +11,12 @@
   tags:
     - tools
 
-- name: TOOLS | 4.2 Set latest version facts
+- name: TOOLS | 4.2 Build dictionary of repo versions
   ansible.builtin.set_fact:
-    "{{ (item.item | split('/'))[1] | replace('-', '_') }}_ver": \
-      "{{ item.json.tag_name \
-      | default(item.json.name) | regex_replace('^v', '') }}"
+    tools_versions: "{{ tools_versions \
+                    | default({}) \
+                    | combine({item.item: item.json.name}) }}"
   loop: "{{ latest_versions.results }}"
-  loop_control:
-    label: "{{ item.item }}"
   tags:
     - tools
 

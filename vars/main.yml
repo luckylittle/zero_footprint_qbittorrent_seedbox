@@ -15,10 +15,13 @@ create_folders:
 maximum_number_of_open_file_descriptors: "262144"
 
 # 02-qbt
+qbt_latest_ver_url: "https://api.github.com/repos/userdocs/\
+                    qbittorrent-nox-static/releases/latest"
 qbt_nox_static_url: "https://github.com/userdocs/qbittorrent-nox-static/\
                     releases/download"
 qbt_nox_asset: "x86_64-qbittorrent-nox"
-qbt_url: "{{ qbt_nox_static_url }}/{{ qbittorrent_nox_static_ver }}/\
+qbt_url: "{{ qbt_nox_static_url }}/\
+          {{ qbt_static_nox_ver.json.tag_name }}/\
           {{ qbt_nox_asset }}"
 qbt_config_directory: "/home/{{ ansible_user }}/.config/qBittorrent/"
 qbt_config_file: "/home/{{ ansible_user }}/.config/qBittorrent/qBittorrent.conf"
@@ -138,7 +141,11 @@ tools_repos_to_check:
   - "autobrr/tqm"
   - "nvm-sh/nvm"
   - "s0up4200/sizechecker"
-  - "userdocs/qbittorrent-nox-static"
+autobrr_ver: "{{ tools_versions['autobrr/autobrr'] }}"
+mkbrr_ver: "{{ tools_versions['autobrr/mkbrr'] }}"
+tqm_ver: "{{ tools_versions['autobrr/tqm'] }}"
+nvm_ver: "{{ tools_versions['nvm-sh/nvm'] }}"
+sizechecker_ver: "{{ tools_versions['s0up4200/sizechecker'] }}"
 cross_seed: true
 autobrr_service_file: "/etc/systemd/system/autobrr@.service"
 autobrr_cfg_file: "/home/{{ ansible_user }}/.config/autobrr/config.toml"
@@ -154,13 +161,13 @@ autobrr_url: "https://github.com/autobrr/autobrr/releases/download"
 sizechecker_url: "https://github.com/s0up4200/sizechecker/releases/download"
 mkbrr_url: "https://github.com/autobrr/mkbrr/releases/download"
 tqm_url: "https://github.com/autobrr/tqm/releases/download"
-autobrr_src: "{{ autobrr_url }}/v{{ autobrr_ver }}/\
+autobrr_src: "{{ autobrr_url }}/{{ autobrr_ver }}/\
               autobrr_{{ autobrr_ver }}_linux_x86_64.tar.gz"
-sizechecker_src: "{{ sizechecker_url }}/v{{ sizechecker_ver }}/\
+sizechecker_src: "{{ sizechecker_url }}/{{ sizechecker_ver }}/\
                   sizechecker_{{ sizechecker_ver }}_linux_amd64.tar.gz"
-mkbrr_src: "{{ mkbrr_url }}/v{{ mkbrr_ver }}/\
+mkbrr_src: "{{ mkbrr_url }}/{{ mkbrr_ver }}/\
             mkbrr_{{ mkbrr_ver }}_linux_x86_64.tar.gz"
-tqm_src: "{{ tqm_url }}/v{{ tqm_ver }}/tqm_{{ tqm_ver }}_linux_amd64.tar.gz"
+tqm_src: "{{ tqm_url }}/{{ tqm_ver }}/tqm_{{ tqm_ver }}_linux_amd64.tar.gz"
 tqm_cfg_file: "/home/{{ ansible_user }}/.config/tqm/config.yaml"
 upgrade_autobrr_file: "/home/{{ ansible_user }}/upgrade_autobrr.sh"
 panic_file: "/usr/local/bin/panic.sh"
