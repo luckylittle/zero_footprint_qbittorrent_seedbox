@@ -10,9 +10,6 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - name: "Symlink role for tests"
-        run: "ln -s ${{ github.workspace }} \
-              ${{ github.workspace }}/tests/"
       - name: "Run ansible-lint"
         uses: ansible/ansible-lint@main
         with:
