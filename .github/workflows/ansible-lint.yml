@@ -3,26 +3,20 @@
 name: ansible-lint
 on:
   pull_request:
-    branches: ["main", "stable", "release/v*"]
+    branches: ["main", "stable", "release/v*", "feature/*", "bugfix/*"]
 jobs:
   build:
     name: Ansible Lint
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - name: "Install Ansible Collections"
-        run: |
-          ansible-galaxy collection install community.general
-          ansible-galaxy collection install ansible.posix
-          ansible-galaxy collection install community.crypto
       - name: "Symlink role for tests"
         run: "ln -s ${{ github.workspace }} \
               ${{ github.workspace }}/tests/"
       - name: "Run ansible-lint"
         uses: ansible/ansible-lint@main
-        # optional (see below):
         with:
-          args: ""
+          args: "-v"
           setup_python: "true"
           working_directory: ""
-          requirements_file: ""
+          requirements_file: "requirements.yml"

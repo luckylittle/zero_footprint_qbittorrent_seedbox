@@ -15,12 +15,14 @@ create_folders:
 maximum_number_of_open_file_descriptors: "262144"
 
 # 02-qbt
+qbt_latest_ver_url: "https://api.github.com/repos/userdocs/\
+                    qbittorrent-nox-static/releases/latest"
 qbt_nox_static_url: "https://github.com/userdocs/qbittorrent-nox-static/\
                     releases/download"
-qbt_nox_libtorrent_ver: "2.0.11"
 qbt_nox_asset: "x86_64-qbittorrent-nox"
-qbt_nox_release: "release-{{ qbt_ver }}_v{{ qbt_nox_libtorrent_ver }}"
-qbt_url: "{{ qbt_nox_static_url }}/{{ qbt_nox_release }}/{{ qbt_nox_asset }}"
+qbt_url: "{{ qbt_nox_static_url }}/\
+          {{ qbt_static_nox_ver.json.tag_name }}/\
+          {{ qbt_nox_asset }}"
 qbt_config_directory: "/home/{{ ansible_user }}/.config/qBittorrent/"
 qbt_config_file: "/home/{{ ansible_user }}/.config/qBittorrent/qBittorrent.conf"
 qbt_service_file: "/etc/systemd/system/qbt.service"
@@ -133,8 +135,22 @@ vsftpd_require_ssl_reuse: "NO"
 vsftpd_ssl_ciphers: "MEDIUM"
 
 # 04-tools
+tools_repos_to_check:
+  - "autobrr/autobrr"
+  - "autobrr/mkbrr"
+  - "autobrr/tqm"
+  - "autobrr/netronome"
+  - "nvm-sh/nvm"
+  - "s0up4200/sizechecker"
+autobrr_ver: "{{ tools_versions['autobrr/autobrr'] }}"
+mkbrr_ver: "{{ tools_versions['autobrr/mkbrr'] }}"
+netronome_ver: "{{ tools_versions['autobrr/netronome'] }}"
+tqm_ver: "{{ tools_versions['autobrr/tqm'] }}"
+nvm_ver: "{{ tools_versions['nvm-sh/nvm'] }}"
+sizechecker_ver: "{{ tools_versions['s0up4200/sizechecker'] }}"
+cross_seed: true
 autobrr_service_file: "/etc/systemd/system/autobrr@.service"
-autobrr_config_file: "/home/{{ ansible_user }}/.config/autobrr/config.toml"
+autobrr_cfg_file: "/home/{{ ansible_user }}/.config/autobrr/config.toml"
 autobrr_cfg_host: "0.0.0.0"
 autobrr_cfg_port: "7474"
 autobrr_cfg_baseurl: "/autobrr/"
@@ -146,33 +162,51 @@ autobrr_cfg_customdefinitions: "/home/{{ ansible_user }}/.config/\
 autobrr_url: "https://github.com/autobrr/autobrr/releases/download"
 sizechecker_url: "https://github.com/s0up4200/sizechecker/releases/download"
 mkbrr_url: "https://github.com/autobrr/mkbrr/releases/download"
+netronome_url: "https://github.com/autobrr/netronome/releases/download"
 tqm_url: "https://github.com/autobrr/tqm/releases/download"
-autobrr_src: "{{ autobrr_url }}/v{{ autobrr_ver }}/\
-              autobrr_{{ autobrr_ver }}_linux_x86_64.tar.gz"
-sizechecker_src: "{{ sizechecker_url }}/v{{ sizechecker_ver }}/\
-                  sizechecker_{{ sizechecker_ver }}_linux_amd64.tar.gz"
-mkbrr_src: "{{ mkbrr_url }}/v{{ mkbrr_ver }}/\
-            mkbrr_{{ mkbrr_ver }}_linux_x86_64.tar.gz"
-tqm_src: "{{ tqm_url }}/v{{ tqm_ver }}/tqm_{{ tqm_ver }}_linux_amd64.tar.gz"
-tqm_config_file: "/home/{{ ansible_user }}/.config/tqm/config.yaml"
+autobrr_src: "{{ autobrr_url }}/{{ autobrr_ver }}/\
+              autobrr_{{ autobrr_ver | regex_replace('^v', '') \
+              }}_linux_x86_64.tar.gz"
+sizechecker_src: "{{ sizechecker_url }}/{{ sizechecker_ver }}/\
+                  sizechecker_{{ sizechecker_ver | regex_replace('^v', '') \
+                  }}_linux_amd64.tar.gz"
+mkbrr_src: "{{ mkbrr_url }}/{{ mkbrr_ver }}/\
+            mkbrr_{{ mkbrr_ver | regex_replace('^v', '') }}_linux_x86_64.tar.gz"
+netronome_src: "{{ netronome_url }}/{{ netronome_ver }}/\
+                netronome_{{ netronome_ver | regex_replace('^v', '') \
+                }}_linux_x86_64.tar.gz"
+tqm_src: "{{ tqm_url }}/{{ tqm_ver }}/tqm_{{ tqm_ver | regex_replace('^v', '') \
+          }}_linux_amd64.tar.gz"
+tqm_cfg_file: "/home/{{ ansible_user }}/.config/tqm/config.yaml"
 upgrade_autobrr_file: "/home/{{ ansible_user }}/upgrade_autobrr.sh"
 panic_file: "/usr/local/bin/panic.sh"
 benchmark_file: "/usr/local/bin/bench.sh"
-nvm_ver: "0.40.3"
 node_ver: "22.17.0"
 temporary_nvm_install_script_file: "/tmp/install-nvm.sh"
 cross_seed_port: "2468"
-cross_seed_config_file: "/home/{{ ansible_user }}/.cross-seed/config.js"
+cross_seed_cfg_file: "/home/{{ ansible_user }}/.cross-seed/config.js"
 cross_seed_start_file: "/usr/local/bin/start-cross-seed.sh"
 cross_seed_service_file: "/etc/systemd/system/cross-seed.service"
 cross_seed_api_key: "1234567890abcdefghijklmnopqrstuvwxyz1234567890ab"
-tools_required_rpms: "wget"
+tools_required_rpms:
+  - "{{ vnstat_dl }}"
+  - "traceroute"
+  - "wget"
+netronome_cfg_port: "7575"
+netronome_cfg_file: "/home/{{ ansible_user }}/.config/netronome/config.toml"
+netronome_agent_cfg_port: "8200"
+netronome_agent_cfg_file: "/home/{{ ansible_user }}/.config/netronome/\
+                          agent.toml"
+netronome_service_file: "/etc/systemd/system/netronome@.service"
+netronome_agent_service_file: "/etc/systemd/system/netronome-agent.service"
+vnstat_dl: "https://kojipkgs.fedoraproject.org//packages/vnstat/\
+            2.9/2.el9/x86_64/vnstat-2.9-2.el9.x86_64.rpm"
 
 # 05-security
 ssh_port: "22"
 security_required_rpms:
   - "firewalld"
-sshd_config_file: "/etc/ssh/sshd_config"
+sshd_cfg_file: "/etc/ssh/sshd_config"
 restricted_sudo_commands:
   - "/bin/cat"
   - "/usr/bin/dnf"
@@ -202,6 +236,7 @@ common_tools_homefolder_junk:
   - "LICENSE.md"
   - "LICENSE"
   - "mkbrr"
+  - "netronome"
   - "README.md"
   - "sizechecker_{{ sizechecker_ver }}_linux_amd64.tar.gz"
   - "sizechecker"
@@ -228,18 +263,15 @@ cleanup_junk_services:
   - "dnf-makecache.timer"
 
 # 07-reboot
-required_services: >-
-  {{
-    base_required_services |
-    union(cross_seed | default(false) |
-    ternary(['cross-seed'], []))
-  }}
-base_required_services:
+required_services:
   - "{{ autobrr_service }}"
+  - "{{ netronome_service }}"
   - "cross-seed"
   - "fstrim.timer"
+  - "netronome-agent"
   - "qbt"
   - "tuned"
+  - "vnstat"
   - "vsftpd"
 reboot_timeout: 1200
 

@@ -29,17 +29,7 @@
   tags:
     - security
 
-- name: SECURITY | 5.4 Ensure Autobrr port is labeled with http_port_t
-  community.general.seport:
-    ports: "{{ autobrr_cfg_port }}"
-    proto: "tcp"
-    setype: "http_port_t"
-    state: present
-  become: true
-  tags:
-    - security
-
-- name: SECURITY | 5.5 Start service firewalld
+- name: SECURITY | 5.4 Start service firewalld
   ansible.builtin.service:
     name: "firewalld"
     state: "started"
@@ -48,7 +38,7 @@
   tags:
     - security
 
-- name: SECURITY | 5.6 Allow incoming traffic from whitelisted IPv4 addresses
+- name: SECURITY | 5.5 Allow incoming traffic from whitelisted IPv4 addresses
   ansible.posix.firewalld:
     rich_rule: 'rule family="ipv4" source address="{{ item }}" accept'
     zone: public
@@ -60,7 +50,7 @@
   tags:
     - security
 
-- name: SECURITY | 5.7 Allow incoming traffic to qbt from anywhere
+- name: SECURITY | 5.6 Allow incoming traffic to qbt from anywhere
   ansible.posix.firewalld:
     port: "{{ item }}"
     zone: public
@@ -74,7 +64,7 @@
   tags:
     - security
 
-- name: SECURITY | 5.8 Remove allowed public services
+- name: SECURITY | 5.7 Remove allowed public services
   ansible.posix.firewalld:
     service: "{{ item }}"
     zone: public
@@ -89,7 +79,7 @@
   tags:
     - security
 
-- name: SECURITY | 5.9 Block all incoming by default
+- name: SECURITY | 5.8 Block all incoming by default
   ansible.posix.firewalld:
     zone: public
     state: enabled
@@ -99,10 +89,10 @@
   tags:
     - security
 
-- name: SECURITY | 5.10 Template the configuration for SSHD
+- name: SECURITY | 5.9 Template the configuration for SSHD
   ansible.builtin.template:
     src: "sshd/sshd_config.j2"
-    dest: "{{ sshd_config_file }}"
+    dest: "{{ sshd_cfg_file }}"
     backup: true
     mode: "0600"
   become: true
@@ -111,7 +101,7 @@
   tags:
     - security
 
-- name: SECURITY | 5.11 Disable shell history
+- name: SECURITY | 5.10 Disable shell history
   ansible.builtin.lineinfile:
     path: "/etc/profile"
     regexp: '^HISTSIZE=1000$'
@@ -121,7 +111,7 @@
   tags:
     - security
 
-- name: SECURITY | 5.12 Configure restricted sudo for ansible_user
+- name: SECURITY | 5.11 Configure restricted sudo for ansible_user
   # This will end up in /etc/sudoers.d/ folder
   community.general.sudoers:
     name: "ansible-{{ ansible_user }}-custom-sudo"

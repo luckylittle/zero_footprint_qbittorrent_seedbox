@@ -7,7 +7,13 @@
   tags:
     - reboot
 
-- name: REBOOT | 7.2 Enable all required services
+- name: REBOOT | 7.2 Set Netronome service as fact
+  ansible.builtin.set_fact:
+    netronome_service: "netronome@{{ ansible_user }}"
+  tags:
+    - reboot
+
+- name: REBOOT | 7.3 Enable all required services
   ansible.builtin.systemd:
     state: "stopped"
     enabled: true
@@ -18,7 +24,7 @@
   tags:
     - reboot
 
-- name: REBOOT | 7.3 Reboot a machine
+- name: REBOOT | 7.4 Reboot a machine
   ansible.builtin.reboot:
     reboot_timeout: "{{ reboot_timeout }}"
   become: true
@@ -26,7 +32,7 @@
   tags:
     - reboot
 
-- name: REBOOT | 7.4 Test we can logon back after the reboot
+- name: REBOOT | 7.5 Test we can logon back after the reboot
   ansible.builtin.ping:
   tags:
     - reboot

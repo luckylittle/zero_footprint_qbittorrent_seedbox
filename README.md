@@ -10,7 +10,7 @@ Project overview
 
 This Ansible role provisions a standard [Red Hat Enterprise Linux 9 (RHEL 9)](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux) system as a secure, efficient and lightweight peer-to-peer (P2P) seedbox, running [qBittorrent](https://www.qbittorrent.org/).
 
-The configuration prioritizes security and simplicity, utilizing integrated tools such as SELinux and firewalld. To maintain a minimal system footprint, it is configured for zero-logging operation and no shell history. Among others, the role incorporates [Autobrr](https://github.com/autobrr/autobrr) for modern automated downloads and [cross-seed](https://github.com/cross-seed/cross-seed) for enhanced seeding.
+The configuration prioritizes security and simplicity, utilizing integrated tools such as SELinux and firewalld. To maintain a minimal system footprint, it is configured for zero-logging operation and no shell history. Among others (mkbrr, tqm, netronome, sizechecker etc.), the role incorporates [Autobrr](https://github.com/autobrr/autobrr) for modern automated downloads and [cross-seed](https://github.com/cross-seed/cross-seed) for enhanced seeding.
 
 Please be aware that the absence of persistent logs may complicate troubleshooting, though the ephemeral journal should be sufficient for most diagnostics. This project is an enhanced fork of my [zero_footprint_rutorrent_seedbox](https://github.com/luckylittle/zero_footprint_rutorrent_seedbox) repository, simplified and adapted for qBittorrent (lot of lessons learned!). [Contributions](CONTRIBUTING.md) via pull requests are welcome.
 
@@ -25,8 +25,8 @@ Prerequisites
 * Pre-configured, passwordless Ansible access with `sudo` privileges. The [luckylittle/ansible-role-create-user](https://github.com/luckylittle/ansible-role-create-user) role may be used to establish this access.
 * Access via password should also be in place (mainly due to single-user vsftpd) - e.g. `sudo passwd <user>`.
 
-:warning: Important configuration notes :warning
-------------------------------------------------
+:warning: Important configuration notes :warning:
+-------------------------------------------------
 
 * **SSH Key Authentication is mandatory**: This role will disable password-based SSH access by setting `PasswordAuthentication no`. You must configure SSH key-pair authentication BEFORE execution to avoid being completely locked out of the system.
 * **Firewall IP whitelisting**: To ensure you can access the system after the firewall is enabled, you must add your client IP address(es) to the `ipv4_whitelist` variable. Failure to do so will result in a system lockout as well.
@@ -52,7 +52,6 @@ _Note:_ Lot of the tasks rely on `remote_user` / `ansible_user` variable (user w
 [qBt (section 2)](tasks/02-qbt.yml):
 
 * `qbt_port` - what port should qBittorrent listen on. Default is **55442**.
-* `qbt_ver` - what version should be used/installed?
 
 [vsFTPd (section 3)](tasks/03-vsftpd.yml):
 
@@ -60,14 +59,9 @@ _Note:_ Lot of the tasks rely on `remote_user` / `ansible_user` variable (user w
 * `pasv_port_range` - what port range should be used for FTP PASV, by default this is **64000-64321**.
 * `single_user` - when `true` only one FTP user will be used and it is the same username who runs this playbook. :warning: When `false`, [this](files/vsftpd/users.txt) file is used, update accordingly :warning: This is now true by default.
 
-[Tools (section 4)](tasks/04-tools.yml):
-
-* `autobrr_ver`, `mkbrr_ver` & `sizechecker_ver` etc. - contains the latest [Autobrr](https://github.com/autobrr/autobrr/releases), [Mkbrr](https://github.com/autobrr/mkbrr), [Sizechecker](https://github.com/s0up4200/sizechecker/releases) and [tqm](https://github.com/autobrr/tqm/releases) versions.
-* `cross_seed` - Optional installation and configuration of the latest [cross-seed](https://github.com/cross-seed/cross-seed/releases) automation tool. Default is true.
-
 [Security (section 5)](tasks/05-security.yml):
 
-* `ipv4_whitelist` - what IP addresses should be used in the **firewalld** zone for access to services. Default whitelisted is arbitrary address `X.X.X.X`. :warning: You **need** to [change it](defaults/main.yml#L27) to your own :warning:
+* `ipv4_whitelist` - what IP addresses should be used in the **firewalld** zone for access to services. Default whitelisted is arbitrary address `X.X.X.X`. :warning: You **need** to [change it](defaults/main.yml#L19) to your own :warning:
 
 _Example:_ `192.168.0.0/16 10.0.0.0/8 172.16.0.0/12 123.222.11.111`
 
@@ -81,9 +75,7 @@ Dependencies
 ------------
 
 * Ansible core v`2.16.14`
-* community.general v`11.2.1` (Install with: `ansible-galaxy collection install community.general`)
-* community.crypto v`3.0.3` (Install with: `ansible-galaxy collection install community.crypto`)
-* ansible.posix v`2.1.0` (Install with: `ansible-galaxy collection install ansible.posix`)
+* `ansible-galaxy collection install -r requirements.yml`
 
 Example Playbook
 ----------------
@@ -106,19 +98,35 @@ Example Playbook
 Testing
 -------
 
-|OS        |Version 0.0.1     |
-|----------|------------------|
-|9.6 (Plow)|:white_check_mark:|
+|OS        |Version 0.0.1     |Version 0.1.0     |
+|----------|------------------|------------------|
+|9.6 (Plow)|:white_check_mark:|:white_check_mark:|
 
 On a brand new Red Hat Enterprise Linux release 9.6 (Plow) on AWS (t3.medium - 2 vCPU, 4GiB RAM), it took 13m 38s.
 The following versions were installed during the last RHEL9 test:
 
-|Package name |Package version          |
-|-------------|-------------------------|
-|curl         |7.76.1-31.el9_6.1.x86_64 |
-|tar          |1.34-7.el9.x86_64        |
-|tuned        |2.25.1-2.el9_6.noarch    |
-|vsftpd       |3.0.5-6.el9.x86_64       |
+|Package name   |Package version          |
+|---------------|-------------------------|
+|autobrr        |1.65.0                   |
+|bash           |5.1.8-9.el9.x86_64       |
+|cross-seed     |6.13.2                   |
+|curl           |7.76.1-31.el9_6.1.x86_64 |
+|firewalld      |1.3.4-9.el9_5.noarch     |
+|libdb-utils    |5.3.28-57.el9_6.x86_64   |
+|mkbrr          |1.15.0                   |
+|netronome      |0.6.0                    |
+|NetworkManager |1.52.0-5.el9_6.x86_64    |
+|nvm            |0.40.3                   |
+|openssh        |8.7p1-45.el9.x86_64      |
+|qBittorrent    |5.1.2                    |
+|sizechecker    |1.4.0                    |
+|tar            |1.34-7.el9.x86_64        |
+|tqm            |1.16.0                   |
+|traceroute     |2.1.1-1.el9.x86_64       |
+|tuned          |2.25.1-2.el9_6.noarch    |
+|vnstat         |2.9-2.el9.x86_64         |
+|vsftpd         |3.0.5-6.el9.x86_64       |
+|wget           |1.21.1-8.el9_4.x86_64    |
 
 The following Terraform can be used to create necessary infrastructure (based on RHEL9.X on AWS):
 
@@ -331,6 +339,9 @@ After you successfully apply this role, you should be able to see a similar outp
 "qBt WebUI:"
 "http://123.124.125.126:8080"
 "----------------------------------------------------------------"
+"Netronome URL:",
+"http://123.124.125.126:7575",
+"------------------------------------------------------------",
 "vsFTPd URL:"
 "ftps://123.124.125.126:55443"
 "----------------------------------------------------------------"
@@ -351,4 +362,4 @@ Author Information
 
 Lucian Maly <<lmaly@redhat.com>>
 
-_Last update: Tue 26 Aug 2025 02:23:57 UTC_
+_Last update: Wed 27 Aug 2025 11:44:13 UTC_

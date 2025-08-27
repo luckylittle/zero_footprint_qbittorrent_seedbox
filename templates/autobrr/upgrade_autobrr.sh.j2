@@ -2,7 +2,7 @@
 # {{ ansible_managed }}
 
 ##############################################
-export AUTOBRR_VERSION="{{ autobrr_ver }}"
+export AUTOBRR_VERSION="{{ autobrr_ver | regex_replace('^v', '') }}"
 ##############################################
 
 # Check if required commands are installed

@@ -8,12 +8,14 @@
 # Stop all the services
 sudo systemctl stop autobrr@{{ ansible_user }}
 sudo systemctl stop cross-seed
+sudo systemctl stop netronome
 sudo systemctl stop qbt
 sudo systemctl stop vsftpd
 
 # Show if they are all stopped
 sudo systemctl is-active autobrr@{{ ansible_user }}
 sudo systemctl is-active cross-seed
+sudo systemctl is-active netronome
 sudo systemctl is-active qbt
 sudo systemctl is-active vsftpd
 

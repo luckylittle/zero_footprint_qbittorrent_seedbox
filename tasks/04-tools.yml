@@ -1,7 +1,36 @@
 ---
 # tasks file for zero_footprint_qbittorrent_seedbox/04-tools
 
-- name: TOOLS | 4.1 Add Autobrr service
+- name: TOOLS | 4.1 Get latest version for each repo
+  ansible.builtin.uri:
+    url: "https://api.github.com/repos/{{ item }}/releases/latest"
+    return_content: true
+  register: latest_versions
+  delegate_to: localhost
+  loop: "{{ tools_repos_to_check }}"
+  tags:
+    - tools
+
+- name: TOOLS | 4.2 Build dictionary of repo versions
+  ansible.builtin.set_fact:
+    tools_versions: "{{ tools_versions \
+                    | default({}) \
+                    | combine({item.item: item.json.name}) }}"
+  loop: "{{ latest_versions.results }}"
+  tags:
+    - tools
+
+- name: TOOLS | 4.3 Install required RPMs for Tools
+  ansible.builtin.dnf:
+    name: "{{ item }}"
+    state: present
+    disable_gpg_check: true
+  become: true
+  loop: "{{ tools_required_rpms }}"
+  tags:
+    - tools
+
+- name: TOOLS | 4.4 Add Autobrr service
   ansible.builtin.template:
     src: "autobrr/autobrr.service.j2"
     dest: "{{ autobrr_service_file }}"
@@ -11,18 +40,39 @@
   tags:
     - tools
 
-- name: TOOLS | 4.2 Add config directory
+- name: TOOLS | 4.5 Add Netronome service
+  ansible.builtin.template:
+    src: "netronome/netronome.service.j2"
+    dest: "{{ netronome_service_file }}"
+    backup: false
+    mode: "0644"
+  become: true
+  tags:
+    - tools
+
+- name: TOOLS | 4.6 Add Netronome agent service
+  ansible.builtin.template:
+    src: "netronome/netronome-agent.service.j2"
+    dest: "{{ netronome_agent_service_file }}"
+    backup: false
+    mode: "0644"
+  become: true
+  tags:
+    - tools
+
+- name: TOOLS | 4.7 Add config directories
   ansible.builtin.file:
     path: "/home/{{ ansible_user }}/.config/{{ item }}/"
     state: "directory"
     mode: "0755"
   loop:
     - autobrr
+    - netronome
     - tqm
   tags:
     - tools
 
-- name: TOOLS | 4.3 Generate session secret for Autobrr
+- name: TOOLS | 4.8 Generate session secret for Autobrr & Netronome
   ansible.builtin.shell:
     cmd: "set -o pipefail && head /dev/urandom | tr -dc A-Za-z0-9 | head -c32"
     executable: "/bin/bash"
@@ -31,42 +81,62 @@
   tags:
     - tools
 
-- name: TOOLS | 4.4 Add Autobrr configuration file
+- name: TOOLS | 4.9 Add Autobrr configuration file
   ansible.builtin.template:
     src: "autobrr/config.toml.j2"
-    dest: "{{ autobrr_config_file }}"
+    dest: "{{ autobrr_cfg_file }}"
     backup: true
     mode: "0644"
   tags:
     - tools
 
-- name: TOOLS | 4.5 Add TQM configuration file
+- name: TOOLS | 4.10 Add Netronome configuration file
+  ansible.builtin.template:
+    src: "netronome/config.toml.j2"
+    dest: "{{ netronome_cfg_file }}"
+    backup: true
+    mode: "0644"
+  tags:
+    - tools
+
+- name: TOOLS | 4.11 Add Netronome agent configuration file
+  ansible.builtin.template:
+    src: "netronome/agent.toml.j2"
+    dest: "{{ netronome_agent_cfg_file }}"
+    backup: true
+    mode: "0644"
+  tags:
+    - tools
+
+- name: TOOLS | 4.12 Add TQM configuration file
   ansible.builtin.template:
     src: "tqm/config.yaml.j2"
-    dest: "{{ tqm_config_file }}"
+    dest: "{{ tqm_cfg_file }}"
     backup: true
     mode: "0644"
   tags:
     - tools
 
-- name: TOOLS | 4.6 Unarchive tools
+- name: TOOLS | 4.13 Unarchive tools
   ansible.builtin.unarchive:
     src: "{{ item }}"
     dest: "/home/{{ ansible_user }}"
     remote_src: true
   loop:
     - "{{ autobrr_src }}"
-    - "{{ sizechecker_src }}"
     - "{{ mkbrr_src }}"
+    - "{{ netronome_src }}"
+    - "{{ sizechecker_src }}"
     - "{{ tqm_src }}"
   tags:
     - tools
 
-- name: TOOLS | 4.7 Install Autobrr, Mkbrr & Sizechecker binaries
+- name: TOOLS | 4.14 Install Autobrr, Mkbrr & Sizechecker... binaries
   ansible.builtin.command: "mv -v /home/{{ ansible_user }}/autobrr \
                             /home/{{ ansible_user }}/autobrrctl \
-                            /home/{{ ansible_user }}/sizechecker \
                             /home/{{ ansible_user }}/mkbrr \
+                            /home/{{ ansible_user }}/netronome \
+                            /home/{{ ansible_user }}/sizechecker \
                             /home/{{ ansible_user }}/tqm \
                             /usr/local/bin/"
   args:
@@ -75,7 +145,7 @@
   tags:
     - tools
 
-- name: TOOLS | 4.8 Add Autobrr backup & upgrade shell script
+- name: TOOLS | 4.15 Add Autobrr backup & upgrade shell script
   ansible.builtin.template:
     src: "autobrr/upgrade_autobrr.sh.j2"
     dest: "{{ upgrade_autobrr_file }}"
@@ -84,7 +154,7 @@
   tags:
     - tools
 
-- name: TOOLS | 4.9 Add panic shell script
+- name: TOOLS | 4.16 Add panic shell script
   ansible.builtin.template:
     src: "common/panic.sh.j2"
     dest: "{{ panic_file }}"
@@ -96,7 +166,7 @@
   tags:
     - tools
 
-- name: TOOLS | 4.10 Deploy benchmarking script
+- name: TOOLS | 4.17 Deploy benchmarking script
   ansible.builtin.copy:
     src: "benchmark/bench.sh"
     dest: "{{ benchmark_file }}"
@@ -108,32 +178,23 @@
   tags:
     - tools
 
-- name: TOOLS | 4.11 Install packages for Tools
-  ansible.builtin.dnf:
-    name: "{{ item }}"
-    state: present
-  become: true
-  loop: "{{ tools_required_rpms }}"
-  tags:
-    - tools
-
-- name: TOOLS | 4.12 Install & configure cross-seed (Optional)
+- name: TOOLS | 4.18 Install & configure cross-seed (Optional)
   when: cross_seed
   tags:
     - tools
   block:
-    - name: TOOLS | 4.12.1 Download Node.js Version Manager
+    - name: TOOLS | 4.18.1 Download Node.js Version Manager
       ansible.builtin.get_url:
         url: "https://raw.githubusercontent.com/nvm-sh/nvm/\
-              v{{ nvm_ver }}/install.sh"
+              {{ nvm_ver }}/install.sh"
         dest: "{{ temporary_nvm_install_script_file }}"
         mode: "0755"
 
-    - name: TOOLS | 4.12.2 Upgrade Node.js package manager
+    - name: TOOLS | 4.18.2 Upgrade Node.js package manager
       ansible.builtin.command: "{{ temporary_nvm_install_script_file }}"
       changed_when: true
 
-    - name: TOOLS | 4.12.3 Install cross-seed via Node.js package manager
+    - name: TOOLS | 4.18.3 Install cross-seed via Node.js package manager
       ansible.builtin.shell: |
         export NVM_DIR="/home/{{ ansible_user }}/.nvm"
         [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
@@ -143,20 +204,20 @@
       args:
         creates: "{{ ansible_env.HOME }}/.nvm/versions/node"
 
-    - name: TOOLS | 4.12.4 Add cross-seed config directory
+    - name: TOOLS | 4.18.4 Add cross-seed config directory
       ansible.builtin.file:
         path: "/home/{{ ansible_user }}/.cross-seed"
         state: "directory"
         mode: "0755"
 
-    - name: TOOLS | 4.12.5 Configure cross-seed
+    - name: TOOLS | 4.18.5 Configure cross-seed
       ansible.builtin.template:
         src: "cross_seed/config.js.j2"
-        dest: "{{ cross_seed_config_file }}"
+        dest: "{{ cross_seed_cfg_file }}"
         backup: true
         mode: "0644"
 
-    - name: TOOLS | 4.12.6 Add cross-seed start script
+    - name: TOOLS | 4.18.6 Add cross-seed start script
       ansible.builtin.template:
         src: "cross_seed/start-cross-seed.sh.j2"
         dest: "{{ cross_seed_start_file }}"
@@ -166,7 +227,7 @@
         mode: "0755"
       become: true
 
-    - name: TOOLS | 4.12.7 Add cross-seed service
+    - name: TOOLS | 4.18.7 Add cross-seed service
       ansible.builtin.template:
         src: "cross_seed/cross-seed.service.j2"
         dest: "{{ cross_seed_service_file }}"
@@ -174,7 +235,7 @@
         mode: "0644"
       become: true
 
-    - name: TOOLS | 4.12.8 Remove temporary install-nvm.sh
+    - name: TOOLS | 4.18.8 Remove temporary install-nvm.sh
       ansible.builtin.file:
         path: "{{ temporary_nvm_install_script_file }}"
         state: "absent"

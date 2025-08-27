@@ -30,7 +30,7 @@
   tags:
     - cleanup
 
-- name: CLEANUP | 6.4 Lower jourland RuntimeMaxUse
+- name: CLEANUP | 6.4 Lower journald RuntimeMaxUse
   ansible.builtin.lineinfile:
     path: "{{ journald_config_file }}"
     regexp: '^#RuntimeMaxUse=.*'
@@ -41,7 +41,7 @@
   tags:
     - cleanup
 
-- name: CLEANUP | 6.5 Lower jourland RuntimeMaxFileSize
+- name: CLEANUP | 6.5 Lower journald RuntimeMaxFileSize
   ansible.builtin.lineinfile:
     path: "{{ journald_config_file }}"
     regexp: '^#RuntimeMaxFileSize=.*'
@@ -52,7 +52,7 @@
   tags:
     - cleanup
 
-- name: CLEANUP | 6.6 Lower jourland RuntimeMaxFiles
+- name: CLEANUP | 6.6 Lower journald RuntimeMaxFiles
   ansible.builtin.lineinfile:
     path: "{{ journald_config_file }}"
     regexp: '^#RuntimeMaxFiles=100.*'

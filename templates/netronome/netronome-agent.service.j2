@@ -1,0 +1,21 @@
+[Unit]
+Description=Netronome vnstat Agent
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User={{ ansible_user }}
+Group={{ ansible_user }}
+ExecStart=/usr/local/bin/netronome agent --config /home/{{ ansible_user }}/.config/netronome/agent.toml
+Restart=always
+RestartSec=10
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+# ProtectHome=true
+ReadWritePaths=/home/{{ ansible_user }}/.config/netronome/
+
+[Install]
+WantedBy=multi-user.target
