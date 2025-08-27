@@ -69,6 +69,9 @@
 - [ ] autobrrctl can execute
 - [ ] sizechecker can execute
 - [ ] mkbrr can execute
+- [ ] netronome installed
+- [ ] netronome config in place
+- [ ] netronome service in place
 - [ ] `upgrade_autobrr.sh` in place and working
 - [ ] `panic.sh` in place and working
 - [ ] `bench.sh` in place and working

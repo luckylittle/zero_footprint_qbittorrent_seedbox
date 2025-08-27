@@ -135,7 +135,7 @@ vsftpd_ssl_ciphers: "MEDIUM"
 # 04-tools
 cross_seed: true
 autobrr_service_file: "/etc/systemd/system/autobrr@.service"
-autobrr_config_file: "/home/{{ ansible_user }}/.config/autobrr/config.toml"
+autobrr_cfg_file: "/home/{{ ansible_user }}/.config/autobrr/config.toml"
 autobrr_cfg_host: "0.0.0.0"
 autobrr_cfg_port: "7474"
 autobrr_cfg_baseurl: "/autobrr/"
@@ -155,25 +155,28 @@ sizechecker_src: "{{ sizechecker_url }}/v{{ sizechecker_ver }}/\
 mkbrr_src: "{{ mkbrr_url }}/v{{ mkbrr_ver }}/\
             mkbrr_{{ mkbrr_ver }}_linux_x86_64.tar.gz"
 tqm_src: "{{ tqm_url }}/v{{ tqm_ver }}/tqm_{{ tqm_ver }}_linux_amd64.tar.gz"
-tqm_config_file: "/home/{{ ansible_user }}/.config/tqm/config.yaml"
+tqm_cfg_file: "/home/{{ ansible_user }}/.config/tqm/config.yaml"
 upgrade_autobrr_file: "/home/{{ ansible_user }}/upgrade_autobrr.sh"
 panic_file: "/usr/local/bin/panic.sh"
 benchmark_file: "/usr/local/bin/bench.sh"
-nvm_ver: "0.40.3"
 node_ver: "22.17.0"
 temporary_nvm_install_script_file: "/tmp/install-nvm.sh"
 cross_seed_port: "2468"
-cross_seed_config_file: "/home/{{ ansible_user }}/.cross-seed/config.js"
+cross_seed_cfg_file: "/home/{{ ansible_user }}/.cross-seed/config.js"
 cross_seed_start_file: "/usr/local/bin/start-cross-seed.sh"
 cross_seed_service_file: "/etc/systemd/system/cross-seed.service"
 cross_seed_api_key: "1234567890abcdefghijklmnopqrstuvwxyz1234567890ab"
-tools_required_rpms: "wget"
+tools_required_rpms:
+  - "wget"
+netronome_cfg_port: "7575"
+netronome_cfg_file: "/home/{{ ansible_user }}/.config/netronome/config.toml"
+netronome_service_file: "/etc/systemd/system/netronome@.service"
 
 # 05-security
 ssh_port: "22"
 security_required_rpms:
   - "firewalld"
-sshd_config_file: "/etc/ssh/sshd_config"
+sshd_cfg_file: "/etc/ssh/sshd_config"
 restricted_sudo_commands:
   - "/bin/cat"
   - "/usr/bin/dnf"
@@ -203,6 +206,7 @@ common_tools_homefolder_junk:
   - "LICENSE.md"
   - "LICENSE"
   - "mkbrr"
+  - "netronome"
   - "README.md"
   - "sizechecker_{{ sizechecker_ver }}_linux_amd64.tar.gz"
   - "sizechecker"
@@ -237,6 +241,7 @@ required_services: >-
   }}
 base_required_services:
   - "{{ autobrr_service }}"
+  - "{{ netronome_service }}"
   - "cross-seed"
   - "fstrim.timer"
   - "qbt"

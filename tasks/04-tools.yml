@@ -11,18 +11,29 @@
   tags:
     - tools
 
-- name: TOOLS | 4.2 Add config directory
+- name: TOOLS | 4.1 Add Netronome service
+  ansible.builtin.template:
+    src: "netronome/netronome.service.j2"
+    dest: "{{ netronome_service_file }}"
+    backup: false
+    mode: "0644"
+  become: true
+  tags:
+    - tools
+
+- name: TOOLS | 4.2 Add config directories
   ansible.builtin.file:
     path: "/home/{{ ansible_user }}/.config/{{ item }}/"
     state: "directory"
     mode: "0755"
   loop:
     - autobrr
+    - netronome
     - tqm
   tags:
     - tools
 
-- name: TOOLS | 4.3 Generate session secret for Autobrr
+- name: TOOLS | 4.3 Generate session secret for Autobrr & Netronome
   ansible.builtin.shell:
     cmd: "set -o pipefail && head /dev/urandom | tr -dc A-Za-z0-9 | head -c32"
     executable: "/bin/bash"
@@ -34,7 +45,16 @@
 - name: TOOLS | 4.4 Add Autobrr configuration file
   ansible.builtin.template:
     src: "autobrr/config.toml.j2"
-    dest: "{{ autobrr_config_file }}"
+    dest: "{{ autobrr_cfg_file }}"
+    backup: true
+    mode: "0644"
+  tags:
+    - tools
+
+- name: TOOLS | 4.4 Add Netronome configuration file
+  ansible.builtin.template:
+    src: "netronome/config.toml.j2"
+    dest: "{{ netronome_cfg_file }}"
     backup: true
     mode: "0644"
   tags:
@@ -43,7 +63,7 @@
 - name: TOOLS | 4.5 Add TQM configuration file
   ansible.builtin.template:
     src: "tqm/config.yaml.j2"
-    dest: "{{ tqm_config_file }}"
+    dest: "{{ tqm_cfg_file }}"
     backup: true
     mode: "0644"
   tags:
@@ -56,17 +76,19 @@
     remote_src: true
   loop:
     - "{{ autobrr_src }}"
-    - "{{ sizechecker_src }}"
     - "{{ mkbrr_src }}"
+    - "{{ netronome_src }}"
+    - "{{ sizechecker_src }}"
     - "{{ tqm_src }}"
   tags:
     - tools
 
-- name: TOOLS | 4.7 Install Autobrr, Mkbrr & Sizechecker binaries
+- name: TOOLS | 4.7 Install Autobrr, Mkbrr & Sizechecker... binaries
   ansible.builtin.command: "mv -v /home/{{ ansible_user }}/autobrr \
                             /home/{{ ansible_user }}/autobrrctl \
-                            /home/{{ ansible_user }}/sizechecker \
                             /home/{{ ansible_user }}/mkbrr \
+                            /home/{{ ansible_user }}/netronome \
+                            /home/{{ ansible_user }}/sizechecker \
                             /home/{{ ansible_user }}/tqm \
                             /usr/local/bin/"
   args:
@@ -152,7 +174,7 @@
     - name: TOOLS | 4.12.5 Configure cross-seed
       ansible.builtin.template:
         src: "cross_seed/config.js.j2"
-        dest: "{{ cross_seed_config_file }}"
+        dest: "{{ cross_seed_cfg_file }}"
         backup: true
         mode: "0644"
 

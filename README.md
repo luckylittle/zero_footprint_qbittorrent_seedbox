@@ -10,7 +10,7 @@ Project overview
 
 This Ansible role provisions a standard [Red Hat Enterprise Linux 9 (RHEL 9)](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux) system as a secure, efficient and lightweight peer-to-peer (P2P) seedbox, running [qBittorrent](https://www.qbittorrent.org/).
 
-The configuration prioritizes security and simplicity, utilizing integrated tools such as SELinux and firewalld. To maintain a minimal system footprint, it is configured for zero-logging operation and no shell history. Among others, the role incorporates [Autobrr](https://github.com/autobrr/autobrr) for modern automated downloads and [cross-seed](https://github.com/cross-seed/cross-seed) for enhanced seeding.
+The configuration prioritizes security and simplicity, utilizing integrated tools such as SELinux and firewalld. To maintain a minimal system footprint, it is configured for zero-logging operation and no shell history. Among others (mkbrr, tqm, netronome, sizechecker etc.), the role incorporates [Autobrr](https://github.com/autobrr/autobrr) for modern automated downloads and [cross-seed](https://github.com/cross-seed/cross-seed) for enhanced seeding.
 
 Please be aware that the absence of persistent logs may complicate troubleshooting, though the ephemeral journal should be sufficient for most diagnostics. This project is an enhanced fork of my [zero_footprint_rutorrent_seedbox](https://github.com/luckylittle/zero_footprint_rutorrent_seedbox) repository, simplified and adapted for qBittorrent (lot of lessons learned!). [Contributions](CONTRIBUTING.md) via pull requests are welcome.
 

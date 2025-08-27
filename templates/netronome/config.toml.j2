@@ -1,0 +1,56 @@
+# {{ ansible_managed }}
+
+[database]
+type = "sqlite"
+path = "netronome.db"
+
+[server]
+host = "{{ autobrr_cfg_host }}"
+port = {{ metronome_cfg_port }}
+# base_url = "/"
+
+[logging]
+level = "error"
+
+[auth]
+whitelist = {{ ipv4_whitelist.split() | to_json }}
+
+[speedtest]
+timeout = 30
+
+[speedtest.iperf]
+test_duration = 10
+parallel_conns = 4
+timeout = 60
+
+[speedtest.librespeed]
+timeout = 60
+
+[speedtest.iperf.ping]
+count = 5
+interval = 1000
+timeout = 10
+
+[session]
+session_secret = "{{ session_secret.stdout }}"
+
+[packetloss]
+enabled = true
+default_interval = 3600
+default_packet_count = 10
+max_concurrent_monitors = 10
+privileged_mode = true
+
+[monitor]
+enabled = true
+reconnect_interval = "30s"
+
+[tailscale]
+enabled = false
+method = "auto"
+
+agent_port = 8200
+
+auto_discover = true
+discovery_interval = "5m"
+discovery_port = 8200
