@@ -75,9 +75,7 @@ Dependencies
 ------------
 
 * Ansible core v`2.16.14`
-* community.general v`11.2.1` (Install with: `ansible-galaxy collection install community.general`)
-* community.crypto v`3.0.3` (Install with: `ansible-galaxy collection install community.crypto`)
-* ansible.posix v`2.1.0` (Install with: `ansible-galaxy collection install ansible.posix`)
+* `ansible-galaxy collection install -r requirements.yml`
 
 Example Playbook
 ----------------
@@ -100,19 +98,35 @@ Example Playbook
 Testing
 -------
 
-|OS        |Version 0.0.1     |
-|----------|------------------|
-|9.6 (Plow)|:white_check_mark:|
+|OS        |Version 0.0.1     |Version 0.1.0     |
+|----------|------------------|------------------|
+|9.6 (Plow)|:white_check_mark:|:white_check_mark:|
 
 On a brand new Red Hat Enterprise Linux release 9.6 (Plow) on AWS (t3.medium - 2 vCPU, 4GiB RAM), it took 13m 38s.
 The following versions were installed during the last RHEL9 test:
 
-|Package name |Package version          |
-|-------------|-------------------------|
-|curl         |7.76.1-31.el9_6.1.x86_64 |
-|tar          |1.34-7.el9.x86_64        |
-|tuned        |2.25.1-2.el9_6.noarch    |
-|vsftpd       |3.0.5-6.el9.x86_64       |
+|Package name   |Package version          |
+|---------------|-------------------------|
+|autobrr        |1.65.0                   |
+|bash           |5.1.8-9.el9.x86_64       |
+|cross-seed     |6.13.2                   |
+|curl           |7.76.1-31.el9_6.1.x86_64 |
+|firewalld      |1.3.4-9.el9_5.noarch     |
+|libdb-utils    |5.3.28-57.el9_6.x86_64   |
+|mkbrr          |1.15.0                   |
+|netronome      |0.6.0                    |
+|NetworkManager |1.52.0-5.el9_6.x86_64    |
+|nvm            |0.40.3                   |
+|openssh        |8.7p1-45.el9.x86_64      |
+|qBittorrent    |5.1.2                    |
+|sizechecker    |1.4.0                    |
+|tar            |1.34-7.el9.x86_64        |
+|tqm            |1.16.0                   |
+|traceroute     |2.1.1-1.el9.x86_64       |
+|tuned          |2.25.1-2.el9_6.noarch    |
+|vnstat         |2.9-2.el9.x86_64         |
+|vsftpd         |3.0.5-6.el9.x86_64       |
+|wget           |1.21.1-8.el9_4.x86_64    |
 
 The following Terraform can be used to create necessary infrastructure (based on RHEL9.X on AWS):
 
@@ -325,6 +339,9 @@ After you successfully apply this role, you should be able to see a similar outp
 "qBt WebUI:"
 "http://123.124.125.126:8080"
 "----------------------------------------------------------------"
+"Netronome URL:",
+"http://123.124.125.126:7575",
+"------------------------------------------------------------",
 "vsFTPd URL:"
 "ftps://123.124.125.126:55443"
 "----------------------------------------------------------------"
@@ -345,4 +362,4 @@ Author Information
 
 Lucian Maly <<lmaly@redhat.com>>
 
-_Last update: Tue 26 Aug 2025 23:21:59 UTC_
+_Last update: Wed 27 Aug 2025 11:44:13 UTC_
