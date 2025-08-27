@@ -2,10 +2,10 @@
 [agent]
 host = "127.0.0.1"
 port = {{ netronome_agent_cfg_port }}
-interface = "1"
-api_key = "1234567890abcdefghijklmnopqrstuv"
-disk_includes = ["/home/{{ ansible_user }}/site/"]
+interface = "{{ ansible_default_ipv4.alias }}"
+api_key = ""
+disk_includes = ["/home/{{ ansible_user }}/site"]
 disk_excludes = ["/boot", "/tmp"]
 
 [logging]
-level = "info"
+level = "error"
