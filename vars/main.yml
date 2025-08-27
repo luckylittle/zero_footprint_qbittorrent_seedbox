@@ -262,13 +262,7 @@ cleanup_junk_services:
   - "dnf-makecache.timer"
 
 # 07-reboot
-required_services: >-
-  {{
-    base_required_services |
-    union(cross_seed | default(false) |
-    ternary(['cross-seed'], []))
-  }}
-base_required_services:
+required_services:
   - "{{ autobrr_service }}"
   - "{{ netronome_service }}"
   - "cross-seed"
@@ -276,6 +270,7 @@ base_required_services:
   - "netronome-agent"
   - "qbt"
   - "tuned"
+  - "vnstat"
   - "vsftpd"
 reboot_timeout: 1200
 
