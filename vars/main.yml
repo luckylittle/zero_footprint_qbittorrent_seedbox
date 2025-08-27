@@ -139,10 +139,12 @@ tools_repos_to_check:
   - "autobrr/autobrr"
   - "autobrr/mkbrr"
   - "autobrr/tqm"
+  - "autobrr/netronome"
   - "nvm-sh/nvm"
   - "s0up4200/sizechecker"
 autobrr_ver: "{{ tools_versions['autobrr/autobrr'] }}"
 mkbrr_ver: "{{ tools_versions['autobrr/mkbrr'] }}"
+netronome_ver: "{{ tools_versions['autobrr/netronome'] }}"
 tqm_ver: "{{ tools_versions['autobrr/tqm'] }}"
 nvm_ver: "{{ tools_versions['nvm-sh/nvm'] }}"
 sizechecker_ver: "{{ tools_versions['s0up4200/sizechecker'] }}"
@@ -160,14 +162,21 @@ autobrr_cfg_customdefinitions: "/home/{{ ansible_user }}/.config/\
 autobrr_url: "https://github.com/autobrr/autobrr/releases/download"
 sizechecker_url: "https://github.com/s0up4200/sizechecker/releases/download"
 mkbrr_url: "https://github.com/autobrr/mkbrr/releases/download"
+netronome_url: "https://github.com/autobrr/netronome/releases/download"
 tqm_url: "https://github.com/autobrr/tqm/releases/download"
 autobrr_src: "{{ autobrr_url }}/{{ autobrr_ver }}/\
-              autobrr_{{ autobrr_ver }}_linux_x86_64.tar.gz"
+              autobrr_{{ autobrr_ver | regex_replace('^v', '') \
+              }}_linux_x86_64.tar.gz"
 sizechecker_src: "{{ sizechecker_url }}/{{ sizechecker_ver }}/\
-                  sizechecker_{{ sizechecker_ver }}_linux_amd64.tar.gz"
+                  sizechecker_{{ sizechecker_ver | regex_replace('^v', '') \
+                  }}_linux_amd64.tar.gz"
 mkbrr_src: "{{ mkbrr_url }}/{{ mkbrr_ver }}/\
-            mkbrr_{{ mkbrr_ver }}_linux_x86_64.tar.gz"
-tqm_src: "{{ tqm_url }}/{{ tqm_ver }}/tqm_{{ tqm_ver }}_linux_amd64.tar.gz"
+            mkbrr_{{ mkbrr_ver | regex_replace('^v', '') }}_linux_x86_64.tar.gz"
+netronome_src: "{{ netronome_url }}/{{ netronome_ver }}/\
+                netronome_{{ netronome_ver | regex_replace('^v', '') \
+                }}_linux_x86_64.tar.gz"
+tqm_src: "{{ tqm_url }}/{{ tqm_ver }}/tqm_{{ tqm_ver | regex_replace('^v', '') \
+          }}_linux_amd64.tar.gz"
 tqm_cfg_file: "/home/{{ ansible_user }}/.config/tqm/config.yaml"
 upgrade_autobrr_file: "/home/{{ ansible_user }}/upgrade_autobrr.sh"
 panic_file: "/usr/local/bin/panic.sh"
@@ -180,6 +189,8 @@ cross_seed_start_file: "/usr/local/bin/start-cross-seed.sh"
 cross_seed_service_file: "/etc/systemd/system/cross-seed.service"
 cross_seed_api_key: "1234567890abcdefghijklmnopqrstuvwxyz1234567890ab"
 tools_required_rpms:
+  - "traceroute"
+  - "vnstat"
   - "wget"
 netronome_cfg_port: "7575"
 netronome_cfg_file: "/home/{{ ansible_user }}/.config/netronome/config.toml"

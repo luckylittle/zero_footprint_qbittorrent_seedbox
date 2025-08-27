@@ -159,7 +159,8 @@
   register: test_netronome
   delegate_to: localhost
   failed_when: "test_netronome.status != 200 or \
-                'netronome' not in test_netronome.content"
+                'Network performance testing and monitoring tool' \
+                not in test_netronome.content"
   changed_when: false
   tags:
     - smoke_tests

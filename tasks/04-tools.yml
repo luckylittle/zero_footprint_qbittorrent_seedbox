@@ -166,7 +166,7 @@
     - name: TOOLS | 4.16.1 Download Node.js Version Manager
       ansible.builtin.get_url:
         url: "https://raw.githubusercontent.com/nvm-sh/nvm/\
-              v{{ nvm_ver }}/install.sh"
+              {{ nvm_ver }}/install.sh"
         dest: "{{ temporary_nvm_install_script_file }}"
         mode: "0755"
 

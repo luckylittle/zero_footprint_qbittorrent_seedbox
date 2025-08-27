@@ -31,11 +31,14 @@
 
 - name: SECURITY | 5.4 Ensure Autobrr port is labeled with http_port_t
   community.general.seport:
-    ports: "{{ autobrr_cfg_port }}"
+    ports: "{{ item }}"
     proto: "tcp"
     setype: "http_port_t"
     state: present
   become: true
+  loop:
+    - "{{ autobrr_cfg_port }}"
+    - "{{ netronome_cfg_port }}"
   tags:
     - security
 
