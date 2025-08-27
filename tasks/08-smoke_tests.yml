@@ -6,7 +6,7 @@
   tags:
     - smoke_tests
 
-- name: TEST | 8.2 Print ACTIVE services
+- name: TEST | 8.2 Print ACTIVE service(s)
   ansible.builtin.debug:
     var: ansible_facts['services'].values() |
           selectattr('state','equalto','active') |
@@ -14,7 +14,7 @@
   tags:
     - smoke_tests
 
-- name: TEST | 8.3 Print INACTIVE services
+- name: TEST | 8.3 Print INACTIVE service(s)
   ansible.builtin.debug:
     var: ansible_facts['services'].values() |
           selectattr('state','equalto','inactive') |
@@ -22,7 +22,7 @@
   tags:
     - smoke_tests
 
-- name: TEST | 8.4 Print RUNNING services
+- name: TEST | 8.4 Print RUNNING service(s)
   ansible.builtin.debug:
     var: ansible_facts['services'].values() |
           selectattr('state','equalto','running') |
@@ -30,7 +30,7 @@
   tags:
     - smoke_tests
 
-- name: TEST | 8.5 Print STOPPED services
+- name: TEST | 8.5 Print STOPPED service(s)
   ansible.builtin.debug:
     var: ansible_facts['services'].values() |
           selectattr('state','equalto','stopped') |
@@ -38,7 +38,7 @@
   tags:
     - smoke_tests
 
-- name: TEST | 8.6 Print UNKNOWN services
+- name: TEST | 8.6 Print UNKNOWN service(s)
   ansible.builtin.debug:
     var: ansible_facts['services'].values() |
           selectattr('state','equalto','unknown') |
@@ -84,7 +84,7 @@
   tags:
     - smoke_tests
 
-- name: TEST | 8.10 Check for qbt HTTP endpoint to be open
+- name: TEST | 8.10 Check for qBt HTTP endpoint to be open
   ansible.builtin.uri:
     url: "http://{{ hostvars[inventory_hostname].ansible_host \
           | default(inventory_hostname) }}:{{ qbt_preferences_webuiport }}"
@@ -150,7 +150,21 @@
   tags:
     - smoke_tests
 
-- name: TEST | 8.14 Show the smoke test results
+- name: TEST | 8.14 Check for Netronome to be responding
+  ansible.builtin.uri:
+    url: "http://{{ hostvars[inventory_hostname].ansible_host | \
+          default(inventory_hostname) }}:{{ netronome_cfg_port }}"
+    return_content: true
+    timeout: "{{ test_timeout }}"
+  register: test_netronome
+  delegate_to: localhost
+  failed_when: "test_netronome.status != 200 or \
+                'netronome' not in test_netronome.content"
+  changed_when: false
+  tags:
+    - smoke_tests
+
+- name: TEST | 8.15 Show the smoke test results
   ansible.builtin.debug:
     msg:
       - "Results:"
@@ -173,34 +187,42 @@
                             | string) + ')' if test_cross_seed.failed
                             else 'Passed')
                             }}"
+      - "NETRONOME:         {{ 'Passed' if not test_netronome.failed else
+                              'Failed (status ' +
+                              (test_netronome.status | string) + ')' }}"
       - "########"
   tags:
     - smoke_tests
 
-- name: TEST | 8.15 Output
+- name: TEST | 8.16 Output
   ansible.builtin.debug:
     msg:
-      - "----------------------------------------------------------------"
+      - "------------------------------------------------------------"
       - "Autobrr URL:"
       - "http://{{ (ansible_ssh_host | \
           default(ansible_host)) | default(inventory_hostname) }}:\
           {{ autobrr_cfg_port }}/\
           onboard"
-      - "----------------------------------------------------------------"
+      - "------------------------------------------------------------"
       - "Autobrr Healthz URL:"
       - "http://{{ (ansible_ssh_host | \
           default(ansible_host)) | default(inventory_hostname) }}:\
           {{ autobrr_cfg_port }}/\
           api/healthz/liveness"
-      - "----------------------------------------------------------------"
+      - "------------------------------------------------------------"
       - "qBt WebUI:"
       - "http://{{ (ansible_ssh_host | \
           default(ansible_host)) | default(inventory_hostname) }}:\
           {{ qbt_preferences_webuiport }}"
-      - "----------------------------------------------------------------"
+      - "------------------------------------------------------------"
+      - "Netronome URL:"
+      - "http://{{ (ansible_ssh_host | \
+          default(ansible_host)) | default(inventory_hostname) }}:\
+          {{ netronome_cfg_port }}"
+      - "------------------------------------------------------------"
       - "vsFTPd URL:"
       - "ftps://{{ (ansible_ssh_host | default(ansible_host)) | \
           default(inventory_hostname) }}:{{ ftp_port }}"
-      - "----------------------------------------------------------------"
+      - "------------------------------------------------------------"
   tags:
     - smoke_tests
