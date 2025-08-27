@@ -24,6 +24,7 @@
   ansible.builtin.dnf:
     name: "{{ item }}"
     state: present
+    disable_gpg_check: true
   become: true
   loop: "{{ tools_required_rpms }}"
   tags:
