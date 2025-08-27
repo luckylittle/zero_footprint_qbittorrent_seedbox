@@ -189,12 +189,17 @@ cross_seed_start_file: "/usr/local/bin/start-cross-seed.sh"
 cross_seed_service_file: "/etc/systemd/system/cross-seed.service"
 cross_seed_api_key: "1234567890abcdefghijklmnopqrstuvwxyz1234567890ab"
 tools_required_rpms:
+  - "{{ vnstat_dl }}"
   - "traceroute"
-  - "vnstat"
   - "wget"
 netronome_cfg_port: "7575"
 netronome_cfg_file: "/home/{{ ansible_user }}/.config/netronome/config.toml"
+netronome_agent_cfg_port: "8200"
+netronome_agent_cfg_file: "/home/{{ ansible_user }}/.config/netronome/agent.toml"
 netronome_service_file: "/etc/systemd/system/netronome@.service"
+netronome_agent_service_file: "/etc/systemd/system/netronome-agent.service"
+vnstat_dl: "https://kojipkgs.fedoraproject.org//packages/vnstat/\
+            2.9/2.el9/x86_64/vnstat-2.9-2.el9.x86_64.rpm"
 
 # 05-security
 ssh_port: "22"
@@ -268,6 +273,7 @@ base_required_services:
   - "{{ netronome_service }}"
   - "cross-seed"
   - "fstrim.timer"
+  - "netronome-agent"
   - "qbt"
   - "tuned"
   - "vsftpd"
