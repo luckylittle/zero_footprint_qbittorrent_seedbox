@@ -52,7 +52,6 @@ _Note:_ Lot of the tasks rely on `remote_user` / `ansible_user` variable (user w
 [qBt (section 2)](tasks/02-qbt.yml):
 
 * `qbt_port` - what port should qBittorrent listen on. Default is **55442**.
-* `qbt_ver` - what version should be used/installed?
 
 [vsFTPd (section 3)](tasks/03-vsftpd.yml):
 
@@ -60,13 +59,9 @@ _Note:_ Lot of the tasks rely on `remote_user` / `ansible_user` variable (user w
 * `pasv_port_range` - what port range should be used for FTP PASV, by default this is **64000-64321**.
 * `single_user` - when `true` only one FTP user will be used and it is the same username who runs this playbook. :warning: When `false`, [this](files/vsftpd/users.txt) file is used, update accordingly :warning: This is now true by default.
 
-[Tools (section 4)](tasks/04-tools.yml):
-
-* `autobrr_ver`, `mkbrr_ver` & `sizechecker_ver` etc. - contains the latest [Autobrr](https://github.com/autobrr/autobrr/releases), [Mkbrr](https://github.com/autobrr/mkbrr), [Sizechecker](https://github.com/s0up4200/sizechecker/releases) and [tqm](https://github.com/autobrr/tqm/releases) versions.
-
 [Security (section 5)](tasks/05-security.yml):
 
-* `ipv4_whitelist` - what IP addresses should be used in the **firewalld** zone for access to services. Default whitelisted is arbitrary address `X.X.X.X`. :warning: You **need** to [change it](defaults/main.yml#L26) to your own :warning:
+* `ipv4_whitelist` - what IP addresses should be used in the **firewalld** zone for access to services. Default whitelisted is arbitrary address `X.X.X.X`. :warning: You **need** to [change it](defaults/main.yml#L19) to your own :warning:
 
 _Example:_ `192.168.0.0/16 10.0.0.0/8 172.16.0.0/12 123.222.11.111`
 
