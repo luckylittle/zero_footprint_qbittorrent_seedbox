@@ -16,7 +16,7 @@ Please be aware that the absence of persistent logs may complicate troubleshooti
 
 </p>
 
-![GitHub Release](https://img.shields.io/github/v/release/luckylittle/zero_footprint_qbittorrent_seedbox?style=for-the-badge) ![Ansible Role](https://img.shields.io/ansible/role/d/luckylittle/zero_footprint_qbittorrent_seedbox?style=for-the-badge) ![GitHub last commit](https://img.shields.io/github/last-commit/luckylittle/zero_footprint_qbittorrent_seedbox?style=for-the-badge)
+[![ansible-lint](https://github.com/luckylittle/zero_footprint_qbittorrent_seedbox/actions/workflows/ansible-lint.yml/badge.svg)](https://github.com/luckylittle/zero_footprint_qbittorrent_seedbox/actions/workflows/ansible-lint.yml) ![GitHub Release](https://img.shields.io/github/v/release/luckylittle/zero_footprint_qbittorrent_seedbox?style=for-the-badge) ![Ansible Role](https://img.shields.io/ansible/role/d/luckylittle/zero_footprint_qbittorrent_seedbox?style=for-the-badge) ![GitHub last commit](https://img.shields.io/github/last-commit/luckylittle/zero_footprint_qbittorrent_seedbox?style=for-the-badge)
 
 Prerequisites
 -------------
