@@ -17,10 +17,9 @@ maximum_number_of_open_file_descriptors: "262144"
 # 02-qbt
 qbt_nox_static_url: "https://github.com/userdocs/qbittorrent-nox-static/\
                     releases/download"
-qbt_nox_libtorrent_ver: "2.0.11"
 qbt_nox_asset: "x86_64-qbittorrent-nox"
-qbt_nox_release: "release-{{ qbt_ver }}_v{{ qbt_nox_libtorrent_ver }}"
-qbt_url: "{{ qbt_nox_static_url }}/{{ qbt_nox_release }}/{{ qbt_nox_asset }}"
+qbt_url: "{{ qbt_nox_static_url }}/{{ qbittorrent_nox_static_ver }}/\
+          {{ qbt_nox_asset }}"
 qbt_config_directory: "/home/{{ ansible_user }}/.config/qBittorrent/"
 qbt_config_file: "/home/{{ ansible_user }}/.config/qBittorrent/qBittorrent.conf"
 qbt_service_file: "/etc/systemd/system/qbt.service"
@@ -133,6 +132,13 @@ vsftpd_require_ssl_reuse: "NO"
 vsftpd_ssl_ciphers: "MEDIUM"
 
 # 04-tools
+tools_repos_to_check:
+  - "autobrr/autobrr"
+  - "autobrr/mkbrr"
+  - "autobrr/tqm"
+  - "nvm-sh/nvm"
+  - "s0up4200/sizechecker"
+  - "userdocs/qbittorrent-nox-static"
 cross_seed: true
 autobrr_service_file: "/etc/systemd/system/autobrr@.service"
 autobrr_cfg_file: "/home/{{ ansible_user }}/.config/autobrr/config.toml"
