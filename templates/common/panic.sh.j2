@@ -6,31 +6,36 @@
 #######################################
 
 # Stop all the services
-sudo systemctl stop autobrr@{{ ansible_user }}
-sudo systemctl stop cross-seed
-sudo systemctl stop netronome
-sudo systemctl stop qbt
-sudo systemctl stop vsftpd
+sudo systemctl stop \
+  autobrr@{{ ansible_user }} \
+  cross-seed \
+  netronome-agent \
+  netronome@{{ ansible_user }} \
+  qbt \
+  vsftpd
 
 # Show if they are all stopped
-sudo systemctl is-active autobrr@{{ ansible_user }}
-sudo systemctl is-active cross-seed
-sudo systemctl is-active netronome
-sudo systemctl is-active qbt
-sudo systemctl is-active vsftpd
+sudo systemctl is-active \
+  autobrr@{{ ansible_user }} \
+  cross-seed \
+  netronome-agent \
+  netronome@{{ ansible_user }} \
+  qbt \
+  vsftpd
 
 # Remove all the data
 rm -rvf /home/{{ ansible_user }}/site
 
 # Re-create an empty folder structure
-mkdir -pv /home/{{ ansible_user }}/site/APPZ
-mkdir -pv /home/{{ ansible_user }}/site/GAMES
-mkdir -pv /home/{{ ansible_user }}/site/MISC
-mkdir -pv /home/{{ ansible_user }}/site/MOVIES
-mkdir -pv /home/{{ ansible_user }}/site/MUSIC
-mkdir -pv /home/{{ ansible_user }}/site/TV
-mkdir -pv /home/{{ ansible_user }}/site/UPLOAD
-mkdir -pv /home/{{ ansible_user }}/site/XXX
+mkdir -pv \
+  /home/{{ ansible_user }}/site/APPZ \
+  /home/{{ ansible_user }}/site/GAMES \
+  /home/{{ ansible_user }}/site/MISC \
+  /home/{{ ansible_user }}/site/MOVIES \
+  /home/{{ ansible_user }}/site/MUSIC \
+  /home/{{ ansible_user }}/site/TV \
+  /home/{{ ansible_user }}/site/UPLOAD \
+  /home/{{ ansible_user }}/site/XXX
 
 # Change permissions of the newly created structure
 chmod -Rv 777 /home/{{ ansible_user }}/site
