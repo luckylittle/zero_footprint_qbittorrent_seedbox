@@ -1,12 +1,8 @@
-.terraform
-.terraform.lock.hcl
 .travis.yml
-.venv
 files/vsftpd/users.txt
-password.txt
-terraform.tf
-terraform.tfstate
-terraform.tfstate.backup
+tests/.terraform/
+tests/roles/
+tests/.terraform.lock.hcl
 tests/inventory
-tests/password.txt
-tests/zero_footprint_rutorrent_seedbox
+tests/terraform.tfstate
+tests/terraform.tfstate.backup
