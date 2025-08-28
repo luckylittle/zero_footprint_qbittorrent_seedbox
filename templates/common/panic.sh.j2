@@ -23,6 +23,9 @@ sudo systemctl is-active \
   qbt \
   vsftpd
 
+# Remove BT_backup
+rm -rvf /home/{{ ansible_user }}/.local/share/qBittorrent/BT_backup/*
+
 # Remove all the data
 rm -rvf /home/{{ ansible_user }}/site
 
