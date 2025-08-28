@@ -92,7 +92,7 @@ Example Playbook
 - hosts: seedbox
   name: Playbook for zero_footprint_qbittorrent_seedbox role
   roles:
-    - "zero_footprint_qbittorrent_seedbox"
+    - "luckylittle.zero_footprint_qbittorrent_seedbox"
 ```
 
 Testing
@@ -329,22 +329,22 @@ Services Installed
 After you successfully apply this role, you should be able to see a similar output and access the following services:
 
 ```bash
-"----------------------------------------------------------------"
+"----------------------------------------------------"
 "Autobrr URL:"
 "http://123.124.125.126:7474/onboard"
-"----------------------------------------------------------------"
+"----------------------------------------------------"
 "Autobrr Healthz URL:"
 "http://123.124.125.126:7474/api/healthz/liveness"
-"----------------------------------------------------------------"
+"----------------------------------------------------"
 "qBt WebUI:"
 "http://123.124.125.126:8080"
-"----------------------------------------------------------------"
+"----------------------------------------------------"
 "Netronome URL:",
 "http://123.124.125.126:7575",
-"------------------------------------------------------------",
+"----------------------------------------------------"
 "vsFTPd URL:"
 "ftps://123.124.125.126:55443"
-"----------------------------------------------------------------"
+"----------------------------------------------------"
 ```
 
 License
@@ -362,4 +362,4 @@ Author Information
 
 Lucian Maly <<lmaly@redhat.com>>
 
-_Last update: Wed 27 Aug 2025 11:44:13 UTC_
+_Last update: Thu 28 Aug 2025 00:02:19 UTC_

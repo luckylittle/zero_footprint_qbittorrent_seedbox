@@ -2,4 +2,4 @@
 - name: Test playbook for zero_footprint_qbittorrent_seedbox role
   hosts: all
   roles:
-    - "zero_footprint_qbittorrent_seedbox"
+    - "luckylittle.zero_footprint_qbittorrent_seedbox"
