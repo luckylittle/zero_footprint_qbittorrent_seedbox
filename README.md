@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD033 -->
 <h1 align="center">
   <img alt="autobrr logo" src=".github/images/logo.png" width="160px"/><br/>
 luckylittle.zero_footprint_qbittorrent_seedbox
