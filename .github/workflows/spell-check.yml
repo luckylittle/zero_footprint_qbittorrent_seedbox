@@ -1,0 +1,14 @@
+---
+# .github/workflows/spell-check.yml
+name: Spellcheck
+on:
+  pull_request:
+    branches: ["main", "stable", "release/v*", "feature/*", "bugfix/*"]
+jobs:
+  build:
+    name: Spellcheck
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Spellcheck
+      uses: rojopolis/spellcheck-github-actions@v0
