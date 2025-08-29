@@ -137,8 +137,8 @@
   tags:
     - common
 
-- name: COMMON | 1.15 Configure tuned for latency-performance
-  ansible.builtin.command: "tuned-adm profile latency-performance"
+- name: COMMON | 1.15 Configure tuned for high throughput
+  ansible.builtin.command: "tuned-adm profile {{ tuned_profile }}"
   changed_when: true
   notify:
     - "Restart tuned"
