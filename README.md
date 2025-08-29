@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD033 -->
 <h1 align="center">
   <img alt="autobrr logo" src=".github/images/logo.png" width="160px"/><br/>
 luckylittle.zero_footprint_qbittorrent_seedbox
@@ -77,10 +78,8 @@ Dependencies
 * Ansible core v`2.16.14`
 * `ansible-galaxy collection install -r requirements.yml`
 
-Example Playbook
-----------------
-
-`time ansible-playbook -i inventory -u ansible test.yml`
+Example Inventory & Playbook
+----------------------------
 
 ```ini
 [seedbox]
@@ -98,11 +97,11 @@ Example Playbook
 Testing
 -------
 
-|OS        |Version 0.0.1     |Version 0.1.0     |
+|OS        |Version 0.1.1     |Version 0.1.2     |
 |----------|------------------|------------------|
 |9.6 (Plow)|:white_check_mark:|:white_check_mark:|
 
-On a brand new Red Hat Enterprise Linux release 9.6 (Plow) on AWS (t3.medium - 2 vCPU, 4GiB RAM), it took 13m 38s.
+On a brand new Red Hat Enterprise Linux release 9.6 (Plow) on AWS (t3.medium - 2 vCPU, 4GiB RAM), it took 13m 59s.
 The following versions were installed during the last RHEL9 test:
 
 |Package name   |Package version          |
@@ -317,11 +316,19 @@ output "instance_dns" {
 
 To test:
 
-1. `terraform init; terraform apply -var=key_name=<NAME_OF_THE_EXISTING_KEY_PAIR_IN_AWS>`
-2. `cd zero_footprint_qbittorrent_seedbox/tests`
-3. `ln -s ../../zero_footprint_qbittorrent_seedbox .`
-4. Insert AWS `instance_public_ip` (step 1.) to the [inventory](tests/inventory)
-5. `time ansible-playbook -i inventory -u ec2-user test.yml`
+```bash
+# Create a testing EC2 machine
+cd tests/
+terraform init; terraform apply -var=key_name=<NAME_OF_THE_EXISTING_KEY_PAIR_IN_AWS> -auto-approve
+# Insert the EC2 machine's public IP to the Ansible inventory
+terraform output -raw instance_public_ip > inventory
+# Make necessary symlink for testing playbook
+mkdir roles/; ln -s ../../ roles/luckylittle.zero_footprint_qbittorrent_seedbox
+# Run the test
+time ansible-playbook -i inventory -u ec2-user test.yml
+# To destroy the EC2 machine afterwards
+# terraform destroy -auto-approve
+```
 
 Services Installed
 ------------------
@@ -362,4 +369,4 @@ Author Information
 
 Lucian Maly <<lmaly@redhat.com>>
 
-_Last update: Thu 28 Aug 2025 00:02:19 UTC_
+_Last update: Fri 29 Aug 2025 00:02:49 UTC_
