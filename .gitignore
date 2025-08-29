@@ -3,6 +3,7 @@ files/vsftpd/users.txt
 tests/.terraform/
 tests/roles/
 tests/.terraform.lock.hcl
+tests/.terraform.tfstate.lock.info
 tests/inventory
 tests/terraform.tfstate
 tests/terraform.tfstate.backup
