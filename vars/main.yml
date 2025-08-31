@@ -211,6 +211,7 @@ sshd_cfg_file: "/etc/ssh/sshd_config"
 restricted_sudo_commands:
   - "/bin/cat"
   - "/usr/bin/dnf"
+  - "/usr/bin/firewall-cmd"
   - "/usr/bin/mv"
   - "/usr/bin/python3"
   - "/usr/bin/systemctl"
