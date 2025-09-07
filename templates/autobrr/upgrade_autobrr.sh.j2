@@ -51,7 +51,7 @@ rm -vf autobrr_${AUTOBRR_VERSION}_linux_x86_64.tar.gz LICENSE README.md
 rm -rvf /home/{{ ansible_user }}/.config/autobrr/filters
 
 echo "Moving the backup file to the site/UPLOAD folder..."
-mv -v autobrr_backup_$(date +%Y-%m-%d_%H%M%S).tgz /home/{{ ansible_user }}/site/UPLOAD/
+mv -v autobrr_backup_*.tgz /home/{{ ansible_user }}/site/UPLOAD/
 restorecon -Rv /home/{{ ansible_user }}/site/UPLOAD/
 
 echo "Upgrade of Autobrr to version ${AUTOBRR_VERSION} finished!"
