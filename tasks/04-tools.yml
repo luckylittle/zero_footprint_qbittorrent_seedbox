@@ -239,3 +239,14 @@
       ansible.builtin.file:
         path: "{{ temporary_nvm_install_script_file }}"
         state: "absent"
+
+- name: TOOLS | 4.19 Deploy TQM crontab
+  ansible.builtin.cron:
+    name: "Cleanup Dry Run of TQM"
+    minute: "0"
+    hour: "2"
+    job: "/usr/local/bin/tqm clean qbt --dry-run"
+    user: "{{ ansible_user }}"
+    backup: true
+  tags:
+    - tools
