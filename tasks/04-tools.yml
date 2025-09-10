@@ -240,7 +240,15 @@
         path: "{{ temporary_nvm_install_script_file }}"
         state: "absent"
 
-- name: TOOLS | 4.19 Deploy TQM crontab
+- name: TOOLS | 4.19 Deploy TQM crontab env
+  ansible.builtin.cron:
+    name: "HOME"
+    env: true
+    job: "/home/{{ ansible_user }}"
+  tags:
+    - tools
+
+- name: TOOLS | 4.20 Deploy TQM crontab job
   ansible.builtin.cron:
     name: "Cleanup Dry Run of TQM"
     minute: "0"
