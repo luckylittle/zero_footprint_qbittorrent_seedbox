@@ -210,6 +210,7 @@ security_required_rpms:
 sshd_cfg_file: "/etc/ssh/sshd_config"
 restricted_sudo_commands:
   - "/bin/cat"
+  - "/bin/journalctl"
   - "/usr/bin/dnf"
   - "/usr/bin/firewall-cmd"
   - "/usr/bin/ls"
