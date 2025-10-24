@@ -13,6 +13,7 @@ create_folders:
   - "site/UPLOAD"
   - "site/XXX"
 maximum_number_of_open_file_descriptors: "262144"
+tuned_profile: "network-throughput"
 
 # 02-qbt
 qbt_latest_ver_url: "https://api.github.com/repos/userdocs/\
@@ -209,8 +210,12 @@ security_required_rpms:
 sshd_cfg_file: "/etc/ssh/sshd_config"
 restricted_sudo_commands:
   - "/bin/cat"
+  - "/bin/journalctl"
   - "/usr/bin/dnf"
+  - "/usr/bin/firewall-cmd"
+  - "/usr/bin/ls"
   - "/usr/bin/mv"
+  - "/usr/bin/nmcli"
   - "/usr/bin/python3"
   - "/usr/bin/systemctl"
   - "/usr/bin/vi"
