@@ -5,6 +5,7 @@
   ansible.builtin.uri:
     url: "{{ qbt_latest_ver_url }}"
     return_content: true
+    timeout: 120
   register: qbt_static_nox_ver
   delegate_to: localhost
   tags:

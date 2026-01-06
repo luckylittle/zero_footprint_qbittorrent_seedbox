@@ -1,6 +1,9 @@
 ---
 # tasks file for zero_footprint_qbittorrent_seedbox/03-vsftpd
 
+# subscription-manager repos --enable codeready-builder-for-rhel-10-$(arch)-rpms
+# dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm
+
 - name: VSFTPD | 3.1 Install required packages
   ansible.builtin.dnf:
     name: "{{ item }}"

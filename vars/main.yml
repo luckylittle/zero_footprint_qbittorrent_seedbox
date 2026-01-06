@@ -141,15 +141,15 @@ tools_repos_to_check:
   - "autobrr/mkbrr"
   - "autobrr/tqm"
   - "autobrr/netronome"
-  - "nvm-sh/nvm"
+  # - "nvm-sh/nvm"
   - "s0up4200/sizechecker"
 autobrr_ver: "{{ tools_versions['autobrr/autobrr'] }}"
 mkbrr_ver: "{{ tools_versions['autobrr/mkbrr'] }}"
 netronome_ver: "{{ tools_versions['autobrr/netronome'] }}"
 tqm_ver: "{{ tools_versions['autobrr/tqm'] }}"
-nvm_ver: "{{ tools_versions['nvm-sh/nvm'] }}"
+# nvm_ver: "{{ tools_versions['nvm-sh/nvm'] }}"
 sizechecker_ver: "{{ tools_versions['s0up4200/sizechecker'] }}"
-cross_seed: true
+cross_seed: false
 autobrr_service_file: "/etc/systemd/system/autobrr@.service"
 autobrr_cfg_file: "/home/{{ ansible_user }}/.config/autobrr/config.toml"
 autobrr_cfg_host: "0.0.0.0"
@@ -190,7 +190,7 @@ cross_seed_start_file: "/usr/local/bin/start-cross-seed.sh"
 cross_seed_service_file: "/etc/systemd/system/cross-seed.service"
 cross_seed_api_key: "1234567890abcdefghijklmnopqrstuvwxyz1234567890ab"
 tools_required_rpms:
-  - "{{ vnstat_dl }}"
+  - "vnstat"
   - "traceroute"
   - "wget"
 netronome_cfg_port: "7575"
@@ -200,8 +200,8 @@ netronome_agent_cfg_file: "/home/{{ ansible_user }}/.config/netronome/\
                           agent.toml"
 netronome_service_file: "/etc/systemd/system/netronome@.service"
 netronome_agent_service_file: "/etc/systemd/system/netronome-agent.service"
-vnstat_dl: "https://kojipkgs.fedoraproject.org//packages/vnstat/\
-            2.9/2.el9/x86_64/vnstat-2.9-2.el9.x86_64.rpm"
+# vnstat_dl: "https://kojipkgs.fedoraproject.org//packages/vnstat/\
+#             2.9/2.el9/x86_64/vnstat-2.9-2.el9.x86_64.rpm"
 
 # 05-security
 ssh_port: "22"
@@ -228,7 +228,7 @@ restricted_sudo_commands:
 cleanup_junk_rpms:
   - "audit"
   - "insights-client"
-  - "langpacks-*"
+  # - "langpacks-*"
   - "make"
   - "python3-cryptography"
   - "rsyslog"
@@ -246,7 +246,7 @@ common_tools_homefolder_junk:
   - "sizechecker_{{ sizechecker_ver }}_linux_amd64.tar.gz"
   - "sizechecker"
   - "tqm"
-journald_config_file: "/etc/systemd/journald.conf"
+journald_config_file: "/usr/lib/systemd/journald.conf"
 rhsm_config_file: "/etc/rhsm/rhsm.conf"
 dnf_config_file: "/etc/dnf/dnf.conf"
 centos_logs:
@@ -271,7 +271,7 @@ cleanup_junk_services:
 required_services:
   - "{{ autobrr_service }}"
   - "{{ netronome_service }}"
-  - "cross-seed"
+  # - "cross-seed"
   - "fstrim.timer"
   - "netronome-agent"
   - "qbt"

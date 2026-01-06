@@ -61,7 +61,7 @@
 
 - name: COMMON | 1.7 Systemd wide DefaultLimitNOFILE
   ansible.builtin.lineinfile:
-    path: "/etc/systemd/system.conf"
+    path: "/usr/lib/systemd/system.conf"
     regexp: '^#DefaultLimitNOFILE=.*'
     line: "DefaultLimitNOFILE={{ maximum_number_of_open_file_descriptors }}"
     backup: true

@@ -5,8 +5,9 @@
   ansible.builtin.uri:
     url: "https://api.github.com/repos/{{ item }}/releases/latest"
     return_content: true
+    timeout: 120
   register: latest_versions
-  delegate_to: localhost
+  # delegate_to: localhost
   loop: "{{ tools_repos_to_check }}"
   tags:
     - tools
@@ -240,21 +241,21 @@
         path: "{{ temporary_nvm_install_script_file }}"
         state: "absent"
 
-- name: TOOLS | 4.19 Deploy TQM crontab env
-  ansible.builtin.cron:
-    name: "HOME"
-    env: true
-    job: "/home/{{ ansible_user }}"
-  tags:
-    - tools
+# - name: TOOLS | 4.19 Deploy TQM crontab env
+#   ansible.builtin.cron:
+#     name: "HOME"
+#     env: true
+#     job: "/home/{{ ansible_user }}"
+#   tags:
+#     - tools
 
-- name: TOOLS | 4.20 Deploy TQM crontab job
-  ansible.builtin.cron:
-    name: "Cleanup Dry Run of TQM"
-    minute: "0"
-    hour: "2"
-    job: "/usr/local/bin/tqm clean qbt --dry-run"
-    user: "{{ ansible_user }}"
-    backup: true
-  tags:
-    - tools
+# - name: TOOLS | 4.20 Deploy TQM crontab job
+#   ansible.builtin.cron:
+#     name: "Cleanup Dry Run of TQM"
+#     minute: "0"
+#     hour: "2"
+#     job: "/usr/local/bin/tqm clean qbt --dry-run"
+#     user: "{{ ansible_user }}"
+#     backup: true
+#   tags:
+#     - tools
