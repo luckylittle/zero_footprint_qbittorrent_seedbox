@@ -14,7 +14,7 @@
 
 - name: PREFLIGHT | 0.2 Get status of local users.txt file for vsftpd
   ansible.builtin.stat:
-    path: "{{ ansible_role_name }}/files/vsftpd/users.txt"
+    path: "{{ role_path }}/files/vsftpd/users.txt"
   register: users_txt_stat_result
   delegate_to: localhost
   run_once: true
