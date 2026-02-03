@@ -35,7 +35,7 @@
   ansible.builtin.template:
     src: "autobrr/autobrr.service.j2"
     dest: "{{ autobrr_service_file }}"
-    backup: false
+    backup: true
     mode: "0644"
   become: true
   tags:
@@ -45,7 +45,7 @@
   ansible.builtin.template:
     src: "netronome/netronome.service.j2"
     dest: "{{ netronome_service_file }}"
-    backup: false
+    backup: true
     mode: "0644"
   become: true
   tags:
@@ -55,7 +55,7 @@
   ansible.builtin.template:
     src: "netronome/netronome-agent.service.j2"
     dest: "{{ netronome_agent_service_file }}"
-    backup: false
+    backup: true
     mode: "0644"
   become: true
   tags:
