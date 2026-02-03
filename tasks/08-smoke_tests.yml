@@ -128,7 +128,7 @@
   tags:
     - smoke_tests
 
-- name: TEST | 8.14 Check for Autobrr healtcheck to be reporting OK
+- name: TEST | 8.14 Check for Autobrr healthcheck to be reporting OK
   ansible.builtin.uri:
     url: "http://{{ hostvars[inventory_hostname].ansible_host | \
           default(inventory_hostname) }}:{{ autobrr_cfg_port }}/api/\
