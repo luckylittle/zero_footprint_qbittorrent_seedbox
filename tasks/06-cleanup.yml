@@ -118,7 +118,7 @@
   tags:
     - cleanup
 
-- name: CLEANUP | 6.12 Create a symbolic link pointing to \
+- name: CLEANUP | 6.12a Create a symbolic link pointing to \
         /dev/null for all remaining logs (CentOS)
   ansible.builtin.file:
     src: "/dev/null"
@@ -130,7 +130,7 @@
   tags:
     - cleanup
 
-- name: CLEANUP | 6.12 Create a symbolic link pointing to \
+- name: CLEANUP | 6.12b Create a symbolic link pointing to \
         /dev/null for all remaining logs (Red Hat)
   ansible.builtin.file:
     src: "/dev/null"
