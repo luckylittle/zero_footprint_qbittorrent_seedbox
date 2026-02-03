@@ -45,7 +45,7 @@ Role Variables
 [Common (section 1)](tasks/01-common.yml):
 
 * `set_google_dns` - if `true`, it will add Google DNS servers to the primary interface. Defaults to true.
-* `set_timezone` - change the time zone of the server, defaults to Australia/Sydney.
+* `set_timezone` - change the time zone of the server, defaults to UTC.
 * `sysctl_tunables` - on/off for various tuning options in [sysctl.yml](vars/sysctl.yml). Default is on.
 
 _Note:_ Lot of the tasks rely on `remote_user` / `ansible_user` variable (user who logs in to the remote machine via Ansible). For example, it creates directory structure under that user.
@@ -58,7 +58,7 @@ _Note:_ Lot of the tasks rely on `remote_user` / `ansible_user` variable (user w
 
 * `ftp_port` - what port should vsftpd listen on. Default is **55443**.
 * `pasv_port_range` - what port range should be used for FTP PASV, by default this is **64000-64321**.
-* `single_user` - when `true` only one FTP user will be used and it is the same username who runs this playbook. :warning: When `false`, [this](files/vsftpd/users.txt) file is used, update accordingly :warning: This is now true by default.
+* `single_user` - when `true` only one FTP user will be used and it is the same username who runs this playbook. :warning: When `false`, [this](files/vsftpd/users.txt) file is used (example [here](files/vsftpd/users.txt.example)), update accordingly :warning: This is now true by default.
 
 [Security (section 5)](tasks/05-security.yml):
 
