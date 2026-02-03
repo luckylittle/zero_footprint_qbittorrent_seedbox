@@ -47,6 +47,8 @@
     immediate: true
   loop: "{{ ipv4_whitelist | split(' ') }}"
   become: true
+  notify:
+    - "Reload firewalld"
   tags:
     - security
 
@@ -61,6 +63,8 @@
     - "{{ qbt_port }}/tcp"
     - "{{ qbt_port }}/udp"
   become: true
+  notify:
+    - "Reload firewalld"
   tags:
     - security
 
@@ -76,6 +80,8 @@
     - "cockpit"
     - "dhcpv6-client"
   become: true
+  notify:
+    - "Reload firewalld"
   tags:
     - security
 
@@ -86,6 +92,8 @@
     target: DROP
     permanent: true
   become: true
+  notify:
+    - "Reload firewalld"
   tags:
     - security
 
