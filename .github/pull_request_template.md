@@ -75,11 +75,10 @@
 - [ ] `upgrade_autobrr.sh` in place and working
 - [ ] `panic.sh` in place and working
 - [ ] `bench.sh` in place and working
-- [ ] cross-seed installed (Optional)
-- [ ] cross-seed config in oplace
-- [ ] cross-seed service in place
-- [ ] cross-seed responds to a local webhook
-- [ ] when qbt finishes download, cross-seed is notified via webhook
+- [ ] qui installed (Optional)
+- [ ] qui config in oplace
+- [ ] qui service in place
+- [ ] qui works as expected
 - [ ] unnecessary file(s) removed
 
 ##### 5. SECURITY
