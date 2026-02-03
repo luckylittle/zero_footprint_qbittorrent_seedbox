@@ -122,3 +122,12 @@
   become: true
   tags:
     - security
+
+- name: SECURITY | 5.12 Add ftpd_full_access boolean
+  ansible.posix.seboolean:
+    name: "ftpd_full_access"
+    state: true
+    persistent: true
+  become: true
+  tags:
+    - security
