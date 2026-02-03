@@ -139,14 +139,15 @@
 
 - name: COMMON | 1.15 Configure tuned for high throughput
   ansible.builtin.command: "tuned-adm profile {{ tuned_profile }}"
-  changed_when: true
+  register: tuned_profile_result
+  changed_when: tuned_profile_result.rc = 0
   notify:
     - "Restart tuned"
   become: true
   tags:
     - common
 
-- name: COMMON | 1.16 Enable Codeready Builder repo
+- name: COMMON | 1.16 Enable Codeready Builder repo (rhsm)
   community.general.rhsm_repository:
     name: "{{ item }}"
     state: enabled
@@ -159,7 +160,7 @@
   tags:
     - common
 
-- name: COMMON | 1.17 Enable Codeready Builder repo
+- name: COMMON | 1.17 Enable Codeready Builder repo (dnf)
   community.general.dnf_config_manager:
     name: "{{ item }}"
     state: enabled
