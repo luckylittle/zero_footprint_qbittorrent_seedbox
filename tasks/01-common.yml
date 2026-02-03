@@ -61,7 +61,7 @@
 
 - name: COMMON | 1.7 Systemd wide DefaultLimitNOFILE
   ansible.builtin.lineinfile:
-    path: "/usr/lib/systemd/system.conf"
+    path: "{{ systemd_cfg_path }}"
     regexp: '^#DefaultLimitNOFILE=.*'
     line: "DefaultLimitNOFILE={{ maximum_number_of_open_file_descriptors }}"
     backup: true
@@ -71,7 +71,7 @@
 
 - name: COMMON | 1.8 Set soft nofile limit
   ansible.builtin.lineinfile:
-    path: "/etc/security/limits.conf"
+    path: "{{ systemd_limits_path }}"
     line: "* soft nofile \
           {{ maximum_number_of_open_file_descriptors }}"
     insertbefore: '^# End of file$'
@@ -82,7 +82,7 @@
 
 - name: COMMON | 1.9 Set hard nofile limit
   ansible.builtin.lineinfile:
-    path: "/etc/security/limits.conf"
+    path: "{{ systemd_limits_path }}"
     line: "* hard nofile \
           {{ maximum_number_of_open_file_descriptors }}"
     insertbefore: '^# End of file$'
@@ -143,5 +143,31 @@
   notify:
     - "Restart tuned"
   become: true
+  tags:
+    - common
+
+- name: COMMON | 1.16 Enable Codeready Builder repo
+  community.general.rhsm_repository:
+    name: "{{ item }}"
+    state: enabled
+  become: true
+  loop: "{{ codeready_builder_repos }}"
+  register: rhsm_repository_result
+  failed_when:
+    - rhsm_repository_result.failed
+    - "'is not a valid repository ID' not in rhsm_repository_result.msg"
+  tags:
+    - common
+
+- name: COMMON | 1.17 Enable Codeready Builder repo
+  community.general.dnf_config_manager:
+    name: "{{ item }}"
+    state: enabled
+  become: true
+  loop: "{{ codeready_builder_repos }}"
+  register: dnf_config_manager
+  failed_when:
+    - dnf_config_manager.failed
+    - "'did not find repo with ID' not in dnf_config_manager.msg"
   tags:
     - common
