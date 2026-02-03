@@ -11,7 +11,7 @@ Project overview
 
 This Ansible role provisions a standard [Red Hat Enterprise Linux 9 (RHEL 9)](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux) system as a secure, efficient and lightweight peer-to-peer (P2P) seedbox, running [qBittorrent](https://www.qbittorrent.org/).
 
-The configuration prioritizes security and simplicity, utilizing integrated tools such as SELinux and firewalld. To maintain a minimal system footprint, it is configured for zero-logging operation and no shell history. Among others (mkbrr, tqm, netronome, sizechecker etc.), the role incorporates [Autobrr](https://github.com/autobrr/autobrr) for modern automated downloads and [cross-seed](https://github.com/cross-seed/cross-seed) for enhanced seeding.
+The configuration prioritizes security and simplicity, utilizing integrated tools such as SELinux and firewalld. To maintain a minimal system footprint, it is configured for zero-logging operation and no shell history. Among others (mkbrr, tqm, netronome, sizechecker etc.), the role incorporates [Autobrr](https://github.com/autobrr/autobrr) for modern automated downloads and cross-seed via [Qui](https://github.com/autobrr/qui) for enhanced seeding.
 
 Please be aware that the absence of persistent logs may complicate troubleshooting, though the ephemeral journal should be sufficient for most diagnostics. This project is an enhanced fork of my [zero_footprint_rutorrent_seedbox](https://github.com/luckylittle/zero_footprint_rutorrent_seedbox) repository, simplified and adapted for qBittorrent (lot of lessons learned!). [Contributions](CONTRIBUTING.md) via pull requests are welcome.
 
@@ -22,7 +22,7 @@ Please be aware that the absence of persistent logs may complicate troubleshooti
 Prerequisites
 -------------
 
-* A clean installation of RHEL 9 (CentOS 9 Stream should also work, but is not always tested).
+* A clean installation of RHEL 10 (CentOS Stream should also work, but is not always tested).
 * Pre-configured, passwordless Ansible access with `sudo` privileges. The [luckylittle/ansible-role-create-user](https://github.com/luckylittle/ansible-role-create-user) role may be used to establish this access.
 * Access via password should also be in place (mainly due to single-user vsftpd) - e.g. `sudo passwd <user>`.
 
@@ -76,7 +76,7 @@ Dependencies
 ------------
 
 * Ansible core v`2.16.14`
-* `ansible-galaxy collection install -r requirements.yml`
+* `ansible-galaxy collection install -r requirements.yml` ([ansible-posix-2.1.0, community-crypto-3.1.0, community-general-12.3.0](requirements.yml))
 
 Example Inventory & Playbook
 ----------------------------
@@ -97,35 +97,33 @@ Example Inventory & Playbook
 Testing
 -------
 
-|OS        |Version 0.1.1     |Version 0.1.2     |
-|----------|------------------|------------------|
-|9.6 (Plow)|:white_check_mark:|:white_check_mark:|
+|OS             |Version 0.2.0     |
+|---------------|------------------|
+|10.1 (Coughlan)|:white_check_mark:|
 
 On a brand new Red Hat Enterprise Linux release 9.6 (Plow) on AWS (t3.medium - 2 vCPU, 4GiB RAM), it took 13m 59s.
 The following versions were installed during the last RHEL9 test:
 
-|Package name   |Package version          |
-|---------------|-------------------------|
-|autobrr        |1.65.0                   |
-|bash           |5.1.8-9.el9.x86_64       |
-|cross-seed     |6.13.2                   |
-|curl           |7.76.1-31.el9_6.1.x86_64 |
-|firewalld      |1.3.4-9.el9_5.noarch     |
-|libdb-utils    |5.3.28-57.el9_6.x86_64   |
-|mkbrr          |1.15.0                   |
-|netronome      |0.6.0                    |
-|NetworkManager |1.52.0-5.el9_6.x86_64    |
-|nvm            |0.40.3                   |
-|openssh        |8.7p1-45.el9.x86_64      |
-|qBittorrent    |5.1.2                    |
-|sizechecker    |1.4.0                    |
-|tar            |1.34-7.el9.x86_64        |
-|tqm            |1.16.0                   |
-|traceroute     |2.1.1-1.el9.x86_64       |
-|tuned          |2.25.1-2.el9_6.noarch    |
-|vnstat         |2.9-2.el9.x86_64         |
-|vsftpd         |3.0.5-6.el9.x86_64       |
-|wget           |1.21.1-8.el9_4.x86_64    |
+|Package name   |Package version   |
+|---------------|------------------|
+|autobrr        |1.72.1            |
+|bash           |5.2.26-6.el10     |
+|curl           |8.12.1-2.el10     |
+|firewalld      |2.3.1-1.el10_0    |
+|libdb-utils    |5.3.28-64.el10_0  |
+|mkbrr          |1.20.0            |
+|netronome      |0.8.0             |
+|NetworkManager |1.54.0-2.el10_1   |
+|openssh        |9.9p1-12.el10_1   |
+|qBittorrent    |5.1.4             |
+|sizechecker    |1.4.0             |
+|tar            |1.35-9.el10_1     |
+|tqm            |1.19.0            |
+|traceroute     |2.1.6-3.el10      |
+|tuned          |2.26.0-1.el10_1.1 |
+|vnstat         |2.13-1.el10_1     |
+|vsftpd         |3.0.5-10.el10_1.1 |
+|wget           |1.24.5-5.el10     |
 
 The following Terraform can be used to create necessary infrastructure (based on RHEL9.X on AWS):
 
@@ -144,14 +142,14 @@ variable "key_name" {
   description = "AWS Key-pair"
 }
 
-# Find latest RHEL 9 AMI
-data "aws_ami" "rhel9" {
+# Find latest RHEL 10 AMI
+data "aws_ami" "rhel10" {
   most_recent = true
   owners      = ["309956199498"] # Red Hat's AWS account ID
 
   filter {
     name   = "name"
-    values = ["RHEL-9*"]
+    values = ["RHEL-10*"]
   }
 
   filter {
@@ -171,17 +169,17 @@ data "aws_ami" "rhel9" {
 }
 
 # Create a security group
-resource "aws_security_group" "rhel9_sg" {
-  name        = "rhel9_sg"
-  description = "Security group for RHEL 9 EC2 seedbox instance"
+resource "aws_security_group" "rhel10_sg" {
+  name        = "rhel10_sg"
+  description = "Security group for RHEL10 EC2 seedbox instance"
 
   tags = {
-    Name = "RHEL9-SecurityGroup"
+    Name = "RHEL10-SecurityGroup"
   }
 }
 
 resource "aws_vpc_security_group_ingress_rule" "allow_all" {
-  security_group_id = aws_security_group.rhel9_sg.id
+  security_group_id = aws_security_group.rhel10_sg.id
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1"
   description       = "Generally a bad practice, but we need to test firewalld functionality"
@@ -191,22 +189,22 @@ resource "aws_vpc_security_group_ingress_rule" "allow_all" {
 }
 
 resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {
-  security_group_id = aws_security_group.rhel9_sg.id
+  security_group_id = aws_security_group.rhel10_sg.id
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1" # semantically equivalent to all ports
 }
 
 resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv6" {
-  security_group_id = aws_security_group.rhel9_sg.id
+  security_group_id = aws_security_group.rhel10_sg.id
   cidr_ipv6         = "::/0"
   ip_protocol       = "-1" # semantically equivalent to all ports
 }
 
 # Create an EC2 instance
 resource "aws_instance" "rhel_instance" {
-  ami                    = data.aws_ami.rhel9.id
+  ami                    = data.aws_ami.rhel10.id
   instance_type          = "t3.medium"
-  vpc_security_group_ids = [aws_security_group.rhel9_sg.id]
+  vpc_security_group_ids = [aws_security_group.rhel10_sg.id]
   key_name               = var.key_name # Replace with your key pair name
 
   root_block_device {
@@ -214,7 +212,7 @@ resource "aws_instance" "rhel_instance" {
     volume_type = "gp3"
     encrypted   = true
     tags = {
-      Name = "RHEL-9-Seedbox"
+      Name = "RHEL10-Seedbox"
     }
   }
 
@@ -225,7 +223,7 @@ resource "aws_instance" "rhel_instance" {
     encrypted             = true
     delete_on_termination = true
     tags = {
-      Name = "RHEL-9-Seedbox"
+      Name = "RHEL10-Seedbox"
     }
   }
 
@@ -293,7 +291,7 @@ touch /var/log/user-data-complete
 EOF
 
   tags = {
-    Name        = "RHEL-9-Seedbox"
+    Name        = "RHEL10-Seedbox"
     Environment = "Dev"
   }
 }
@@ -345,6 +343,9 @@ After you successfully apply this role, you should be able to see a similar outp
 "----------------------------------------------------"
 "qBt WebUI:"
 "http://123.124.125.126:8080"
+"----------------------------------------------------"
+"Qui URL:",
+"http://54.206.30.162:7476",
 "----------------------------------------------------"
 "Netronome URL:",
 "http://123.124.125.126:7575",
