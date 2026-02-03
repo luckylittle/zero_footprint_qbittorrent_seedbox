@@ -280,6 +280,8 @@ cleanup_junk_services:
   - "kdump.service"
 
 # 07-reboot
+autobrr_service: "autobrr@{{ ansible_user }}"
+netronome_service: "netronome@{{ ansible_user }}"
 required_services:
   - "{{ autobrr_service }}"
   - "{{ netronome_service }}"
