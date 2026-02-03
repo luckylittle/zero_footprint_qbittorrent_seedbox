@@ -7,7 +7,7 @@
     return_content: true
     timeout: 120
   register: latest_versions
-  # delegate_to: localhost
+  delegate_to: localhost  # to avoid rate limiting, comment out if needed
   loop: "{{ tools_repos_to_check }}"
   tags:
     - tools
@@ -69,6 +69,8 @@
   loop:
     - autobrr
     - netronome
+    - qui
+    - sfvbrr
     - tqm
   tags:
     - tools
@@ -127,6 +129,8 @@
     - "{{ autobrr_src }}"
     - "{{ mkbrr_src }}"
     - "{{ netronome_src }}"
+    - "{{ qui_src }}"
+    - "{{ sfvbrr_src }}"
     - "{{ sizechecker_src }}"
     - "{{ tqm_src }}"
   tags:
@@ -137,7 +141,9 @@
                             /home/{{ ansible_user }}/autobrrctl \
                             /home/{{ ansible_user }}/mkbrr \
                             /home/{{ ansible_user }}/netronome \
+                            /home/{{ ansible_user }}/qui \
                             /home/{{ ansible_user }}/sizechecker \
+                            /home/{{ ansible_user }}/sfvbrr \
                             /home/{{ ansible_user }}/tqm \
                             /usr/local/bin/"
   args:
@@ -179,83 +185,43 @@
   tags:
     - tools
 
-- name: TOOLS | 4.18 Install & configure cross-seed (Optional)
-  when: cross_seed
+- name: TOOLS | 4.18 Add Qui configuration file
+  ansible.builtin.template:
+    src: "qui/config.toml.j2"
+    dest: "{{ qui_cfg_file }}"
+    backup: true
+    mode: "0644"
   tags:
     - tools
-  block:
-    - name: TOOLS | 4.18.1 Download Node.js Version Manager
-      ansible.builtin.get_url:
-        url: "https://raw.githubusercontent.com/nvm-sh/nvm/\
-              {{ nvm_ver }}/install.sh"
-        dest: "{{ temporary_nvm_install_script_file }}"
-        mode: "0755"
 
-    - name: TOOLS | 4.18.2 Upgrade Node.js package manager
-      ansible.builtin.command: "{{ temporary_nvm_install_script_file }}"
-      changed_when: true
+- name: TOOLS | 4.19 Add Qui upgrade shell script
+  ansible.builtin.copy:
+    src: "qui/upgrade_qui.sh"
+    dest: "{{ upgrade_qui_file }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    backup: true
+    mode: "0755"
+  tags:
+    - tools
 
-    - name: TOOLS | 4.18.3 Install cross-seed via Node.js package manager
-      ansible.builtin.shell: |
-        export NVM_DIR="/home/{{ ansible_user }}/.nvm"
-        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-        npm install -g npm --lts
-        nvm install {{ node_ver }} --lts
-        npm install -g cross-seed
-      args:
-        creates: "{{ ansible_env.HOME }}/.nvm/versions/node"
+- name: TOOLS | 4.20 Add service for Qui
+  ansible.builtin.template:
+    src: "qui/qui.service.j2"
+    dest: "{{ qui_service_file }}"
+    backup: true
+    mode: "0644"
+  become: true
+  tags:
+    - tools
 
-    - name: TOOLS | 4.18.4 Add cross-seed config directory
-      ansible.builtin.file:
-        path: "/home/{{ ansible_user }}/.cross-seed"
-        state: "directory"
-        mode: "0755"
-
-    - name: TOOLS | 4.18.5 Configure cross-seed
-      ansible.builtin.template:
-        src: "cross_seed/config.js.j2"
-        dest: "{{ cross_seed_cfg_file }}"
-        backup: true
-        mode: "0644"
-
-    - name: TOOLS | 4.18.6 Add cross-seed start script
-      ansible.builtin.template:
-        src: "cross_seed/start-cross-seed.sh.j2"
-        dest: "{{ cross_seed_start_file }}"
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
-        backup: true
-        mode: "0755"
-      become: true
-
-    - name: TOOLS | 4.18.7 Add cross-seed service
-      ansible.builtin.template:
-        src: "cross_seed/cross-seed.service.j2"
-        dest: "{{ cross_seed_service_file }}"
-        backup: true
-        mode: "0644"
-      become: true
-
-    - name: TOOLS | 4.18.8 Remove temporary install-nvm.sh
-      ansible.builtin.file:
-        path: "{{ temporary_nvm_install_script_file }}"
-        state: "absent"
-
-# - name: TOOLS | 4.19 Deploy TQM crontab env
-#   ansible.builtin.cron:
-#     name: "HOME"
-#     env: true
-#     job: "/home/{{ ansible_user }}"
-#   tags:
-#     - tools
-
-# - name: TOOLS | 4.20 Deploy TQM crontab job
-#   ansible.builtin.cron:
-#     name: "Cleanup Dry Run of TQM"
-#     minute: "0"
-#     hour: "2"
-#     job: "/usr/local/bin/tqm clean qbt --dry-run"
-#     user: "{{ ansible_user }}"
-#     backup: true
-#   tags:
-#     - tools
+- name: TOOLS | 4.21 Add preset file for sfvbrr
+  ansible.builtin.copy:
+    src: "sfvbrr/presets.yaml"
+    dest: "{{ sfvbrr_cfg_file }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    backup: true
+    mode: "0644"
+  tags:
+    - tools
