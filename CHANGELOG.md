@@ -5,6 +5,57 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-02-04
+
+### Added
+
+* @luckylittle feat(ai): Closes #24 1439fc7
+* @luckylittle feat(chore): Updated runbook in PR template 8b3bb06
+* @luckylittle feat(docs): Added sfvbrr to PR template checklist 92ceba2
+* @luckylittle feat(docs): Updated CONTRIBUTING.md 3acaa79
+* @luckylittle feat(docs): Updated CONTRIBUTING.md d7873fd
+* @luckylittle feat(qui,sfvbrr): Added new vars for these two tools a318231
+* @luckylittle feat(qui): Closes #20 cfd0eee
+* @luckylittle feat(rhel10): Changed default TZ baff01d
+* @luckylittle feat(rhel10): Closes #22 b822877
+* @luckylittle feat(rhel10): Initial refactor c5d3708
+* @luckylittle feat(sfvbrr): Closes #23 9aec73e
+* @luckylittle fix(vsftpd): Added example users.txt 7ac7f66
+
+### Fixed
+
+* @luckylittle fix(cleanup): Gracefully continue when packages not installed 2cc862a
+* @luckylittle fix(cleanup): Renamed identical task for better differentiation c4aab4d
+* @luckylittle fix(common): Improved task names and change_when detection for tuned 4ee1a84
+* @luckylittle fix(docs): Missing qui in smoke_tests 86b6fef
+* @luckylittle fix(preflight): Better handling of the role path 58a1bba
+* @luckylittle fix(reboot): Service name vars moved to main.yml d0b3077
+* @luckylittle fix(sec): Notify firewalld reload for all related tasks 7c4d300
+* @luckylittle fix(selinux): Closes #21 83e7680
+* @luckylittle fix(sfvbrr): Automatically generate presets instead 4cdcf4d
+* @luckylittle fix(smoke_tests): Typo 009ebf2
+* @luckylittle fix(tools): Backup re-enabled for 4.4, 4.5, 4.6 ded6654
+* @luckylittle fix(tools): failed opening custom definitions directory deca4b8
+* @luckylittle fix(tools): Typo in command f3e7134
+* @luckylittle fix(vsftpd): Add disable_gpg_check 990695d
+* @luckylittle fix(vsftpd): Separate EPEL GPG should not be required 47b915b
+* @luckylittle fix(workflow): passing YamlLint 36f85bc
+
+### Changed
+
+* @luckylittle chore(bench): Updated to the latest 3738fca
+* @luckylittle docs(readme) Updated 2026-02-04 e1763ed
+* @luckylittle docs(readme): Add Excalidraw source cd2604a
+* @luckylittle docs(readme): Added Qui 0a5fab7
+* @luckylittle docs(readme): Updated 2026-02-03 c4b3494
+* @luckylittle docs(readme): Updated 2026-02-04 f8aaa1a
+* @luckylittle docs(readme): Updated diagram and location 121286f
+
+### Removed
+
+* @luckylittle fix(cross): Removed unused var 39a85ff
+* @luckylittle chore(tools): Removed unused baseUrl from AutoBrr f9ee2c6
+
 ## [0.1.2] - 2025-08-29
 
 ### Added
