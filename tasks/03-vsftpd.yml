@@ -5,6 +5,7 @@
   ansible.builtin.dnf:
     name: "{{ item }}"
     state: present
+    disable_gpg_check: true
   become: true
   loop: "{{ vsftpd_required_rpms }}"
   tags:
