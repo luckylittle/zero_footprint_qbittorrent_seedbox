@@ -123,7 +123,7 @@
 - [ ] check qbt webui port is open from the ansible control plane
 - [ ] check autobrr webui port is open from the ansible control plane
 - [ ] check autobrr healthcheck port is open from the ansible control plane
-- [ ] check cros-seed port is open on the managed node and webhook responding
+- [ ] check qui port is open from the ansible control plane
 - [ ] check the results are displayed correctly
 - [ ] check the journald for any errors
 
