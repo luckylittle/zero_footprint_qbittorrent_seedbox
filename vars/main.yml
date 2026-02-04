@@ -156,7 +156,6 @@ tqm_ver: "{{ tools_versions['autobrr/tqm'] }}"
 qui_ver: "{{ tools_versions['autobrr/qui'] }}"
 sfvbrr_ver: "{{ tools_versions['autobrr/sfvbrr'] }}"
 sizechecker_ver: "{{ tools_versions['s0up4200/sizechecker'] }}"
-cross_seed: false
 autobrr_service_file: "/etc/systemd/system/autobrr@.service"
 autobrr_cfg_file: "/home/{{ ansible_user }}/.config/autobrr/config.toml"
 autobrr_cfg_host: "0.0.0.0"
