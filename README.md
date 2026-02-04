@@ -35,7 +35,7 @@ Prerequisites
 Architecture
 ------------
 
-![img](architecture.png)
+![img](.github/images/architecture.png)
 
 Role Variables
 --------------
@@ -112,10 +112,11 @@ The following versions were installed during the last RHEL10 test:
 |firewalld      |2.3.1-1.el10_0    |
 |libdb-utils    |5.3.28-64.el10_0  |
 |mkbrr          |1.20.0            |
-|netronome      |0.8.0             |
+|netronome      |0.9.0             |
 |NetworkManager |1.54.0-2.el10_1   |
 |openssh        |9.9p1-12.el10_1   |
 |qBittorrent    |5.1.4             |
+|sfvbrr         |0.0.7             |
 |sizechecker    |1.4.0             |
 |tar            |1.35-9.el10_1     |
 |tqm            |1.19.0            |
