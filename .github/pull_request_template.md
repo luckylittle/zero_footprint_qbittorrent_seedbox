@@ -75,10 +75,12 @@
 - [ ] `upgrade_autobrr.sh` in place and working
 - [ ] `panic.sh` in place and working
 - [ ] `bench.sh` in place and working
-- [ ] qui installed (Optional)
+- [ ] qui installed
 - [ ] qui config in oplace
 - [ ] qui service in place
 - [ ] qui works as expected
+- [ ] sfvbrr installed
+- [ ] sfvbrr config in place
 - [ ] unnecessary file(s) removed
 
 ##### 5. SECURITY
