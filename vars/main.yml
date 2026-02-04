@@ -16,9 +16,6 @@ maximum_number_of_open_file_descriptors: "262144"
 tuned_profile: "network-throughput"
 systemd_cfg_path: "/usr/lib/systemd/system.conf"
 systemd_limits_path: "/etc/security/limits.conf"
-codeready_builder_repos:
-  - "codeready-builder-for-rhel-10-x86_64-rpms"
-  - "codeready-builder-for-rhel-10-rhui-rpms"
 
 # 02-qbt
 qbt_latest_ver_url: "https://api.github.com/repos/userdocs/\
@@ -160,7 +157,6 @@ autobrr_service_file: "/etc/systemd/system/autobrr@.service"
 autobrr_cfg_file: "/home/{{ ansible_user }}/.config/autobrr/config.toml"
 autobrr_cfg_host: "0.0.0.0"
 autobrr_cfg_port: "7474"
-autobrr_cfg_baseurl: "/autobrr/"
 autobrr_cfg_baseurlmodelegacy: "true"
 autobrr_cfg_loglevel: "ERROR"
 autobrr_cfg_checkforupdates: "false"
