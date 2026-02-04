@@ -217,10 +217,11 @@
 
 - name: TOOLS | 4.21 Generate presets file for sfvbrr
   ansible.builtin.command:
-    cmd: "sfvbb validate ."
+    cmd: "sfvbrr validate ."
     creates: "{{ sfvbrr_cfg_file }}"
   register: sfvbrr_validate_result
   failed_when:
+    - sfvbrr_validate_result.failed
     - "'command not found' in sfvbrr_validate_result.msg"
   tags:
     - tools
