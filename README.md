@@ -9,9 +9,9 @@ luckylittle.zero_footprint_qbittorrent_seedbox
 Project overview
 ----------------
 
-This Ansible role provisions a standard [Red Hat Enterprise Linux 9 (RHEL 9)](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux) system as a secure, efficient and lightweight peer-to-peer (P2P) seedbox, running [qBittorrent](https://www.qbittorrent.org/).
+This Ansible role provisions a standard [Red Hat Enterprise Linux 10 (RHEL 10)](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux) system as a secure, efficient and lightweight peer-to-peer (P2P) seedbox, running [qBittorrent](https://www.qbittorrent.org/).
 
-The configuration prioritizes security and simplicity, utilizing integrated tools such as SELinux and firewalld. To maintain a minimal system footprint, it is configured for zero-logging operation and no shell history. Among others (mkbrr, tqm, netronome, sizechecker etc.), the role incorporates [Autobrr](https://github.com/autobrr/autobrr) for modern automated downloads and cross-seed via [Qui](https://github.com/autobrr/qui) for enhanced seeding.
+The configuration prioritizes security and simplicity, utilizing integrated tools such as SELinux and firewalld. To maintain a minimal system footprint, it is configured for zero-logging operation and no shell history. Among others (mkbrr, tqm, netronome, sizechecker, sfvbrr etc.), the role incorporates [Autobrr](https://github.com/autobrr/autobrr) for modern automated downloads and cross-seed via [Qui](https://github.com/autobrr/qui) for enhanced seeding.
 
 Please be aware that the absence of persistent logs may complicate troubleshooting, though the ephemeral journal should be sufficient for most diagnostics. This project is an enhanced fork of my [zero_footprint_rutorrent_seedbox](https://github.com/luckylittle/zero_footprint_rutorrent_seedbox) repository, simplified and adapted for qBittorrent (lot of lessons learned!). [Contributions](CONTRIBUTING.md) via pull requests are welcome.
 
@@ -97,12 +97,12 @@ Example Inventory & Playbook
 Testing
 -------
 
-|OS             |Version 0.2.0     |
+|Version RHEL OS|Version role 0.2.0|
 |---------------|------------------|
 |10.1 (Coughlan)|:white_check_mark:|
 
-On a brand new Red Hat Enterprise Linux release 9.6 (Plow) on AWS (t3.medium - 2 vCPU, 4GiB RAM), it took 13m 59s.
-The following versions were installed during the last RHEL9 test:
+On a brand new Red Hat Enterprise Linux release 10.1 (Coughlan) on AWS (t3.medium - 2 vCPU, 4GiB RAM), it took 13m 59s.
+The following versions were installed during the last RHEL10 test:
 
 |Package name   |Package version   |
 |---------------|------------------|
@@ -125,7 +125,7 @@ The following versions were installed during the last RHEL9 test:
 |vsftpd         |3.0.5-10.el10_1.1 |
 |wget           |1.24.5-5.el10     |
 
-The following Terraform can be used to create necessary infrastructure (based on RHEL9.X on AWS):
+The following Terraform can be used to create necessary infrastructure (based on RHEL10.X on AWS):
 
 <details>
 
@@ -345,7 +345,7 @@ After you successfully apply this role, you should be able to see a similar outp
 "http://123.124.125.126:8080"
 "----------------------------------------------------"
 "Qui URL:",
-"http://54.206.30.162:7476",
+"http://123.124.125.126:7476",
 "----------------------------------------------------"
 "Netronome URL:",
 "http://123.124.125.126:7575",
@@ -370,4 +370,4 @@ Author Information
 
 Lucian Maly <<lmaly@redhat.com>>
 
-_Last update: Fri 29 Aug 2025 00:02:49 UTC_
+_Last update: Wed 04 Feb 2026 01:23:14 UTC_
