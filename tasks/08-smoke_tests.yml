@@ -38,7 +38,23 @@
   tags:
     - smoke_tests
 
-- name: TEST | 8.6 Print UNKNOWN service(s)
+- name: TEST | 8.6 Print ENABLED service(s)
+  ansible.builtin.debug:
+    var: ansible_facts['services'].values() |
+          selectattr('status','equalto','enabled') |
+          map(attribute='name') | list
+  tags:
+    - smoke_tests
+
+- name: TEST | 8.7 Print DISABLED service(s)
+  ansible.builtin.debug:
+    var: ansible_facts['services'].values() |
+          selectattr('status','equalto','disabled') |
+          map(attribute='name') | list
+  tags:
+    - smoke_tests
+
+- name: TEST | 8.8 Print UNKNOWN service(s)
   ansible.builtin.debug:
     var: ansible_facts['services'].values() |
           selectattr('state','equalto','unknown') |
@@ -46,7 +62,7 @@
   tags:
     - smoke_tests
 
-- name: TEST | 8.7 Check for port 22 to be open and contain "OpenSSH"
+- name: TEST | 8.9 Check for port 22 to be open and contain "OpenSSH"
   ansible.builtin.wait_for:
     host: "{{ hostvars[inventory_hostname].ansible_host | \
           default(inventory_hostname) }}"
@@ -59,7 +75,7 @@
   tags:
     - smoke_tests
 
-- name: TEST | 8.8 Check for FTP port to be open and contain "220 Welcome to"
+- name: TEST | 8.10 Check for FTP port to be open and contain "220 Welcome to"
   ansible.builtin.wait_for:
     host: "{{ hostvars[inventory_hostname].ansible_host | \
           default(inventory_hostname) }}"
@@ -72,7 +88,7 @@
   tags:
     - smoke_tests
 
-- name: TEST | 8.9 Check for qBt port to be open
+- name: TEST | 8.11 Check for qBt port to be open
   ansible.builtin.wait_for:
     host: "{{ hostvars[inventory_hostname].ansible_host | \
           default(inventory_hostname) }}"
@@ -84,7 +100,7 @@
   tags:
     - smoke_tests
 
-- name: TEST | 8.10 Check for qBt HTTP endpoint to be open
+- name: TEST | 8.12 Check for qBt HTTP endpoint to be open
   ansible.builtin.uri:
     url: "http://{{ hostvars[inventory_hostname].ansible_host \
           | default(inventory_hostname) }}:{{ qbt_preferences_webuiport }}"
@@ -98,7 +114,7 @@
   tags:
     - smoke_tests
 
-- name: TEST | 8.11 Check for Autobrr to be responding
+- name: TEST | 8.13 Check for Autobrr to be responding
   ansible.builtin.uri:
     url: "http://{{ hostvars[inventory_hostname].ansible_host | \
           default(inventory_hostname) }}:{{ autobrr_cfg_port }}"
@@ -112,7 +128,7 @@
   tags:
     - smoke_tests
 
-- name: TEST | 8.12 Check for Autobrr healtcheck to be reporting OK
+- name: TEST | 8.14 Check for Autobrr healthcheck to be reporting OK
   ansible.builtin.uri:
     url: "http://{{ hostvars[inventory_hostname].ansible_host | \
           default(inventory_hostname) }}:{{ autobrr_cfg_port }}/api/\
@@ -127,30 +143,7 @@
   tags:
     - smoke_tests
 
-- name: TEST | 8.13 Check for cross-seed webhook to be responding
-  ansible.builtin.uri:
-    url: "http://127.0.0.1:{{ cross_seed_port }}/api/webhook?\
-          apikey={{ cross_seed_api_key }}"
-    return_content: true
-    method: "POST"
-    body_format: "json"
-    body: |
-      {
-        "infoHash": "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ0123",
-        "includeSingleEpisodes": "true"
-      }
-    timeout: "{{ test_timeout }}"
-  register: test_cross_seed
-  until: test_cross_seed.status == 204
-  retries: 6
-  delay: 10
-  failed_when: "test_cross_seed.status != 204"
-  changed_when: false
-  when: cross_seed
-  tags:
-    - smoke_tests
-
-- name: TEST | 8.14 Check for Netronome to be responding
+- name: TEST | 8.15 Check for Netronome to be responding
   ansible.builtin.uri:
     url: "http://{{ hostvars[inventory_hostname].ansible_host | \
           default(inventory_hostname) }}:{{ netronome_cfg_port }}"
@@ -165,7 +158,22 @@
   tags:
     - smoke_tests
 
-- name: TEST | 8.15 Show the smoke test results
+- name: TEST | 8.16 Check for Qui to be responding
+  ansible.builtin.uri:
+    url: "http://{{ hostvars[inventory_hostname].ansible_host | \
+          default(inventory_hostname) }}:{{ qui_cfg_port }}"
+    return_content: true
+    timeout: "{{ test_timeout }}"
+  register: test_qui
+  delegate_to: localhost
+  failed_when: "test_qui.status != 200 or \
+                '__QUI_VERSION__' \
+                not in test_qui.content"
+  changed_when: false
+  tags:
+    - smoke_tests
+
+- name: TEST | 8.17 Show the smoke test results
   ansible.builtin.debug:
     msg:
       - "Results:"
@@ -182,12 +190,9 @@
       - "AUTOBRR HEALTHZ:   {{ 'Passed' if not healthz_autobrr.failed else
                               'Failed (status ' +
                               (healthz_autobrr.status | string) + ')' }}"
-      - "CROSS-SEED:        {{ 'Skipped' if (test_cross_seed is not defined
-                            or test_cross_seed.get('skipped', false))
-                            else ('Failed (status ' + (test_cross_seed.status
-                            | string) + ')' if test_cross_seed.failed
-                            else 'Passed')
-                            }}"
+      - "QUI:               {{ 'Passed' if not test_qui.failed else
+                              'Failed (status ' +
+                              (test_qui.status | string) + ')' }}"
       - "NETRONOME:         {{ 'Passed' if not test_netronome.failed else
                               'Failed (status ' +
                               (test_netronome.status | string) + ')' }}"
@@ -195,7 +200,7 @@
   tags:
     - smoke_tests
 
-- name: TEST | 8.16 Output
+- name: TEST | 8.18 Output
   ansible.builtin.debug:
     msg:
       - "------------------------------------------------------------"
@@ -215,6 +220,11 @@
       - "http://{{ (ansible_ssh_host | \
           default(ansible_host)) | default(inventory_hostname) }}:\
           {{ qbt_preferences_webuiport }}"
+      - "------------------------------------------------------------"
+      - "Qui URL:"
+      - "http://{{ (ansible_ssh_host | \
+          default(ansible_host)) | default(inventory_hostname) }}:\
+          {{ qui_cfg_port }}"
       - "------------------------------------------------------------"
       - "Netronome URL:"
       - "http://{{ (ansible_ssh_host | \

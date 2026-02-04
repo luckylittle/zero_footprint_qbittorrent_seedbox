@@ -75,11 +75,12 @@
 - [ ] `upgrade_autobrr.sh` in place and working
 - [ ] `panic.sh` in place and working
 - [ ] `bench.sh` in place and working
-- [ ] cross-seed installed (Optional)
-- [ ] cross-seed config in oplace
-- [ ] cross-seed service in place
-- [ ] cross-seed responds to a local webhook
-- [ ] when qbt finishes download, cross-seed is notified via webhook
+- [ ] qui installed
+- [ ] qui config in oplace
+- [ ] qui service in place
+- [ ] qui works as expected
+- [ ] sfvbrr installed
+- [ ] sfvbrr config in place
 - [ ] unnecessary file(s) removed
 
 ##### 5. SECURITY
@@ -122,7 +123,7 @@
 - [ ] check qbt webui port is open from the ansible control plane
 - [ ] check autobrr webui port is open from the ansible control plane
 - [ ] check autobrr healthcheck port is open from the ansible control plane
-- [ ] check cros-seed port is open on the managed node and webhook responding
+- [ ] check qui port is open from the ansible control plane
 - [ ] check the results are displayed correctly
 - [ ] check the journald for any errors
 

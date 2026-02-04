@@ -8,19 +8,19 @@
 # Stop all the services
 sudo systemctl stop \
   autobrr@{{ ansible_user }} \
-  cross-seed \
   netronome-agent \
   netronome@{{ ansible_user }} \
   qbt \
+  qui \
   vsftpd
 
 # Show if they are all stopped
 sudo systemctl is-active \
   autobrr@{{ ansible_user }} \
-  cross-seed \
   netronome-agent \
   netronome@{{ ansible_user }} \
   qbt \
+  qui \
   vsftpd
 
 # Remove BT_backup

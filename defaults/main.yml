@@ -3,7 +3,7 @@
 
 # 01-common
 set_google_dns: true
-set_timezone: "Australia/Sydney"
+set_timezone: "UTC"
 sysctl_tunables: true
 
 # 02-qbt

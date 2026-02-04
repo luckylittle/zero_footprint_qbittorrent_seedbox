@@ -61,7 +61,7 @@
 
 - name: COMMON | 1.7 Systemd wide DefaultLimitNOFILE
   ansible.builtin.lineinfile:
-    path: "/etc/systemd/system.conf"
+    path: "{{ systemd_cfg_path }}"
     regexp: '^#DefaultLimitNOFILE=.*'
     line: "DefaultLimitNOFILE={{ maximum_number_of_open_file_descriptors }}"
     backup: true
@@ -71,7 +71,7 @@
 
 - name: COMMON | 1.8 Set soft nofile limit
   ansible.builtin.lineinfile:
-    path: "/etc/security/limits.conf"
+    path: "{{ systemd_limits_path }}"
     line: "* soft nofile \
           {{ maximum_number_of_open_file_descriptors }}"
     insertbefore: '^# End of file$'
@@ -82,7 +82,7 @@
 
 - name: COMMON | 1.9 Set hard nofile limit
   ansible.builtin.lineinfile:
-    path: "/etc/security/limits.conf"
+    path: "{{ systemd_limits_path }}"
     line: "* hard nofile \
           {{ maximum_number_of_open_file_descriptors }}"
     insertbefore: '^# End of file$'
@@ -139,7 +139,8 @@
 
 - name: COMMON | 1.15 Configure tuned for high throughput
   ansible.builtin.command: "tuned-adm profile {{ tuned_profile }}"
-  changed_when: true
+  register: tuned_profile_result
+  changed_when: tuned_profile_result.rc == 0
   notify:
     - "Restart tuned"
   become: true
