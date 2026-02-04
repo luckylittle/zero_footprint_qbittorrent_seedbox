@@ -68,6 +68,7 @@
     mode: "0755"
   loop:
     - autobrr
+    - autobrr/definitions
     - netronome
     - qui
     - sfvbrr
