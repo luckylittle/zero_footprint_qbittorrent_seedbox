@@ -116,6 +116,7 @@ The following versions were installed during the last RHEL10 test:
 |NetworkManager |1.54.0-2.el10_1   |
 |openssh        |9.9p1-12.el10_1   |
 |qBittorrent    |5.1.4             |
+|qui            |1.13.1            |
 |sfvbrr         |0.0.7             |
 |sizechecker    |1.4.0             |
 |tar            |1.35-9.el10_1     |
