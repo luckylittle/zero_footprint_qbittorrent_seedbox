@@ -85,7 +85,6 @@ qbt_categories_file: "/home/{{ ansible_user }}/.config/\
                     qBittorrent/categories.json"
 
 # 03-vsftpd
-epel_gpg_key: "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-10"
 epel_release_latest: "https://dl.fedoraproject.org/pub/epel/\
                       epel-release-latest-10.noarch.rpm"
 vsftpd_required_rpms:
@@ -280,8 +279,8 @@ cleanup_junk_services:
   - "kdump.service"
 
 # 07-reboot
-autobrr_service: "autobrr@{{ ansible_user }}"
-netronome_service: "netronome@{{ ansible_user }}"
+autobrr_service: "autobrr@{{ ansible_user | default(ansible_user_id) }}"
+netronome_service: "netronome@{{ ansible_user | default(ansible_user_id) }}"
 required_services:
   - "{{ autobrr_service }}"
   - "{{ netronome_service }}"
