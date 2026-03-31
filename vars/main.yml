@@ -195,6 +195,7 @@ tools_required_rpms:
   - "vnstat"
   - "traceroute"
   - "wget"
+  - "mc"
 netronome_cfg_port: "7575"
 netronome_cfg_file: "/home/{{ ansible_user }}/.config/netronome/config.toml"
 netronome_agent_cfg_port: "8200"
