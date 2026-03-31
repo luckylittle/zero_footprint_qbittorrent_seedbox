@@ -111,6 +111,7 @@ The following versions were installed during the last RHEL10 test:
 |curl           |8.12.1-2.el10     |
 |firewalld      |2.3.1-1.el10_0    |
 |libdb-utils    |5.3.28-64.el10_0  |
+|mc             |4.8.31-3.el10     |
 |mkbrr          |1.20.0            |
 |netronome      |0.9.0             |
 |NetworkManager |1.54.0-2.el10_1   |
@@ -372,4 +373,4 @@ Author Information
 
 Lucian Maly <<lmaly@redhat.com>>
 
-_Last update: Wed 04 Feb 2026 01:23:14 UTC_
+_Last update: Tue 31 Mar 2026 04:05:32 UTC_
